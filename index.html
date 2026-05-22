@@ -245,6 +245,8 @@
     <div id="modal-container"></div>
 
     <script>
+        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQc2dXEAKzT_n32JPtuLff__6Xo3rffL5WQObCnFSas9opkiWbzRu2SnEbqjRehCN8Bw/exec';
+
         class ResearchApp {
             constructor() {
                 this.currentUser = null;
@@ -267,8 +269,14 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
                 btn.disabled = true;
 
-                google.script.run
-                    .withSuccessHandler((response) => {
+                const formData = new FormData();
+                formData.append('action', 'loginAttempt');
+                formData.append('username', u);
+                formData.append('password', p);
+
+                fetch(APP_SCRIPT_URL, { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(response => {
                         btn.innerHTML = origHTML; btn.disabled = false;
                         if (response.success) {
                             this.currentUser = response.user;
@@ -279,11 +287,10 @@
                             this.showToast(response.message || 'Login Failed', 'error');
                         }
                     })
-                    .withFailureHandler((err) => {
+                    .catch(err => {
                         btn.innerHTML = origHTML; btn.disabled = false;
-                        this.showToast('Server connection error', 'error');
-                    })
-                    .loginAttempt(u, p);
+                        this.showToast('Server error: ' + err, 'error');
+                    });
             }
 
             logout() { this.currentUser = null; this.data = []; this.showLogin(); document.getElementById('login-form').reset(); }
@@ -292,10 +299,17 @@
                 this.showDashboard();
                 document.getElementById('table-body').innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px;"><i class="fas fa-spinner fa-spin"></i> Loading data...</td></tr>';
                 
-                google.script.run
-                    .withSuccessHandler((records) => { this.data = records; this.renderTable(); this.updateStats(); })
-                    .withFailureHandler((err) => { this.showToast('Failed to load data', 'error'); })
-                    .getAllRecords();
+                const formData = new FormData();
+                formData.append('action', 'getAllRecords');
+
+                fetch(APP_SCRIPT_URL, { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(records => { 
+                        this.data = records; 
+                        this.renderTable(); 
+                        this.updateStats(); 
+                    })
+                    .catch(err => { this.showToast('Load error: ' + err, 'error'); });
             }
 
             saveRecord(e) {
@@ -326,28 +340,38 @@
                     record.cultures.push({ sent: v('D1_sent'), date: v('D2_date'), type: v('D3_type'), result: v('D4_res'), organism: v('D5_org'), gram: v('D6_gram'), ast: v('D7_ast'), resist: v('D8_resist'), mdr: v('D9_mdr'), xdr: v('D10_xdr'), eskape: v('D11_eskape') });
                 });
 
-                google.script.run
-                    .withSuccessHandler((res) => {
+                const formData = new FormData();
+                formData.append('action', 'saveRecordToSheet');
+                formData.append('record', JSON.stringify(record));
+                formData.append('user', JSON.stringify(this.currentUser));
+
+                fetch(APP_SCRIPT_URL, { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(res => {
                         btn.innerHTML = origHTML; btn.disabled = false;
-                        this.showToast('Record saved to sheet', 'success');
+                        this.showToast('Record saved successfully', 'success');
                         this.loadData();
                     })
-                    .withFailureHandler((err) => {
+                    .catch(err => {
                         btn.innerHTML = origHTML; btn.disabled = false;
-                        this.showToast('Error saving: ' + err.message, 'error');
-                    })
-                    .saveRecordToSheet(record, this.currentUser);
+                        this.showToast('Save error: ' + err, 'error');
+                    });
             }
 
             deleteRecord(id) {
-                google.script.run
-                    .withSuccessHandler((res) => {
+                const formData = new FormData();
+                formData.append('action', 'deleteRecordById');
+                formData.append('id', id);
+                formData.append('userRole', this.currentUser.role);
+
+                fetch(APP_SCRIPT_URL, { method: 'POST', body: formData })
+                    .then(r => r.json())
+                    .then(res => {
                         if(res.success) { this.showToast('Record deleted', 'info'); this.loadData(); }
                         else { this.showToast(res.message, 'error'); }
                         this.closeModal();
                     })
-                    .withFailureHandler((err) => { this.showToast('Delete failed: ' + err.message, 'error'); })
-                    .deleteRecordById(id, this.currentUser.role);
+                    .catch(err => { this.showToast('Delete error: ' + err, 'error'); });
             }
 
             showLogin() { document.getElementById('login-view').classList.remove('hidden'); document.getElementById('app-view').classList.add('hidden'); }
@@ -426,7 +450,7 @@
             }
 
             confirmDelete(id) {
-                document.getElementById('modal-container').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)app.closeModal()"><div class="modal" style="max-width:420px; text-align:center;"><i class="fas fa-exclamation-triangle" style="font-size:40px; color:var(--danger); margin-bottom:16px;"></i><h2 style="justify-content:center;">Confirm Deletion</h2><p style="color:var(--text-muted); margin-bottom:24px;">Delete <strong>${id}</strong> permanently?</p><div style="display:flex; gap:10px; justify-content:center;"><button class="btn btn-ghost" onclick="app.closeModal()">Cancel</button><button class="btn btn-danger" onclick="app.deleteRecord('${id}')"><i class="fas fa-trash-alt"></i> Delete</button></div></div></div>`;
+                document.getElementById('modal-container').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)app.closeModal()"><div class="modal" style="max-width:420px; text-align:center;"><i class="fas fa-exclamation-triangle" style="font-size:40px; color:var(--danger); margin-bottom:16px;"></i><h2>Confirm Deletion</h2><p style="color:var(--text-muted); margin-bottom:24px;">Delete <strong>${id}</strong> permanently?</p><div style="display:flex; gap:10px; justify-content:center;"><button class="btn btn-ghost" onclick="app.closeModal()">Cancel</button><button class="btn btn-danger" onclick="app.deleteRecord('${id}')"><i class="fas fa-trash-alt"></i> Delete</button></div></div></div>`;
             }
 
             closeModal() { document.getElementById('modal-container').innerHTML = ''; }
