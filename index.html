@@ -10,10 +10,10 @@
     <style>
         :root {
             --bg: #0B0F14; --bg-sec: #111820; --card: #151F2E; --card-alt: #1C293A;
-            --accent: #00E5C3; --accent-dim: rgba(0,229,195,0.1); --accent-glow: rgba(0,229,195,0.4);
+            --accent: #00E5C3; --accent-dim: rgba(0,229,195,0.1);
             --danger: #FF5757; --danger-dim: rgba(255,87,87,0.1);
             --warning: #FFB84D; --warning-dim: rgba(255,184,77,0.1);
-            --text: #EEF2F6; --text-muted: #8B9BB4; --border: #2A3849; --border-hover: #3E5066;
+            --text: #EEF2F6; --text-muted: #8B9BB4; --border: #2A3849;
             --radius: 12px;
             --font-head: 'Space Grotesk', sans-serif;
             --font-body: 'DM Sans', sans-serif;
@@ -33,13 +33,13 @@
         .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
         .hidden { display: none !important; }
 
-        /* Background Effects */
+        /* Background */
         .bg-mesh { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at 15% 50%, rgba(0,229,195,0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(59,130,246,0.08), transparent 25%); }
 
         /* Components */
         .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-family: var(--font-body); }
         .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--accent); color: #000; } .btn-primary:hover { background: var(--accent-glow); box-shadow: 0 0 20px var(--accent-dim); }
+        .btn-primary { background: var(--accent); color: #000; } .btn-primary:hover { box-shadow: 0 0 20px var(--accent-dim); }
         .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); } .btn-ghost:hover { border-color: var(--text-muted); color: var(--text); }
         .btn-danger { background: var(--danger-dim); color: var(--danger); } .btn-danger:hover { background: var(--danger); color: #fff; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
@@ -53,6 +53,9 @@
         .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
         .form-control[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: not-allowed; }
         
+        /* Datalist/Search Input Styling */
+        input[list]::-webkit-calendar-picker-indicator { display: none; } /* Hide calendar icon on search inputs */
+
         /* Specific "Other" Field Styling */
         .other-input-wrapper { margin-top: 8px; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -87,14 +90,12 @@
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge-success { background: var(--accent-dim); color: var(--accent); }
         .badge-danger { background: var(--danger-dim); color: var(--danger); }
-        .badge-warning { background: var(--warning-dim); color: var(--warning); }
 
         /* Header */
         header { background: rgba(11,15,20,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; height: 70px; }
         .logo { display: flex; align-items: center; gap: 12px; font-family: var(--font-head); font-weight: 700; font-size: 18px; }
         .logo i { color: var(--accent); font-size: 20px; }
-        .user-menu { display: flex; gap: 12px; align-items: center; }
         .user-pill { background: var(--card-alt); padding: 6px 12px; border-radius: 30px; border: 1px solid var(--border); font-size: 13px; display: flex; align-items: center; gap: 8px; }
 
         /* Login */
@@ -103,7 +104,7 @@
 
         /* Toast */
         #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--card); border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; min-width: 300px; animation: toastIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .toast { background: var(--card); border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; min-width: 300px; animation: toastIn 0.3s; }
         .toast.error { border-left-color: var(--danger); }
         @keyframes toastIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -147,67 +148,26 @@
                     <i class="fas fa-dna"></i>
                     <span>OncoCollect DB</span>
                 </div>
-                <div class="user-menu">
-                    <div class="user-pill">
-                        <span id="user-avatar" style="width: 24px; height: 24px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px;">A</span>
-                        <span id="user-name">Admin</span>
-                        <span id="user-role" class="badge badge-success">Admin</span>
-                    </div>
-                    <button class="btn btn-ghost btn-sm" onclick="app.showDashboard()"><i class="fas fa-list"></i> Records</button>
+                <div class="user-pill">
+                    <span id="user-avatar" style="width: 24px; height: 24px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px;">A</span>
+                    <span id="user-name">Admin</span>
                     <button class="btn btn-ghost btn-sm" onclick="app.logout()"><i class="fas fa-power-off"></i></button>
                 </div>
             </div>
         </header>
 
         <main class="container" style="padding-top: 32px;">
-            
             <!-- Dashboard Panel -->
             <section id="dashboard-panel">
-                <div class="grid-4" style="margin-bottom: 24px;">
-                    <div class="card" style="padding: 20px; margin-bottom: 0; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: var(--accent-dim); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 20px;"><i class="fas fa-folder-open"></i></div>
-                        <div><div class="text-muted text-xs">Total Records</div><div class="text-accent" style="font-size: 24px; font-weight: 700; font-family: var(--font-head);" id="stat-total">0</div></div>
-                    </div>
-                    <div class="card" style="padding: 20px; margin-bottom: 0; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: rgba(59,130,246,0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #3B82F6; font-size: 20px;"><i class="fas fa-pills"></i></div>
-                        <div><div class="text-muted text-xs">Antibiotic Episodes</div><div class="text-accent" style="font-size: 24px; font-weight: 700; font-family: var(--font-head);" id="stat-abx">0</div></div>
-                    </div>
-                    <div class="card" style="padding: 20px; margin-bottom: 0; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: var(--warning-dim); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--warning); font-size: 20px;"><i class="fas fa-vial"></i></div>
-                        <div><div class="text-muted text-xs">Cultures</div><div class="text-accent" style="font-size: 24px; font-weight: 700; font-family: var(--font-head);" id="stat-cult">0</div></div>
-                    </div>
-                    <div class="card" style="padding: 20px; margin-bottom: 0; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: var(--danger-dim); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 20px;"><i class="fas fa-heartbeat"></i></div>
-                        <div><div class="text-muted text-xs">Mortality Rate</div><div class="text-accent" style="font-size: 24px; font-weight: 700; font-family: var(--font-head);" id="stat-mort">0%</div></div>
-                    </div>
-                </div>
-
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
                         <h3 style="font-size: 20px;">Study Records</h3>
-                        <div style="display: flex; gap: 12px;">
-                            <input type="text" id="filter-search" class="form-control" placeholder="Search Diagnosis, ID..." style="width: 250px; padding: 8px 12px;" onkeyup="app.filterData()">
-                            <button class="btn btn-primary btn-sm" onclick="app.showForm()"><i class="fas fa-plus"></i> New Entry</button>
-                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="app.showForm()"><i class="fas fa-plus"></i> New Entry</button>
                     </div>
-
                     <div class="table-container">
                         <table id="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Study ID</th>
-                                    <th>Age</th>
-                                    <th>Sex</th>
-                                    <th>Diagnosis</th>
-                                    <th>Cancer</th>
-                                    <th>Admission</th>
-                                    <th>Outcome</th>
-                                    <th style="text-align: right;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body">
-                                <!-- Data rows here -->
-                            </tbody>
+                            <thead><tr><th>Study ID</th><th>Age</th><th>Diagnosis</th><th>Outcome</th></tr></thead>
+                            <tbody id="table-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -220,185 +180,31 @@
                         <h2><i class="fas fa-file-medical text-accent"></i> New Study Entry</h2>
                         <button class="btn btn-ghost btn-sm" onclick="app.showDashboard()">Cancel</button>
                     </div>
-
                     <form id="research-form">
-                        <!-- Section A: Demographics -->
-                        <div class="section-header">
-                            <h3><i class="fas fa-user"></i> Demographics & Admission</h3>
-                        </div>
+                        <!-- Basic Info -->
+                        <div class="section-header"><h3><i class="fas fa-user"></i> Demographics</h3></div>
                         <div class="grid-4">
-                            <div class="form-group">
-                                <label>A1. Study ID</label>
-                                <input type="text" id="A1" name="Study_ID" class="form-control" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>A2. Age (Years)</label>
-                                <input type="number" id="A2" name="Age" class="form-control" required min="0">
-                            </div>
-                            <div class="form-group">
-                                <label>A3. Sex</label>
-                                <select id="A3" name="Sex" class="form-control" required>
-                                    <option value="">Select...</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>B1. Date of Admission</label>
-                                <input type="date" id="B1" name="Admission_Date" class="form-control" required onchange="app.calculateLOS()">
-                            </div>
-                            <div class="form-group">
-                                <label>B2. Date of Discharge</label>
-                                <input type="date" id="B2" name="Discharge_Date" class="form-control" onchange="app.calculateLOS()">
-                            </div>
-                            <div class="form-group">
-                                <label>B3. Length of Stay (Days)</label>
-                                <input type="number" id="B3" name="LOS" class="form-control" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>B4. Type of Admission</label>
-                                <select id="B4" name="Admission_Type" class="form-control">
-                                    <option value="Emergency">Emergency</option>
-                                    <option value="Elective">Elective</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>B5. Ward of Admission</label>
-                                <select id="B5" name="Ward" class="form-control other-trigger">
-                                    <option value="Oncology Ward">Oncology Ward</option>
-                                    <option value="HDU">HDU</option>
-                                    <option value="ICU">ICU</option>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden">
-                                    <input type="text" name="Ward_Other" class="form-control" placeholder="Specify Ward">
-                                </div>
-                            </div>
+                            <div class="form-group"><label>Study ID</label><input type="text" id="A1" name="Study_ID" class="form-control" readonly></div>
+                            <div class="form-group"><label>Age</label><input type="number" id="A2" name="Age" class="form-control" required></div>
+                            <div class="form-group"><label>Sex</label><select id="A3" name="Sex" class="form-control"><option>Male</option><option>Female</option></select></div>
+                            <div class="form-group"><label>Outcome</label><select id="B6" name="Outcome" class="form-control"><option>Discharged</option><option>Died</option></select></div>
                         </div>
 
-                        <!-- Section B: Cancer Details -->
-                        <div class="section-header">
-                            <h3><i class="fas fa-ribbon"></i> Cancer Details</h3>
-                        </div>
-                        <div class="grid-3">
-                            <div class="form-group">
-                                <label>A4. Diagnosis (Free Text)</label>
-                                <input type="text" id="A4" name="Diagnosis" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>A5. Cancer Type</label>
-                                <select id="A5" name="Cancer_Type" class="form-control">
-                                    <option value="Solid Tumor">Solid Tumor</option>
-                                    <option value="Hematological Malignancy">Hematological Malignancy</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>A6. Specific Cancer Name</label>
-                                <select id="A6" name="Cancer_Name" class="form-control other-trigger">
-                                    <option value="AML">AML</option>
-                                    <option value="Breast Cancer">Breast Cancer</option>
-                                    <option value="Lung Cancer">Lung Cancer</option>
-                                    <option value="Colon Cancer">Colon Cancer</option>
-                                    <option value="Lymphoma">Lymphoma</option>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden">
-                                    <input type="text" name="Cancer_Name_Other" class="form-control" placeholder="Specify Cancer Type">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>A7. Stage</label>
-                                <select id="A7" name="Stage" class="form-control">
-                                    <option value="Stage I">Stage I</option>
-                                    <option value="Stage II">Stage II</option>
-                                    <option value="Stage III">Stage III</option>
-                                    <option value="Stage IV">Stage IV</option>
-                                    <option value="Not Documented">Not Documented</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>A8. Current Treatment</label>
-                                <select id="A8" name="Treatment" class="form-control">
-                                    <option value="Chemotherapy">Chemotherapy</option>
-                                    <option value="Radiotherapy">Radiotherapy</option>
-                                    <option value="Surgery">Surgery</option>
-                                    <option value="Supportive Care">Supportive Care</option>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>A9. Comorbidities</label>
-                                <select id="A9" name="Comorbidities" class="form-control other-trigger">
-                                    <option value="None">None</option>
-                                    <option value="Diabetes (DM)">Diabetes (DM)</option>
-                                    <option value="CKD">CKD</option>
-                                    <option value="Liver Disease">Liver Disease</option>
-                                    <option value="Hypertension">Hypertension</option>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden">
-                                    <input type="text" name="Comorbidities_Other" class="form-control" placeholder="Specify Comorbidities">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>A10. Immunosuppression</label>
-                                <select id="A10" name="Immunosuppression" class="form-control">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                    <option value="Not Documented">Not Documented</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Dynamic Antibiotics -->
+                        <!-- Dynamic Antibiotics (Searchable from Sheet) -->
                         <div class="section-header">
                             <h3><i class="fas fa-capsules"></i> Antibiotic Episodes</h3>
                             <button type="button" class="btn btn-primary btn-sm" onclick="app.addAntibioticBlock()"><i class="fas fa-plus"></i> Add</button>
                         </div>
                         <div id="antibiotic-container"></div>
 
-                        <!-- Dynamic Cultures -->
+                        <!-- Dynamic Cultures (XDR) -->
                         <div class="section-header">
                             <h3><i class="fas fa-flask"></i> Microbiology Cultures</h3>
                             <button type="button" class="btn btn-primary btn-sm" onclick="app.addCultureBlock()"><i class="fas fa-plus"></i> Add</button>
                         </div>
                         <div id="culture-container"></div>
 
-                        <!-- Outcomes -->
-                        <div class="section-header">
-                            <h3><i class="fas fa-clipboard-check"></i> Outcomes</h3>
-                        </div>
-                        <div class="grid-3">
-                            <div class="form-group">
-                                <label>B6. Outcome</label>
-                                <select id="B6" name="Outcome" class="form-control">
-                                    <option value="Discharged Well">Discharged Well</option>
-                                    <option value="Discharged on Request">Discharged on Request</option>
-                                    <option value="Referred">Referred</option>
-                                    <option value="Died">Died</option>
-                                    <option value="Still Admitted">Still Admitted</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>B7. Readmission (30 days)</label>
-                                <select id="B7" name="Readmission_30d" class="form-control">
-                                    <option value="No">No</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="Unknown">Unknown</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>E3. De-escalation Performed</label>
-                                <select id="E3" name="De_escalation" class="form-control">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                    <option value="N/A">N/A</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); text-align: right;">
+                        <div style="margin-top: 40px; text-align: right;">
                             <button type="button" class="btn btn-ghost" onclick="app.showDashboard()">Cancel</button>
                             <button type="submit" class="btn btn-primary" style="padding: 12px 32px;"><i class="fas fa-save"></i> Save Record</button>
                         </div>
@@ -415,42 +221,20 @@
         // === Configuration ===
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwQc2dXEAKzT_n32JPtuLff__6Xo3rffL5WQObCnFSas9opkiWbzRu2SnEbqjRehCN8Bw/exec'; 
 
-        // === App Logic ===
         class ResearchApp {
             constructor() {
                 this.user = null;
                 this.data = [];
                 this.abxCount = 0;
                 this.cultCount = 0;
+                this.whoDatabase = []; // Will hold {name, class, category}
+                this.whoMap = {}; // Fast lookup map
                 this.init();
             }
 
             init() {
-                // Event Listeners
                 document.getElementById('login-form').addEventListener('submit', (e) => this.handleLogin(e));
                 document.getElementById('research-form').addEventListener('submit', (e) => this.handleSave(e));
-                
-                // Initialize "Other" field toggles
-                this.setupOtherFields();
-            }
-
-            setupOtherFields() {
-                // Delegate event for dynamically added elements too
-                document.body.addEventListener('change', (e) => {
-                    if (e.target.classList.contains('other-trigger')) {
-                        const wrapper = e.target.parentElement.querySelector('.other-input-wrapper');
-                        const input = wrapper.querySelector('input');
-                        
-                        if (e.target.value === 'Other') {
-                            wrapper.classList.remove('hidden');
-                            input.setAttribute('required', 'required');
-                        } else {
-                            wrapper.classList.add('hidden');
-                            input.removeAttribute('required');
-                            input.value = ''; // Clear value
-                        }
-                    }
-                });
             }
 
             /* --- Authentication --- */
@@ -473,10 +257,10 @@
                     if (res.success) {
                         this.user = res.user;
                         this.showApp();
+                        this.loadWhoData(); // Load searchable list
                         this.loadData();
-                        this.toast('Welcome back, ' + this.user.username, 'success');
                     } else {
-                        this.toast(res.message || 'Invalid credentials', 'error');
+                        this.toast(res.message, 'error');
                     }
                 })
                 .catch(err => this.toast('Connection error', 'error'))
@@ -486,12 +270,23 @@
                 });
             }
 
-            logout() {
-                this.user = null;
-                this.data = [];
-                document.getElementById('app-view').classList.add('hidden');
-                document.getElementById('login-view').classList.remove('hidden');
-                document.getElementById('login-form').reset();
+            /* --- Load WHO Data from Sheet --- */
+            loadWhoData() {
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getAntibiotics' })
+                })
+                .then(r => r.json())
+                .then(list => {
+                    this.whoDatabase = list;
+                    // Create a lookup map: Key=Name, Value={class, category}
+                    this.whoMap = {};
+                    list.forEach(item => {
+                        this.whoMap[item.name] = item;
+                    });
+                    console.log("WHO Data Loaded:", list.length, "drugs");
+                })
+                .catch(e => console.error("Failed to load WHO list", e));
             }
 
             /* --- Navigation --- */
@@ -500,20 +295,16 @@
                 document.getElementById('app-view').classList.remove('hidden');
                 document.getElementById('user-name').textContent = this.user.username;
                 document.getElementById('user-avatar').textContent = this.user.username.charAt(0).toUpperCase();
-                document.getElementById('user-role').textContent = this.user.role;
             }
-
             showDashboard() {
                 document.getElementById('form-panel').classList.add('hidden');
                 document.getElementById('dashboard-panel').classList.remove('hidden');
             }
-
             showForm() {
                 document.getElementById('dashboard-panel').classList.add('hidden');
                 document.getElementById('form-panel').classList.remove('hidden');
                 this.resetForm();
             }
-
             resetForm() {
                 document.getElementById('research-form').reset();
                 document.getElementById('A1').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
@@ -521,8 +312,9 @@
                 document.getElementById('culture-container').innerHTML = '';
                 this.abxCount = 0;
                 this.cultCount = 0;
-                // Reset "Other" fields visibility
-                document.querySelectorAll('.other-input-wrapper').forEach(el => el.classList.add('hidden'));
+            }
+            logout() {
+                location.reload();
             }
 
             /* --- Data Handling --- */
@@ -532,13 +324,10 @@
                 .then(res => {
                     this.data = res || [];
                     this.renderTable();
-                    this.updateStats();
                 })
                 .catch(e => console.error(e));
             }
 
-            // Flattens the form data to avoid JSON blobs in Sheets
-            // Creates keys like "Abx_1_Name", "Abx_1_Dose" instead of an array
             handleSave(e) {
                 e.preventDefault();
                 const btn = e.target.querySelector('button[type="submit"]');
@@ -547,35 +336,25 @@
                 btn.disabled = true;
 
                 const formData = new FormData(e.target);
-                const payload = {
-                    action: 'save',
-                    user: this.user.username,
-                    data: {} // This will hold flattened data
-                };
+                const payload = { action: 'save', user: this.user.username, data: {} };
 
                 // 1. Process Static Fields
-                formData.forEach((value, key) => {
-                    // Skip empty "Other" fields if the main select isn't "Other"
-                    if (key.includes('_Other') && value === '') return;
-                    payload.data[key] = value;
-                });
+                formData.forEach((value, key) => { payload.data[key] = value; });
 
-                // 2. Process Dynamic Antibiotics (Flattened)
+                // 2. Process Dynamic Antibiotics
                 const abxBlocks = document.querySelectorAll('#antibiotic-container .dynamic-block');
                 abxBlocks.forEach((block, index) => {
                     const i = index + 1;
                     const getVal = (sel) => block.querySelector(sel)?.value || '';
                     
                     payload.data[`Abx_${i}_Name`] = getVal('input[name*="Name"]');
-                    payload.data[`Abx_${i}_Class`] = getVal('select[name*="Class"]');
+                    payload.data[`Abx_${i}_Class`] = getVal('input[name*="Class"]');
+                    payload.data[`Abx_${i}_Category`] = getVal('input[name*="Category"]');
                     payload.data[`Abx_${i}_Route`] = getVal('select[name*="Route"]');
                     payload.data[`Abx_${i}_Dose`] = getVal('input[name*="Dose"]');
-                    payload.data[`Abx_${i}_Freq`] = getVal('input[name*="Freq"]');
-                    payload.data[`Abx_${i}_Duration`] = getVal('input[name*="Duration"]');
-                    payload.data[`Abx_${i}_Indication`] = getVal('select[name*="Indication"]');
                 });
 
-                // 3. Process Dynamic Cultures (Flattened)
+                // 3. Process Dynamic Cultures
                 const cultBlocks = document.querySelectorAll('#culture-container .dynamic-block');
                 cultBlocks.forEach((block, index) => {
                     const i = index + 1;
@@ -583,145 +362,50 @@
                     
                     payload.data[`Cult_${i}_Type`] = getVal('select[name*="Type"]');
                     payload.data[`Cult_${i}_Result`] = getVal('select[name*="Result"]');
-                    payload.data[`Cult_${i}_Organism`] = getVal('input[name*="Organism"]');
+                    payload.data[`Cult_${i}_XDR`] = getVal('select[name*="XDR"]');
+                    payload.data[`Cult_${i}_XDR_Details`] = getVal('input[name*="XDR_Details"]');
                 });
 
-                // Send
-                fetch(GAS_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                })
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
                 .then(r => r.json())
                 .then(res => {
                     if(res.success) {
-                        this.toast('Record saved successfully!', 'success');
+                        this.toast('Saved successfully', 'success');
                         this.showDashboard();
                         this.loadData();
                     } else {
-                        throw new Error(res.message);
+                        this.toast(res.message, 'error');
                     }
                 })
-                .catch(err => {
-                    this.toast('Error saving: ' + err.message, 'error');
-                })
-                .finally(() => {
-                    btn.innerHTML = orig;
-                    btn.disabled = false;
-                });
+                .finally(() => { btn.innerHTML = orig; btn.disabled = false; });
             }
 
-            /* --- UI Renderers --- */
-            renderTable(filter = '') {
+            renderTable() {
                 const tbody = document.getElementById('table-body');
                 tbody.innerHTML = '';
+                if(this.data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No records</td></tr>'; return; }
                 
-                const filtered = this.data.filter(r => {
-                    const s = filter.toLowerCase();
-                    return (r.Study_ID && r.Study_ID.toLowerCase().includes(s)) || 
-                           (r.Diagnosis && r.Diagnosis.toLowerCase().includes(s));
+                this.data.slice().reverse().forEach(r => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><span class="text-accent">${r.Study_ID}</span></td>
+                            <td>${r.Age}</td>
+                            <td>${r.A1_Diagnosis || ''}</td>
+                            <td>${r.Outcome}</td>
+                        </tr>`;
                 });
-
-                if (filtered.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px; color: var(--text-muted);">No records found.</td></tr>';
-                    return;
-                }
-
-                // Show newest first
-                filtered.reverse().forEach(r => {
-                    let badgeClass = 'badge-success';
-                    if (r.Outcome === 'Died') badgeClass = 'badge-danger';
-                    if (r.Outcome === 'Still Admitted') badgeClass = 'badge-warning';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><span class="text-accent" style="font-weight:600;">${r.Study_ID || ''}</span></td>
-                        <td>${r.Age || ''}</td>
-                        <td>${r.Sex || ''}</td>
-                        <td>${r.Diagnosis || ''}</td>
-                        <td>${r.Cancer_Name || ''}</td>
-                        <td>${r.Admission_Date || ''}</td>
-                        <td><span class="badge ${badgeClass}">${r.Outcome || ''}</span></td>
-                        <td style="text-align:right;">
-                            <button class="btn btn-ghost btn-sm" onclick="app.viewDetails('${r.Study_ID}')"><i class="fas fa-eye"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-
-            updateStats() {
-                document.getElementById('stat-total').textContent = this.data.length;
-                
-                // Calculate simple stats based on flattened data presence
-                let abxCount = 0;
-                let cultCount = 0;
-                let deaths = 0;
-
-                this.data.forEach(r => {
-                    // Count how many Abx_1_Name, Abx_2_Name exist
-                    for(let i=1; i<=10; i++) {
-                        if(r[`Abx_${i}_Name`]) abxCount++;
-                        if(r[`Cult_${i}_Type`]) cultCount++;
-                    }
-                    if(r.Outcome === 'Died') deaths++;
-                });
-
-                document.getElementById('stat-abx').textContent = abxCount;
-                document.getElementById('stat-cult').textContent = cultCount;
-                document.getElementById('stat-mort').textContent = this.data.length ? Math.round((deaths/this.data.length)*100) + '%' : '0%';
-            }
-
-            filterData() {
-                const val = document.getElementById('filter-search').value;
-                this.renderTable(val);
-            }
-
-            viewDetails(id) {
-                const r = this.data.find(d => d.Study_ID === id);
-                if(!r) return;
-
-                let details = `<div class="grid-2">`;
-                // Display basic fields
-                Object.keys(r).forEach(k => {
-                    if(!k.startsWith('Abx_') && !k.startsWith('Cult_') && r[k]) {
-                        details += `<div><label class="text-xs text-muted">${k}</label><div>${r[k]}</div></div>`;
-                    }
-                });
-                details += `</div>`;
-
-                // Add Antibiotics
-                let abxHtml = '<div style="margin-top:20px;"><h4 class="text-accent">Antibiotics</h4>';
-                for(let i=1; i<=5; i++) {
-                    if(r[`Abx_${i}_Name`]) {
-                        abxHtml += `<div class="card" style="margin-top:10px; padding:12px; margin-bottom:0;">
-                            <strong>${r[`Abx_${i}_Name`]}</strong> (${r[`Abx_${i}_Dose`] || ''}, ${r[`Abx_${i}_Route`] || ''})
-                        </div>`;
-                    }
-                }
-                abxHtml += '</div>';
-
-                const modalHtml = `
-                    <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;" onclick="document.getElementById('modal-container').innerHTML=''">
-                        <div class="card" style="width:600px;max-height:85vh;overflow-y:auto;position:relative;" onclick="event.stopPropagation()">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
-                                <h3>Record ${r.Study_ID}</h3>
-                                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('modal-container').innerHTML=''">&times;</button>
-                            </div>
-                            ${details}
-                            ${abxHtml}
-                            <div style="margin-top:20px;text-align:right;">
-                                <button class="btn btn-primary" onclick="document.getElementById('modal-container').innerHTML=''">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('modal-container').innerHTML = modalHtml;
             }
 
             /* --- Dynamic Builders --- */
+
+            // Adds a Searchable Antibiotic Block
             addAntibioticBlock() {
                 this.abxCount++;
                 const id = this.abxCount;
+                
+                // Generate Datalist Options dynamically from the loaded WHO list
+                let datalistOptions = this.whoDatabase.map(d => `<option value="${d.name}">`).join('');
+                
                 const html = `
                     <div class="dynamic-block">
                         <div class="block-header">
@@ -730,56 +414,65 @@
                         </div>
                         <div class="grid-3">
                             <div class="form-group">
-                                <label>Name</label>
-                                <select name="Abx_Name_${id}" class="form-control other-trigger">
-                                    <option value="Amoxicillin">Amoxicillin</option>
-                                    <option value="Ceftriaxone">Ceftriaxone</option>
-                                    <option value="Meropenem">Meropenem</option>
-                                    <option value="Vancomycin">Vancomycin</option>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden"><input type="text" name="Abx_Name_${id}_Other" class="form-control" placeholder="Specify Drug"></div>
+                                <label>Antibiotic Name (Type to Search)</label>
+                                <!-- Input list allows typing AND selecting -->
+                                <input type="text" list="abx-list-${id}" name="Abx_Name_${id}" class="form-control" placeholder="Search or type..." oninput="app.handleAbxInput(this, ${id})">
+                                <datalist id="abx-list-${id}">
+                                    ${datalistOptions}
+                                </datalist>
                             </div>
                             <div class="form-group">
                                 <label>Class</label>
-                                <select name="Abx_Class_${id}" class="form-control">
-                                    <option value="Penicillin">Penicillin</option>
-                                    <option value="Cephalosporin">Cephalosporin</option>
-                                    <option value="Carbapenem">Carbapenem</option>
-                                    <option value="Glycopeptide">Glycopeptide</option>
-                                </select>
+                                <input type="text" name="Abx_Class_${id}" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Category (AWaRe)</label>
+                                <input type="text" name="Abx_Category_${id}" class="form-control" readonly>
                             </div>
                             <div class="form-group">
                                 <label>Route</label>
                                 <select name="Abx_Route_${id}" class="form-control">
-                                    <option value="IV">IV</option>
-                                    <option value="Oral">Oral</option>
+                                    <option>IV</option><option>Oral</option><option>Other</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Dose</label>
-                                <input type="text" name="Abx_Dose_${id}" class="form-control" placeholder="e.g. 500mg">
-                            </div>
-                            <div class="form-group">
-                                <label>Frequency</label>
-                                <input type="text" name="Abx_Freq_${id}" class="form-control" placeholder="e.g. BD">
-                            </div>
-                            <div class="form-group">
-                                <label>Duration (Days)</label>
-                                <input type="number" name="Abx_Duration_${id}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Indication</label>
-                                <select name="Abx_Indication_${id}" class="form-control">
-                                    <option value="Empirical">Empirical</option>
-                                    <option value="Targeted">Targeted</option>
-                                    <option value="Prophylaxis">Prophylaxis</option>
-                                </select>
+                                <input type="text" name="Abx_Dose_${id}" class="form-control">
                             </div>
                         </div>
                     </div>
                 `;
                 document.getElementById('antibiotic-container').insertAdjacentHTML('beforeend', html);
+            }
+
+            // Logic to check input against WHO Map
+            handleAbxInput(input, id) {
+                const block = input.closest('.dynamic-block');
+                const val = input.value.trim();
+                const classInput = block.querySelector('input[name*="Class"]');
+                const catInput = block.querySelector('input[name*="Category"]');
+
+                // Check if the value exists in our WHO Map
+                const match = this.whoMap[val];
+
+                if (match) {
+                    // Perfect Match found from Sheet -> Auto-fill
+                    classInput.value = match.class;
+                    catInput.value = match.category;
+                    classInput.style.borderColor = "var(--accent)";
+                } else {
+                    // Not found (User typed "Other" or custom name)
+                    // Do not clear immediately to allow typing, but reset visual cues
+                    classInput.style.borderColor = "var(--border)";
+                    if (val === "") {
+                        classInput.value = "";
+                        catInput.value = "";
+                    } else if (!classInput.value) {
+                        // If they are typing and we haven't set a match yet, leave it blank or clear previous
+                        classInput.value = "";
+                        catInput.value = "";
+                    }
+                }
             }
 
             addCultureBlock() {
@@ -794,26 +487,27 @@
                         <div class="grid-3">
                             <div class="form-group">
                                 <label>Type</label>
-                                <select name="Cult_Type_${id}" class="form-control other-trigger">
-                                    <option value="Blood">Blood</option>
-                                    <option value="Urine">Urine</option>
-                                    <option value="Sputum">Sputum</option>
-                                    <option value="Wound Swab">Wound Swab</option>
-                                    <option value="Other">Other (Specify)</option>
+                                <select name="Cult_Type_${id}" class="form-control">
+                                    <option>Blood</option><option>Urine</option><option>Sputum</option>
                                 </select>
-                                <div class="other-input-wrapper hidden"><input type="text" name="Cult_Type_${id}_Other" class="form-control" placeholder="Specify Type"></div>
                             </div>
                             <div class="form-group">
                                 <label>Result</label>
                                 <select name="Cult_Result_${id}" class="form-control">
-                                    <option value="Positive">Positive Growth</option>
-                                    <option value="Negative">No Growth</option>
-                                    <option value="Contaminated">Contaminated</option>
+                                    <option>Positive</option><option>Negative</option>
                                 </select>
                             </div>
+                            <!-- XDR Logic -->
                             <div class="form-group">
-                                <label>Organism</label>
-                                <input type="text" name="Cult_Organism_${id}" class="form-control" placeholder="e.g. S. aureus">
+                                <label>D10. XDR Criteria Met?</label>
+                                <select name="Cult_XDR_${id}" class="form-control" onchange="app.toggleXDR(this, ${id})">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group hidden" id="xdr-details-${id}" style="grid-column: span 3;">
+                                <label class="text-accent">XDR Details</label>
+                                <input type="text" name="Cult_XDR_Details_${id}" class="form-control" placeholder="Enter specific resistance details...">
                             </div>
                         </div>
                     </div>
@@ -821,22 +515,24 @@
                 document.getElementById('culture-container').insertAdjacentHTML('beforeend', html);
             }
 
-            /* --- Utilities --- */
-            toast(msg, type = 'success') {
+            toggleXDR(select, id) {
+                const detailsDiv = document.getElementById(`xdr-details-${id}`);
+                if(select.value === 'Yes') {
+                    detailsDiv.classList.remove('hidden');
+                    detailsDiv.querySelector('input').required = true;
+                } else {
+                    detailsDiv.classList.add('hidden');
+                    detailsDiv.querySelector('input').required = false;
+                    detailsDiv.querySelector('input').value = '';
+                }
+            }
+
+            toast(msg, type='success') {
                 const div = document.createElement('div');
                 div.className = `toast ${type}`;
                 div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
                 document.getElementById('toast-container').appendChild(div);
                 setTimeout(() => div.remove(), 3000);
-            }
-
-            calculateLOS() {
-                const start = document.getElementById('B1').value;
-                const end = document.getElementById('B2').value;
-                if (start && end) {
-                    const diff = new Date(end) - new Date(start);
-                    document.getElementById('B3').value = diff / (1000 * 60 * 60 * 24);
-                }
             }
         }
 
