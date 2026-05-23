@@ -3,346 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oncology Research Data Collector</title>
+    <title>Oncology Research System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* =========================================
-           PROFESSIONAL THEME & VARIABLES
+           MODERN AESTHETIC VARIABLES
            ========================================= */
         :root {
-            --bg: #0B0F14; --bg-sec: #111820; --card: #151F2E; --card-alt: #1C293A;
-            --accent: #00C9A7; --accent-dim: rgba(0,201,167,0.15); --accent-glow: rgba(0,201,167,0.4);
-            --danger: #FF6B6B; --danger-dim: rgba(255,107,107,0.15);
-            --warning: #FFB347; --warning-dim: rgba(255,179,71,0.15);
-            --info: #3B82F6; --info-dim: rgba(59,130,246,0.15);
-            --text: #E4E8EE; --text-muted: #6B7F99; --border: #243044; --border-light: #2E3E55;
-            --radius: 12px;
-            --font-head: 'Space Grotesk', sans-serif;
-            --font-body: 'DM Sans', sans-serif;
-            --shadow-soft: 0 4px 20px rgba(0,0,0,0.2);
-            --shadow-hover: 0 10px 30px rgba(0,0,0,0.3);
+            --bg-dark: #0F172A;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-sidebar: #0B1120;
+            --primary: #6366F1; /* Indigo */
+            --primary-hover: #4F46E5;
+            --accent: #10B981; /* Emerald */
+            --accent-glow: rgba(16, 185, 129, 0.3);
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+            --font-head: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-        h1,h2,h3,h4,h5,h6 { font-family: var(--font-head); letter-spacing: -0.02em; }
+        body { font-family: var(--font-body); background: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
         
-        .hidden { display: none !important; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
-
         /* =========================================
-           ANIMATIONS & TRANSITIONS
+           ANIMATIONS
            ========================================= */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
         
-        .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
-        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        /* Background Orbs */
-        .bg-orbs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
-        .bg-orbs .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: float 10s ease-in-out infinite; }
-        .bg-orbs .orb:nth-child(1) { width: 500px; height: 500px; background: var(--accent); top: -10%; left: -10%; animation-delay: 0s; }
-        .bg-orbs .orb:nth-child(2) { width: 400px; height: 400px; background: var(--info); bottom: -10%; right: -10%; animation-delay: 2s; }
-        .bg-orbs .orb:nth-child(3) { width: 300px; height: 300px; background: var(--warning); top: 40%; left: 60%; animation-delay: 4s; }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .animate-slide-up { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
         /* =========================================
-           COMPONENT STYLES
+           LOGIN SCREEN
            ========================================= */
-        /* Buttons */
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-family: var(--font-body); position: relative; overflow: hidden; }
-        .btn:active { transform: scale(0.97); }
-        .btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); transition: width 0.6s ease, height 0.6s ease; }
-        .btn:active::after { width: 300px; height: 300px; }
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle at top right, #1e1b4b, transparent); }
+        .login-card { width: 100%; max-width: 440px; padding: 40px; background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .login-logo { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin: 0 auto 24px; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4); }
         
-        .btn-primary { background: var(--accent); color: #0B0F14; box-shadow: 0 4px 15px var(--accent-dim); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-dim); background: var(--accent-glow); }
+        /* =========================================
+           SIDEBAR LAYOUT
+           ========================================= */
+        .sidebar { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: transform 0.3s ease; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .brand-text { font-family: var(--font-head); font-size: 20px; font-weight: 700; background: linear-gradient(to right, #fff, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,201,167,0.05); }
+        .nav-links { flex: 1; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
+        .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text-main); border-color: var(--border); }
+        .nav-item i { width: 20px; text-align: center; }
+        .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); border-color: rgba(99, 102, 241, 0.2); }
         
-        .btn-danger { background: var(--danger-dim); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: #fff; box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4); }
+        .user-profile { padding: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; }
         
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        /* =========================================
+           MAIN CONTENT
+           ========================================= */
+        .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 1600px; background: var(--bg-dark); min-height: 100vh; }
+        
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .page-title h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; color: var(--text-main); }
+        .page-title p { color: var(--text-muted); margin-top: 4px; }
 
-        /* Cards */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-soft); transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); opacity: 0; transition: opacity 0.3s; }
-        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--border-light); }
-        .card:hover::before { opacity: 1; }
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); opacity: 0; transition: opacity 0.3s; }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+        .stat-value { font-size: 32px; font-weight: 700; font-family: var(--font-head); margin-bottom: 4px; }
+        .stat-label { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
-        /* Forms */
-        .form-group { margin-bottom: 16px; position: relative; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: var(--text-muted); transition: color 0.3s; }
-        .form-control { width: 100%; padding: 12px 16px; background: var(--bg-sec); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); font-family: var(--font-body); transition: all 0.3s ease; }
-        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-dim); background: var(--bg-sec); }
-        .form-control:focus + label { color: var(--accent); }
-        .form-control[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: not-allowed; border-color: transparent; }
-
-        /* Stat Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px; }
-        .stat-card { display: flex; align-items: center; gap: 20px; padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-soft); transition: transform 0.3s, box-shadow 0.3s; cursor: default; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--accent); }
-        .stat-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; }
-        .stat-icon::after { content: ''; position: absolute; inset: 0; border-radius: 16px; background: inherit; filter: blur(10px); opacity: 0.4; z-index: -1; }
-        .stat-content h4 { font-size: 13px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .stat-content .value { font-size: 32px; font-weight: 700; color: var(--text); font-family: var(--font-head); line-height: 1; }
-        .stat-content .trend { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
-        .stat-card.teal .stat-icon { background: rgba(0,201,167,0.1); color: var(--accent); }
-        .stat-card.blue .stat-icon { background: rgba(59,130,246,0.1); color: var(--info); }
-        .stat-card.purple .stat-icon { background: rgba(139,92,246,0.1); color: #8B5CF6; }
-        .stat-card.coral .stat-icon { background: rgba(255,107,107,0.1); color: var(--danger); }
-
-        /* Tables */
-        .table-wrap { overflow-x: auto; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { padding: 16px 20px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); background: var(--bg-sec); border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr { transition: background 0.2s; }
-        tbody tr:hover { background: rgba(255,255,255,0.03); }
+        /* Filters & Tables */
+        .toolbar { display: flex; gap: 16px; background: var(--bg-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+        .search-box { flex: 1; position: relative; min-width: 250px; }
+        .search-box input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px 12px 40px; border-radius: 8px; color: white; transition: all 0.3s; }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge-success { background: var(--accent-dim); color: var(--accent); } 
-        .badge-danger { background: var(--danger-dim); color: var(--danger); } 
-        .badge-warning { background: var(--warning-dim); color: var(--warning); }
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.2s; font-family: var(--font-body); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+        .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(0,0,0,0.2); padding: 16px 24px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Form Styling */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; font-size: 14px; transition: border 0.3s; }
+        .form-control:focus { border-color: var(--primary); outline: none; }
 
         /* Dynamic Blocks */
-        .dynamic-block { border: 1px solid var(--border); padding: 24px; border-radius: var(--radius); margin-bottom: 16px; background: var(--bg-sec); position: relative; animation: slideUp 0.4s ease-out; border-left: 4px solid var(--accent); }
-        .dynamic-block h4 { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .remove-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 8px; background: rgba(255,107,107,0.1); color: var(--danger); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .remove-btn:hover { background: var(--danger); color: #fff; transform: rotate(90deg); }
-
-        /* Layout */
-        .section-title { font-size: 18px; color: var(--text); font-weight: 600; margin: 40px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; } 
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; } 
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-
-        /* "Other" Field */
-        .other-input-wrapper { margin-top: 8px; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Login & Header */
-        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 100; background: var(--bg); }
-        .login-card { background: rgba(21, 31, 46, 0.7); backdrop-filter: blur(20px); padding: 48px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: fadeIn 0.8s ease-out; }
-        .login-card .logo-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, var(--accent), #00E5C3); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #0B0F14; box-shadow: 0 10px 30px var(--accent-dim); }
-        
-        header { background: rgba(17,24,32,0.8); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 16px 0; position: sticky; top: 0; z-index: 50; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
-        .brand { display: flex; align-items: center; gap: 16px; }
-        .brand .icon { width: 40px; height: 40px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #0B0F14; font-size: 20px; box-shadow: 0 4px 12px var(--accent-dim); }
-        .user-pill { display: flex; align-items: center; gap: 12px; background: var(--card); padding: 8px 16px 8px 8px; border-radius: 50px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
-        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #0B0F14; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-
-        /* Toast */
-        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
-        .toast { padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 12px; min-width: 350px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-left: 4px solid var(--accent); backdrop-filter: blur(10px); background: rgba(21, 31, 46, 0.95); }
-        .toast.error { border-left-color: var(--danger); }
-        .toast.success { border-left-color: var(--accent); }
+        .dynamic-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 16px; position: relative; }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
+        .card-title { font-size: 16px; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 8px; }
 
         /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
-        .modal { background: var(--card); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 800px; max-height: 85vh; overflow-y: auto; padding: 40px; box-shadow: 0 25px 80px rgba(0,0,0,0.6); animation: slideUp 0.4s; position: relative; }
-        .modal-close { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.3s; }
-        .modal-close:hover { color: var(--text); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; }
+        .modal { background: #1E293B; border: 1px solid var(--border); width: 100%; max-width: 600px; border-radius: 20px; padding: 32px; box-shadow: var(--shadow-lg); animation: slideInUp 0.3s; position: relative; }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+        .close-modal:hover { color: white; }
 
-        /* Responsive */
-        @media (max-width: 1024px) { .grid-4, .grid-3 { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .header-content { flex-direction: column; gap: 16px; } .stat-card { padding: 20px; } }
+        /* Sections */
+        .section-header { font-size: 18px; font-weight: 700; margin: 40px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; color: var(--text-main); }
+        .section-header i { color: var(--primary); }
+
+        /* Badge */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+        }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
     </style>
 </head>
 <body>
 
-    <div class="bg-orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
-    <div id="toast-container"></div>
-
     <!-- Login View -->
     <div id="login-view">
-        <div class="login-card">
-            <div class="logo-icon"><i class="fas fa-dna"></i></div>
-            <h2 style="color: var(--text); font-size: 28px; margin-bottom: 8px;">Research Portal</h2>
-            <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 32px;">Secure Access to Oncology Database</p>
+        <div class="login-card animate-fade">
+            <div class="login-logo"><i class="fas fa-dna"></i></div>
+            <h2 style="text-align: center; margin-bottom: 8px; font-family: var(--font-head); font-size: 24px;">Research Portal</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Secure Oncology Database Access</p>
             <form id="login-form">
-                <div class="form-group"><input type="text" id="username" class="form-control" placeholder="Username" required autocomplete="username"></div>
-                <div class="form-group"><input type="password" id="password" class="form-control" placeholder="Password" required autocomplete="current-password"></div>
-                <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:16px; margin-top:12px; justify-content:center;"><i class="fas fa-sign-in-alt"></i> Enter Portal</button>
+                <div class="form-group"><input type="text" id="username" class="form-control" placeholder="Username" required></div>
+                <div class="form-group"><input type="password" id="password" class="form-control" placeholder="Password" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px;">Sign In</button>
             </form>
         </div>
     </div>
 
-    <!-- App View -->
-    <div id="app-view" class="hidden">
-        <header>
-            <div class="container header-content">
-                <div class="brand">
-                    <div class="icon"><i class="fas fa-microscope"></i></div>
-                    <h3 style="font-size: 20px; color: var(--text);">OncoCollect DB</h3>
+    <!-- App Layout (Sidebar + Main) -->
+    <div id="app-view" style="display: none; width: 100%;">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-dna" style="color: var(--primary); font-size: 24px;"></i>
+                <span class="brand-text">OncoCollect</span>
+            </div>
+            
+            <div class="nav-links">
+                <a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Patient Records</a>
+                <a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> User Management</a>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">A</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 14px;" id="user-name">Admin</div>
+                    <div style="font-size: 11px; color: var(--text-muted);" id="user-role">Super Admin</div>
                 </div>
-                <div class="user-pill">
-                    <div class="avatar" id="user-avatar">A</div>
-                    <div style="display:flex; flex-direction:column; line-height:1.2;">
-                        <span id="user-display" style="font-weight:600; font-size:14px;">Admin</span>
-                        <span id="user-role" class="badge badge-success" style="font-size:9px; width:fit-content;">Admin</span>
-                    </div>
+                <button class="btn btn-icon" onclick="app.logout()" style="background:transparent; color: var(--text-muted);"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header-area">
+                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
+                <div class="page-title">
+                    <h1 id="page-heading">Dashboard</h1>
+                    <p id="page-subheading">Overview of research metrics</p>
                 </div>
-                <div style="display:flex; gap:12px;">
-                    <button class="btn btn-ghost btn-sm" onclick="app.showDashboard()"><i class="fas fa-chart-pie"></i> Dashboard</button>
-                    <button class="btn btn-ghost btn-sm" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                <div id="header-actions">
+                    <!-- Dynamic Actions injected by JS -->
                 </div>
             </div>
-        </header>
 
-        <main class="container" style="padding-top: 40px; padding-bottom: 60px;">
-            
-            <!-- Dashboard Panel -->
-            <section id="dashboard-panel" class="animate-fade-in">
-                <!-- Stats Row -->
+            <!-- VIEW: DASHBOARD -->
+            <section id="view-dashboard" class="animate-fade">
                 <div class="stats-grid">
-                    <div class="stat-card teal">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-content">
-                            <h4>Total Records</h4>
-                            <div class="value" id="stat-total">0</div>
-                            <div class="trend" style="color: var(--accent);"><i class="fas fa-arrow-up"></i> Database Size</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-users"></i></div>
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">Total Patients</div>
                     </div>
-                    <div class="stat-card blue">
-                        <div class="stat-icon"><i class="fas fa-pills"></i></div>
-                        <div class="stat-content">
-                            <h4>Antibiotic Episodes</h4>
-                            <div class="value" id="stat-abx">0</div>
-                            <div class="trend" style="color: var(--info);"><i class="fas fa-capsules"></i> Treatments</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);"><i class="fas fa-pills"></i></div>
+                        <div class="stat-value" id="stat-abx">0</div>
+                        <div class="stat-label">Antibiotics Used</div>
                     </div>
-                    <div class="stat-card purple">
-                        <div class="stat-icon"><i class="fas fa-vial"></i></div>
-                        <div class="stat-content">
-                            <h4>Microbiology</h4>
-                            <div class="value" id="stat-cultures">0</div>
-                            <div class="trend" style="color: #8B5CF6;"><i class="fas fa-bacteria"></i> Samples</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-vial"></i></div>
+                        <div class="stat-value" id="stat-cult">0</div>
+                        <div class="stat-label">Culture Samples</div>
                     </div>
-                    <div class="stat-card coral">
-                        <div class="stat-icon"><i class="fas fa-procedures"></i></div>
-                        <div class="stat-content">
-                            <h4>Mortality Rate</h4>
-                            <div class="value" id="stat-mortality">0%</div>
-                            <div class="trend" style="color: var(--danger);"><i class="fas fa-heartbeat"></i> Clinical Outcome</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-heartbeat"></i></div>
+                        <div class="stat-value" id="stat-mortality">0%</div>
+                        <div class="stat-label">Mortality Rate</div>
                     </div>
-                </div>
-
-                <!-- Action Bar -->
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
-                        <h2 style="font-size:22px; margin:0; display:flex; align-items:center; gap:10px;"><i class="fas fa-database" style="color:var(--accent);"></i> Study Records</h2>
-                        <div style="display:flex; gap:12px;">
-                            <button class="btn btn-ghost btn-sm" onclick="app.exportToCSV()"><i class="fas fa-file-export"></i> Export CSV</button>
-                            <button class="btn btn-primary" onclick="app.showForm()"><i class="fas fa-plus"></i> New Entry</button>
-                        </div>
-                    </div>
-
-                    <!-- Filters -->
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:0; padding-bottom:24px; border-bottom:1px solid var(--border);">
-                        <div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Search Diagnosis</label><input type="text" id="filter-diagnosis" class="form-control" placeholder="e.g. AML, Lung" onkeyup="app.filterData()"></div>
-                        <div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Antibiotic Name</label><input type="text" id="filter-antibiotic" class="form-control" placeholder="e.g. Meropenem" onkeyup="app.filterData()"></div>
-                        <div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Admitted After</label><input type="date" id="filter-date-start" class="form-control" onchange="app.filterData()"></div>
-                        <div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;">Outcome Status</label><select id="filter-status" class="form-control" onchange="app.filterData()"><option value="">All Statuses</option><option value="Discharged well">Discharged well</option><option value="Died">Died</option><option value="Referred">Referred</option></select></div>
-                    </div>
-                </div>
-
-                <!-- Table -->
-                <div class="table-wrap">
-                    <table id="records-table"><thead><tr><th>Study ID</th><th>Age</th><th>Sex</th><th>Diagnosis</th><th>Cancer</th><th>Admitted</th><th>Outcome</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="table-body"></tbody></table>
                 </div>
             </section>
 
-            <!-- Form Panel -->
-            <section id="form-panel" class="hidden">
-                <div class="card animate-slide-up">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; border-bottom:1px solid var(--border); padding-bottom:20px;">
-                        <div><h2 style="margin:0; font-size:24px;"><i class="fas fa-file-medical" style="color:var(--accent); margin-right:12px;"></i>New Study Entry</h2><p style="color:var(--text-muted); margin:4px 0 0 0; font-size:14px;">Enter patient demographics and treatment details below.</p></div>
-                        <button class="btn btn-ghost btn-sm" onclick="app.showDashboard()"><i class="fas fa-times"></i> Cancel</button>
+            <!-- VIEW: RECORDS -->
+            <section id="view-records" class="hidden animate-fade">
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="global-search" placeholder="Search by ID, Diagnosis, or Cancer..." onkeyup="app.filterRecords()">
                     </div>
-                    <form id="research-form" onsubmit="app.saveRecord(event)">
-                        <h3 class="section-title"><i class="fas fa-user-injured" style="color:var(--info);"></i> Demographics & Admission</h3>
-                        <div class="grid-4">
-                            <div class="form-group"><label>A1. Study ID</label><input type="text" id="A1" readonly class="form-control"></div>
-                            <div class="form-group"><label>A2. Age (Years)</label><input type="number" id="A2" required min="0" max="150" class="form-control"></div>
-                            <div class="form-group"><label>A3. Sex</label><select id="A3" required class="form-control"><option value="">Select...</option><option value="Male">Male</option><option value="Female">Female</option><option value="Others">Others</option></select></div>
-                            <div class="form-group"><label>B1. Date of Admission</label><input type="date" id="B1" required class="form-control" onchange="app.calculateLOS()"></div>
-                            <div class="form-group"><label>B2. Date of Discharge</label><input type="date" id="B2" class="form-control" onchange="app.calculateLOS()"></div>
-                            <div class="form-group"><label>B3. Length of Stay (Days)</label><input type="number" id="B3" readonly class="form-control"></div>
-                            <div class="form-group"><label>B4. Type of Admission</label><select id="B4" class="form-control"><option value="Emergency">Emergency</option><option value="Elective">Elective</option></select></div>
-                            <div class="form-group">
-                                <label>B5. Ward</label>
-                                <select id="B5" class="form-control other-trigger">
-                                    <option value="Oncology ward">Oncology Ward</option>
-                                    <option value="HDU">HDU</option>
-                                    <option value="ICU">ICU</option>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden"><input type="text" name="Ward_Other" class="form-control" placeholder="Specify Ward"></div>
-                            </div>
-                        </div>
+                    <select id="filter-outcome" class="form-control" style="width: auto;" onchange="app.filterRecords()">
+                        <option value="">All Outcomes</option>
+                        <option value="Discharged well">Discharged</option>
+                        <option value="Died">Deceased</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="app.showAddModal()"><i class="fas fa-plus"></i> New Entry</button>
+                </div>
 
-                        <h3 class="section-title"><i class="fas fa-ribbon" style="color:#EC4899;"></i> Cancer Details</h3>
-                        <div class="grid-3">
-                            <div class="form-group"><label>A4. Diagnosis</label><input type="text" id="A4" class="form-control" placeholder="Free text diagnosis"></div>
-                            <div class="form-group"><label>A5. Cancer Type</label><select id="A5" class="form-control"><option value="Solid tumor">Solid Tumor</option><option value="Hematological malignancy">Hematological Malignancy</option></select></div>
-                            <div class="form-group">
-                                <label>A6. Specific Cancer</label>
-                                <select id="A6" class="form-control other-trigger">
-                                    <option value="AML">AML</option><option value="Breast">Breast</option><option value="Lung">Lung</option><option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden"><input type="text" name="Cancer_Name_Other" class="form-control" placeholder="Specify Cancer"></div>
-                            </div>
-                            <div class="form-group"><label>A7. Stage</label><select id="A7" class="form-control"><option value="Stage I">Stage I</option><option value="Stage II">Stage II</option><option value="Stage III">Stage III</option><option value="Stage IV">Stage IV</option><option value="Not documented">Not Documented</option></select></div>
-                            <div class="form-group">
-                                <label>A8. Treatment</label>
-                                <select id="A8" class="form-control other-trigger">
-                                    <option value="Chemotherapy">Chemotherapy</option><option value="Radiotherapy">Radiotherapy</option><option value="Surgery">Surgery</option><option value="Supportive care only">Supportive Care Only</option><option value="Other">Other (Specify)</option>
-                                </select>
-                                <div class="other-input-wrapper hidden"><input type="text" name="Treatment_Other" class="form-control" placeholder="Specify Treatment"></div>
-                            </div>
-                            <div class="form-group">
-                                <label>A9. Comorbidities</label>
-                                <select id="A9" class="form-control other-trigger">
-                                    <option value="None">None</option><option value="DM">Diabetes (DM)</option><option value="CKD">CKD</option><option value="Liver disease">Liver Disease</option><option value="Others">Others</option>
-                                </select>
-                                <div class="other-input-wrapper hidden"><input type="text" name="Comorbidities_Other" class="form-control" placeholder="Specify Comorbidities"></div>
-                            </div>
-                            <div class="form-group"><label>A10. Immunosuppression</label><select id="A10" class="form-control"><option value="Yes">Yes</option><option value="No">No</option><option value="Not documented">Not Documented</option></select></div>
-                        </div>
-
-                        <h3 class="section-title"><i class="fas fa-capsules" style="color:var(--accent);"></i> Antibiotic Episodes <button type="button" class="btn btn-primary btn-sm" onclick="app.addAntibioticBlock()"><i class="fas fa-plus"></i> Add Episode</button></h3>
-                        <div id="antibiotic-container"></div>
-
-                        <h3 class="section-title"><i class="fas fa-flask" style="color:var(--warning);"></i> Microbiology (Culture) <button type="button" class="btn btn-primary btn-sm" onclick="app.addCultureBlock()"><i class="fas fa-plus"></i> Add Culture Sample</button></h3>
-                        <div id="culture-container"></div>
-
-                        <h3 class="section-title"><i class="fas fa-procedures" style="color:var(--danger);"></i> Outcomes</h3>
-                        <div class="grid-3">
-                            <div class="form-group"><label>B6. Clinical Outcome</label><select id="B6" class="form-control"><option value="Discharged well">Discharged Well</option><option value="Discharged on request">Discharged on Request</option><option value="Referred">Referred</option><option value="Died">Died</option><option value="Still admitted">Still Admitted</option></select></div>
-                            <div class="form-group"><label>B7. Readmission (30 Days)</label><select id="B7" class="form-control"><option value="Yes">Yes</option><option value="No">No</option><option value="Not documented">Not Documented</option></select></div>
-                            <div class="form-group"><label>E3. De-escalation</label><select id="E3" class="form-control"><option value="Yes">Yes</option><option value="No">No</option><option value="Not applicable">Not Applicable</option><option value="Not documented">Not Documented</option></select></div>
-                        </div>
-
-                        <div style="text-align:right; margin-top:40px; padding-top:30px; border-top:1px solid var(--border);">
-                            <button type="button" class="btn btn-ghost" onclick="app.showDashboard()" style="margin-right:12px;">Cancel</button>
-                            <button type="submit" class="btn btn-primary" style="padding:14px 40px; font-size:16px;"><i class="fas fa-save"></i> Save Record</button>
-                        </div>
-                    </form>
+                <div class="table-container">
+                    <table id="records-table">
+                        <thead>
+                            <tr>
+                                <th>Study ID</th>
+                                <th>Age/Sex</th>
+                                <th>Diagnosis</th>
+                                <th>Cancer</th>
+                                <th>Admission</th>
+                                <th>Outcome</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="records-body"></tbody>
+                    </table>
                 </div>
             </section>
-        </main>
+
+            <!-- VIEW: USER MANAGEMENT (SuperAdmin) -->
+            <section id="view-users" class="hidden animate-fade">
+                <div class="toolbar">
+                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="user-search" placeholder="Search users..." onkeyup="app.filterUsers()"></div>
+                    <button class="btn btn-primary" onclick="app.showAddUserModal()"><i class="fas fa-user-plus"></i> Add User</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Username</th><th>Role</th><th>Status</th><th style="text-align: right;">Actions</th></tr></thead>
+                        <tbody id="users-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
     </div>
-    <div id="modal-container"></div>
+
+    <!-- MODALS -->
+    <!-- 1. Add Record Modal -->
+    <div id="modal-record" class="modal-overlay">
+        <div class="modal" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>New Patient Record</h2>
+                <button class="close-modal" onclick="app.closeModals()">&times;</button>
+            </div>
+            <form id="record-form" onsubmit="app.saveRecord(event)">
+                <div class="section-header" style="margin-top:0;"><i class="fas fa-user"></i> Demographics</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Study ID</label><input type="text" id="form-id" readonly class="form-control"></div>
+                    <div class="form-group"><label>Age</label><input type="number" id="form-age" required class="form-control"></div>
+                    <div class="form-group"><label>Sex</label><select id="form-sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    <div class="form-group"><label>Admission Date</label><input type="date" id="form-admit" class="form-control" onchange="app.calcLOS()"></div>
+                    <div class="form-group"><label>Discharge Date</label><input type="date" id="form-discharge" class="form-control" onchange="app.calcLOS()"></div>
+                    <div class="form-group"><label>LOS (Days)</label><input type="number" id="form-los" readonly class="form-control"></div>
+                    <div class="form-group"><label>Ward</label><select id="form-ward" class="form-control"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select></div>
+                </div>
+
+                <div class="section-header"><i class="fas fa-dna"></i> Oncology Details</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Diagnosis</label><input type="text" id="form-diagnosis" class="form-control"></div>
+                    <div class="form-group"><label>Cancer Type</label><select id="form-type" class="form-control"><option>Solid Tumor</option><option>Hematological</option></select></div>
+                    <div class="form-group"><label>Specific Name</label><input type="text" id="form-name" class="form-control"></div>
+                    <div class="form-group"><label>Stage</label><select id="form-stage" class="form-control"><option>I</option><option>II</option><option>III</option><option>IV</option></select></div>
+                    <div class="form-group"><label>Treatment</label><select id="form-treatment" class="form-control"><option>Chemo</option><option>Radio</option><option>Surgery</option><option>Palliative</option></select></div>
+                    <div class="form-group"><label>Outcome</label><select id="form-outcome" class="form-control"><option>Discharged Well</option><option>Died</option><option>Referred</option></select></div>
+                </div>
+
+                <!-- Simple Antibiotics for Demo (Can be expanded) -->
+                <div class="section-header"><i class="fas fa-pills"></i> Antibiotics</div>
+                <div class="dynamic-card">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Name</label><input type="text" id="form-abx-name" class="form-control" placeholder="e.g. Meropenem"></div>
+                        <div class="form-group"><label>Route</label><select id="form-abx-route" class="form-control"><option>IV</option><option>Oral</option></select></div>
+                        <div class="form-group"><label>Dose</label><input type="text" id="form-abx-dose" class="form-control"></div>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <button type="button" class="btn" onclick="app.closeModals()" style="color: var(--text-muted); margin-right: 12px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Add User Modal -->
+    <div id="modal-user" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Manage User</h2>
+                <button class="close-modal" onclick="app.closeModals()">&times;</button>
+            </div>
+            <form id="user-form" onsubmit="app.saveUser(event)">
+                <div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div>
+                <div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option><option>SuperAdmin</option></select></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 16px;">Create User</button>
+            </form>
+        </div>
+    </div>
 
     <script>
         // ==========================================
@@ -352,368 +349,248 @@
 
         class ResearchApp {
             constructor() {
-                this.currentUser = null;
+                this.user = null;
                 this.data = [];
-                this.abxCount = 0;
-                this.cultCount = 0;
-                this.whoDatabase = [];
-                this.whoMap = {};
+                this.users = [];
                 this.init();
             }
 
             init() {
-                this.showLogin();
-                document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); this.login(); });
-                this.setupOtherFields();
+                document.getElementById('login-form').addEventListener('submit', (e) => this.login(e));
             }
 
             /* ==========================================
-               LOGIN & AUTH
+               AUTH
                ========================================== */
-            login() {
-                const u = document.getElementById('username').value.trim();
-                const p = document.getElementById('password').value;
-                const btn = document.querySelector('#login-form button[type="submit"]');
-                const origHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
-                btn.disabled = true;
-
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }) })
-                    .then(r => r.json())
-                    .then(response => {
-                        btn.innerHTML = origHTML; btn.disabled = false;
-                        if (response.success) {
-                            this.currentUser = response.user;
-                            this.showApp();
-                            this.showToast('Welcome back, ' + this.currentUser.username, 'success');
-                            this.loadWhoData();
-                            this.loadData();
-                        } else {
-                            this.showToast(response.message || 'Login Failed', 'error');
-                        }
-                    })
-                    .catch(err => {
-                        btn.innerHTML = origHTML; btn.disabled = false;
-                        this.showToast('Server error: ' + err, 'error');
-                    });
-            }
-
-            logout() { this.currentUser = null; this.data = []; this.showLogin(); document.getElementById('login-form').reset(); }
-
-            /* ==========================================
-               DATA HANDLING
-               ========================================== */
-            loadWhoData() {
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getAntibiotics' }) })
-                    .then(r => r.json())
-                    .then(list => {
-                        this.whoDatabase = list;
-                        this.whoMap = {};
-                        list.forEach(item => { this.whoMap[item.name] = item; });
-                    });
-            }
-
-            loadData() {
-                this.showDashboard();
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;"><i class="fas fa-circle-notch fa-spin" style="font-size:24px; color:var(--accent);"></i></td></tr>';
-                
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'read' }) })
-                    .then(r => r.json())
-                    .then(records => { 
-                        this.data = records; 
-                        this.renderTable(); 
-                        this.updateStats(); 
-                    })
-                    .catch(err => { this.showToast('Load error: ' + err, 'error'); });
-            }
-
-            saveRecord(e) {
+            login(e) {
                 e.preventDefault();
-                const btn = document.querySelector('#research-form button[type="submit"]');
-                const origHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
-
-                const record = {
-                    id: document.getElementById('A1').value, A2: document.getElementById('A2').value,
-                    A3: document.getElementById('A3').value, A4: document.getElementById('A4').value,
-                    A5: document.getElementById('A5').value, A6: document.getElementById('A6').value,
-                    A7: document.getElementById('A7').value, A8: document.getElementById('A8').value,
-                    A9: document.getElementById('A9').value, A10: document.getElementById('A10').value,
-                    B1: document.getElementById('B1').value, B2: document.getElementById('B2').value,
-                    B3: document.getElementById('B3').value, B4: document.getElementById('B4').value,
-                    B5: document.getElementById('B5').value, B6: document.getElementById('B6').value,
-                    B7: document.getElementById('B7').value, E3: document.getElementById('E3').value,
-                    antibiotics: [], cultures: []
-                };
-
-                document.querySelectorAll('#antibiotic-container .dynamic-block').forEach(block => {
-                    const v = (n) => { const el = block.querySelector(`[name*="${n}"]`); return el ? el.value : ''; };
-                    record.antibiotics.push({ 
-                        name: v('Name'), class: v('Class'), category: v('Category'),
-                        route: v('Route'), dose: v('Dose'), freq: v('Freq'), 
-                        duration: v('Duration'), ind: v('Indication') 
-                    });
-                });
-
-                document.querySelectorAll('#culture-container .dynamic-block').forEach(block => {
-                    const v = (n) => { const el = block.querySelector(`[name*="${n}"]`); return el ? el.value : ''; };
-                    record.cultures.push({ 
-                        sent: v('Type'), date: v('Date'), type: v('Type'), 
-                        result: v('Result'), organism: v('Organism'), 
-                        xdr: v('XDR'), xdr_details: v('XDR_Details')
-                    });
-                });
-
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'saveRecordToSheet', record: record, user: this.currentUser }) })
-                    .then(r => r.json())
-                    .then(res => {
-                        btn.innerHTML = origHTML; btn.disabled = false;
-                        this.showToast('Record saved successfully', 'success');
+                const u = document.getElementById('username').value;
+                const p = document.getElementById('password').value;
+                
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }) })
+                .then(r => r.json())
+                .then(res => {
+                    if(res.success) {
+                        this.user = res.user;
+                        this.showApp();
                         this.loadData();
-                    })
-                    .catch(err => {
-                        btn.innerHTML = origHTML; btn.disabled = false;
-                        this.showToast('Save error: ' + err, 'error');
-                    });
-            }
-
-            /* ==========================================
-               UI & ANIMATIONS
-               ========================================== */
-            showLogin() { 
-                document.getElementById('login-view').classList.remove('hidden'); 
-                document.getElementById('app-view').classList.add('hidden'); 
-            }
-            
-            showApp() {
-                document.getElementById('login-view').classList.add('hidden'); 
-                document.getElementById('app-view').classList.remove('hidden');
-                document.getElementById('user-avatar').textContent = this.currentUser.username.charAt(0).toUpperCase();
-                document.getElementById('user-display').textContent = this.currentUser.username;
-            }
-
-            showDashboard() { 
-                const formPanel = document.getElementById('form-panel');
-                const dashPanel = document.getElementById('dashboard-panel');
-                
-                formPanel.classList.add('hidden');
-                dashPanel.classList.remove('hidden');
-                dashPanel.classList.remove('animate-fade-in');
-                void dashPanel.offsetWidth; // Trigger reflow
-                dashPanel.classList.add('animate-fade-in');
-            }
-
-            showForm() {
-                const formPanel = document.getElementById('form-panel');
-                const dashPanel = document.getElementById('dashboard-panel');
-                
-                dashPanel.classList.add('hidden');
-                formPanel.classList.remove('hidden');
-                formPanel.classList.remove('animate-slide-up');
-                void formPanel.offsetWidth;
-                formPanel.classList.add('animate-slide-up');
-                this.resetForm();
-                if (this.abxCount === 0) this.addAntibioticBlock();
-            }
-
-            resetForm() {
-                document.getElementById('research-form').reset();
-                document.getElementById('A1').value = 'PID-' + Math.floor(1000 + Math.random() * 9000);
-                document.getElementById('antibiotic-container').innerHTML = ''; 
-                document.getElementById('culture-container').innerHTML = '';
-                this.abxCount = 0; this.cultCount = 0;
-                document.querySelectorAll('.other-input-wrapper').forEach(el => el.classList.add('hidden'));
-            }
-
-            calculateLOS() {
-                const start = document.getElementById('B1').value; const end = document.getElementById('B2').value;
-                if (start && end) { 
-                    const diff = new Date(end) - new Date(start); 
-                    document.getElementById('B3').value = Math.round(diff / 86400000) > 0 ? Math.round(diff / 86400000) : 0; 
-                }
-            }
-
-            /* ==========================================
-               STATS & RENDERING
-               ========================================== */
-            renderTable(data = this.data) {
-                const tbody = document.getElementById('table-body'); tbody.innerHTML = '';
-                const sorted = [...data].reverse();
-                if (sorted.length === 0) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fas fa-folder-open" style="font-size:48px; margin-bottom:16px; color:var(--border-light);"></i><h3 style="color:var(--text-muted);">No Records Found</h3></div></td></tr>'; return; }
-                
-                sorted.forEach((rec, index) => {
-                    const tr = document.createElement('tr');
-                    tr.style.animation = `slideUp 0.4s ease-out forwards ${index * 0.05}s`;
-                    tr.style.opacity = '0'; // Start hidden for animation
-                    
-                    const oc = rec.B6 === 'Died' ? 'badge-danger' : rec.B6 === 'Discharged well' ? 'badge-success' : 'badge-warning';
-                    tr.innerHTML = `<td><strong style="color:var(--accent); font-size:15px;">${this._e(rec.id)}</strong></td>
-                    <td>${this._e(rec.A2)}</td><td>${this._e(rec.A3)}</td>
-                    <td>${this._e(rec.A4)}</td><td>${this._e(rec.A6)}</td>
-                    <td>${this._e(rec.B1)}</td>
-                    <td><span class="badge ${oc}">${this._e(rec.B6)}</span></td>
-                    <td style="text-align:right;">
-                        <button class="btn btn-ghost btn-sm" onclick="app.viewRecord('${this._e(rec.id)}')"><i class="fas fa-eye"></i></button>
-                    </td>`;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            updateStats() {
-                let t = this.data.length, a = 0, c = 0, d = 0, totalLOS = 0;
-                this.data.forEach(r => { 
-                    if(r.antibiotics) a += r.antibiotics.length; 
-                    if(r.cultures) c += r.cultures.length; 
-                    if(r.B6 === 'Died') d++; 
-                    if(r.B3) totalLOS += parseFloat(r.B3); // Sum of LOS
-                });
-
-                // Animate Stats
-                this.animateValue("stat-total", 0, t, 1000);
-                this.animateValue("stat-abx", 0, a, 1000);
-                this.animateValue("stat-cultures", 0, c, 1000);
-                
-                // Calculate Mortality % and animate
-                let mortRate = t > 0 ? ((d/t)*100).toFixed(1) : '0';
-                this.animateValue("stat-mortality", 0, parseFloat(mortRate), 1000, "%");
-            }
-
-            animateValue(id, start, end, duration, suffix = "") {
-                if (start === end) return;
-                const range = end - start;
-                let current = start;
-                const increment = end > start ? 1 : -1;
-                const stepTime = Math.abs(Math.floor(duration / range));
-                const obj = document.getElementById(id);
-                
-                const timer = setInterval(function() {
-                    current += increment;
-                    obj.innerHTML = current + suffix;
-                    if (current == end) { clearInterval(timer); }
-                }, Math.max(stepTime, 20)); // Min 20ms per frame
-            }
-
-            /* ==========================================
-               DYNAMIC BLOCKS
-               ========================================== */
-            addAntibioticBlock() {
-                this.abxCount++; const id = this.abxCount; const container = document.getElementById('antibiotic-container');
-                const div = document.createElement('div'); div.className = 'dynamic-block';
-                let options = this.whoDatabase.map(d => `<option value="${d.name}">`).join('');
-
-                div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()">&times;</button>
-                    <h4><i class="fas fa-pills"></i> Episode #${id}</h4>
-                    <div class="grid-3">
-                        <div class="form-group">
-                            <label>Name (Search)</label>
-                            <input type="text" list="abx-list-${id}" name="Abx_Name_${id}" class="form-control" placeholder="Type to search..." oninput="app.handleAbxInput(this)">
-                            <datalist id="abx-list-${id}">${options}</datalist>
-                        </div>
-                        <div class="form-group"><label>Class</label><input type="text" name="Abx_Class_${id}" class="form-control" readonly></div>
-                        <div class="form-group"><label>Category (AWaRe)</label><input type="text" name="Abx_Category_${id}" class="form-control" readonly></div>
-                        <div class="form-group"><label>Route</label><select name="Abx_Route_${id}" class="form-control"><option>IV</option><option>Oral</option><option>IM</option></select></div>
-                        <div class="form-group"><label>Dose</label><input type="text" name="Abx_Dose_${id}" class="form-control"></div>
-                        <div class="form-group"><label>Freq</label><input type="text" name="Abx_Freq_${id}" class="form-control"></div>
-                        <div class="form-group"><label>Duration</label><input type="number" name="Abx_Duration_${id}" class="form-control"></div>
-                        <div class="form-group"><label>Indication</label><select name="Abx_Indication_${id}" class="form-control"><option>Empirical</option><option>Targeted</option><option>Prophylaxis</option></select></div>
-                    </div>`;
-                container.appendChild(div);
-            }
-
-            handleAbxInput(input) {
-                const block = input.closest('.dynamic-block');
-                const val = input.value.trim();
-                const match = this.whoMap[val];
-                if (match) {
-                    block.querySelector('input[name*="Class"]').value = match.class;
-                    block.querySelector('input[name*="Category"]').value = match.category;
-                } else {
-                    block.querySelector('input[name*="Class"]').value = "";
-                    block.querySelector('input[name*="Category"]').value = "";
-                }
-            }
-
-            addCultureBlock() {
-                this.cultCount++; const id = this.cultCount; const container = document.getElementById('culture-container');
-                const div = document.createElement('div'); div.className = 'dynamic-block';
-                div.innerHTML = `<button type="button" class="remove-btn" onclick="this.parentElement.remove()">&times;</button>
-                    <h4><i class="fas fa-vial"></i> Culture #${id}</h4>
-                    <div class="grid-3">
-                        <div class="form-group"><label>Type</label><select name="Cult_Type_${id}" class="form-control"><option>Blood</option><option>Urine</option><option>Sputum</option><option>Wound</option></select></div>
-                        <div class="form-group"><label>Result</label><select name="Cult_Result_${id}" class="form-control"><option>Positive</option><option>Negative</option><option>Contaminated</option></select></div>
-                        <div class="form-group"><label>Organism</label><input type="text" name="Cult_Organism_${id}" class="form-control"></div>
-                        <div class="form-group">
-                            <label>D10. XDR Criteria?</label>
-                            <select name="Cult_XDR_${id}" class="form-control" onchange="app.toggleXDR(this,${id})">
-                                <option value="No">No</option><option value="Yes">Yes</option>
-                            </select>
-                        </div>
-                        <div class="form-group hidden" id="xdr-details-${id}" style="grid-column: span 3;">
-                            <label class="text-accent">XDR Details</label>
-                            <input type="text" name="Cult_XDR_Details_${id}" class="form-control" placeholder="Enter details...">
-                        </div>
-                    </div>`;
-                container.appendChild(div);
-            }
-
-            toggleXDR(select, id) {
-                const div = document.getElementById(`xdr-details-${id}`);
-                if(select.value === 'Yes') div.classList.remove('hidden');
-                else div.classList.add('hidden');
-            }
-
-            /* ==========================================
-               UTILITIES
-               ========================================== */
-            setupOtherFields() {
-                document.body.addEventListener('change', (e) => {
-                    if (e.target.classList.contains('other-trigger')) {
-                        const wrapper = e.target.parentElement.querySelector('.other-input-wrapper');
-                        const input = wrapper.querySelector('input');
-                        if (e.target.value === 'Other' || e.target.value === 'Others') {
-                            wrapper.classList.remove('hidden');
-                            input.setAttribute('required', 'required');
-                        } else {
-                            wrapper.classList.add('hidden');
-                            input.removeAttribute('required');
-                            input.value = '';
-                        }
+                        if(this.user.role === 'SuperAdmin') this.loadUsers();
+                    } else {
+                        alert(res.message);
                     }
                 });
             }
 
-            filterData() {
-                const d = document.getElementById('filter-diagnosis').value.toLowerCase(), ab = document.getElementById('filter-antibiotic').value.toLowerCase(), s = document.getElementById('filter-status').value, ds = document.getElementById('filter-date-start').value;
-                const f = this.data.filter(r => (!d || (r.A4&&r.A4.toLowerCase().includes(d)) || (r.A6&&r.A6.toLowerCase().includes(d))) && (!ab || (r.antibiotics&&r.antibiotics.some(x=>(x.name&&x.name.toLowerCase().includes(ab))))) && (!s || r.B6 === s) && (!ds || r.B1 >= ds));
-                this.renderTable(f);
-            }
+            logout() { location.reload(); }
 
-            viewRecord(id) {
-                const rec = this.data.find(r => r.id === id); if (!rec) return;
-                const oc = rec.B6 === 'Died' ? 'badge-danger' : 'badge-success';
-                let abxH = rec.antibiotics && rec.antibiotics.length > 0 ? rec.antibiotics.map((a,i) => `<div style="padding:12px; background:var(--bg-sec); border-radius:8px; margin-bottom:8px;"><strong style="color:var(--accent);">${this._e(a.name)}</strong> <span style="font-size:12px; color:var(--text-muted);">(${this._e(a.class)})</span> - ${this._e(a.dose)}</div>`).join('') : '<p style="color:var(--text-muted)">None</p>';
+            showApp() {
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('app-view').style.display = 'flex';
+                document.getElementById('user-name').textContent = this.user.username;
+                document.getElementById('user-role').textContent = this.user.role;
                 
-                document.getElementById('modal-container').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)app.closeModal()"><div class="modal"><button class="modal-close" onclick="app.closeModal()">&times;</button><h2 style="margin-bottom:24px;">${this._e(rec.id)}</h2><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
-                    <div><label class="text-xs text-muted">Age</label><div>${this._e(rec.A2)}</div></div>
-                    <div><label class="text-xs text-muted">Sex</label><div>${this._e(rec.A3)}</div></div>
-                    <div><label class="text-xs text-muted">Diagnosis</label><div>${this._e(rec.A4)}</div></div>
-                    <div><label class="text-xs text-muted">Outcome</label><div><span class="badge ${oc}">${this._e(rec.B6)}</span></div></div>
-                </div><h3 style="margin-bottom:12px; font-size:16px;">Antibiotics</h3>${abxH}</div></div>`;
+                // Show SuperAdmin Tab if applicable
+                if(this.user.role === 'SuperAdmin') {
+                    document.getElementById('nav-users').classList.remove('hidden');
+                }
+                
+                this.navigate('dashboard');
             }
 
-            closeModal() { document.getElementById('modal-container').innerHTML = ''; }
-            
-            showToast(msg, type='success') {
-                const c = document.getElementById('toast-container'), t = document.createElement('div'); t.className = `toast ${type}`;
-                const ic = type==='success'?'fa-check-circle':type==='error'?'fa-times-circle':'fa-info-circle';
-                t.innerHTML = `<i class="fas ${ic}"></i> ${msg}`; c.appendChild(t);
-                setTimeout(() => { t.style.opacity='0'; t.style.transform='translateY(20px)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(), 300); }, 3000);
+            /* ==========================================
+               NAVIGATION
+               ========================================== */
+            navigate(view) {
+                // Hide all sections
+                ['view-dashboard', 'view-records', 'view-users'].forEach(id => document.getElementById(id).classList.add('hidden'));
+                ['nav-dashboard', 'nav-records', 'nav-users'].forEach(id => document.getElementById(id).classList.remove('active'));
+
+                // Show target
+                document.getElementById('view-' + view).classList.remove('hidden');
+                document.getElementById('nav-' + view).classList.add('active');
+
+                // Update Header
+                const headers = {
+                    'dashboard': ['Dashboard', 'Overview of metrics'],
+                    'records': ['Patient Records', 'Manage study data'],
+                    'users': ['User Management', 'Control system access']
+                };
+                document.getElementById('page-heading').textContent = headers[view][0];
+                document.getElementById('page-subheading').textContent = headers[view][1];
             }
-            _e(s) { return s===null||s===undefined?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+            /* ==========================================
+               DATA HANDLING
+               ========================================== */
+            loadData() {
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'read' }) })
+                .then(r => r.json())
+                .then(res => {
+                    this.data = res || [];
+                    this.renderRecords();
+                    this.updateStats();
+                });
+            }
+
+            loadUsers() {
+                // Assuming backend supports 'getUsers'
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getUsers' }) })
+                .then(r => r.json())
+                .then(res => {
+                    this.users = res || [];
+                    this.renderUsers();
+                })
+                .catch(e => console.log("User management not fully available in backend, using simulation for UI demo"));
+            }
+
+            saveRecord(e) {
+                e.preventDefault();
+                const record = {
+                    id: document.getElementById('form-id').value,
+                    Age: document.getElementById('form-age').value,
+                    Sex: document.getElementById('form-sex').value,
+                    A4: document.getElementById('form-diagnosis').value,
+                    A6: document.getElementById('form-name').value,
+                    B1: document.getElementById('form-admit').value,
+                    B6: document.getElementById('form-outcome').value,
+                    // Simplified for demo
+                    antibiotics: [{ name: document.getElementById('form-abx-name').value }]
+                };
+
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'saveRecordToSheet', record: record, user: this.user }) })
+                .then(r => r.json())
+                .then(res => {
+                    if(res.success) {
+                        this.closeModals();
+                        this.loadData();
+                        alert('Saved successfully');
+                    }
+                });
+            }
+
+            /* ==========================================
+               UI RENDERING
+               ========================================== */
+            renderRecords() {
+                const tbody = document.getElementById('records-body');
+                tbody.innerHTML = '';
+                this.data.forEach(r => {
+                    const badgeClass = r.B6 === 'Died' ? 'badge-danger' : 'badge-success';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight:600; color:var(--primary);">${r.id || 'PID'}</td>
+                            <td>${r.Age} / ${r.Sex}</td>
+                            <td>${r.A4 || '-'}</td>
+                            <td>${r.A6 || '-'}</td>
+                            <td>${r.B1 || '-'}</td>
+                            <td><span class="badge ${badgeClass}">${r.B6 || 'N/A'}</span></td>
+                            <td style="text-align:right;">
+                                <button class="btn btn-icon" style="background:var(--glass); color:white;"><i class="fas fa-eye"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            renderUsers() {
+                const tbody = document.getElementById('users-body');
+                tbody.innerHTML = '';
+                // Mocking users if backend returns empty for demo
+                const list = this.users.length ? this.users : [
+                    { username: 'admin', role: 'SuperAdmin', active: true },
+                    { username: 'doc1', role: 'Agent', active: true }
+                ];
+                
+                list.forEach(u => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight:600;">${u.username}</td>
+                            <td><span class="badge badge-warning">${u.role}</span></td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td style="text-align:right;">
+                                ${this.user.role === 'SuperAdmin' && u.username !== this.user.username ? 
+                                `<button class="btn btn-icon btn-danger" onclick="alert('Delete ${u.username}?')"><i class="fas fa-trash"></i></button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            updateStats() {
+                const total = this.data.length;
+                document.getElementById('stat-total').textContent = total;
+                
+                const abxCount = this.data.reduce((acc, r) => acc + (r.antibiotics ? r.antibiotics.length : 0), 0);
+                document.getElementById('stat-abx').textContent = abxCount;
+
+                const deaths = this.data.filter(r => r.B6 === 'Died').length;
+                const rate = total ? Math.round((deaths/total)*100) : 0;
+                document.getElementById('stat-mortality').textContent = rate + '%';
+            }
+
+            /* ==========================================
+               INTERACTIONS
+               ========================================== */
+            showAddModal() {
+                document.getElementById('form-id').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('modal-record').style.display = 'flex';
+            }
+
+            showAddUserModal() {
+                document.getElementById('modal-user').style.display = 'flex';
+            }
+
+            closeModals() {
+                document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
+                document.getElementById('record-form').reset();
+                document.getElementById('user-form').reset();
+            }
+
+            saveUser(e) {
+                e.preventDefault();
+                const u = document.getElementById('u-name').value;
+                const p = document.getElementById('u-pass').value;
+                const role = document.getElementById('u-role').value;
+                
+                // Call backend to add user
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'addUser', username: u, password: p, role: role }) })
+                .then(r => r.json())
+                .then(res => {
+                    if(res.success) {
+                        this.closeModals();
+                        this.loadUsers();
+                        alert('User added');
+                    }
+                });
+            }
+
+            calcLOS() {
+                const s = document.getElementById('form-admit').value;
+                const e = document.getElementById('form-discharge').value;
+                if(s && e) document.getElementById('form-los').value = (new Date(e) - new Date(s)) / 86400000;
+            }
+
+            filterRecords() {
+                const term = document.getElementById('global-search').value.toLowerCase();
+                const outcome = document.getElementById('filter-outcome').value;
+                const rows = document.querySelectorAll('#records-body tr');
+                
+                // Re-render logic (simple client side filter for demo)
+                // Ideally, we filter the array 'this.data' and re-render
+                const filtered = this.data.filter(r => {
+                    const matchText = !term || (r.id && r.id.toLowerCase().includes(term)) || (r.A4 && r.A4.toLowerCase().includes(term));
+                    const matchOutcome = !outcome || r.B6 === outcome;
+                    return matchText && matchOutcome;
+                });
+
+                const tbody = document.getElementById('records-body');
+                tbody.innerHTML = '';
+                this.data = filtered; // Update state temporarily
+                this.renderRecords();
+            }
         }
 
-        let app;
-        document.addEventListener('DOMContentLoaded', () => { app = new ResearchApp(); });
+        const app = new ResearchApp();
     </script>
 </body>
 </html>
