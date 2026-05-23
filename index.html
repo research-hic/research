@@ -3,615 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OncoCollect | Premium Research DB</title>
+    <title>OncoCollect | Research DB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        :root {
-            --bg-body: #050a13; --bg-surface: #0c1322; --bg-card: #111827; --bg-hover: #1e293b;
-            --accent: #0ea5e9; --accent-hover: #38bdf8; --accent-glow: rgba(14, 165, 233, 0.15);
-            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
-            --text-main: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
-            --border: rgba(255,255,255,0.06); --radius: 12px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
-        
-        /* ─── Animations ─── */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        /* ─── Layout ─── */
-        .sidebar { width: 260px; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: var(--transition); }
-        .main-content { flex: 1; margin-left: 260px; padding: 32px; min-height: 100vh; background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.03), transparent 40%); }
-        
-        /* ─── Sidebar ─── */
-        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .brand-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; box-shadow: 0 4px 12px var(--accent-glow); }
-        .brand-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-        .nav-links { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-muted); font-size: 14px; font-weight: 500; cursor: pointer; transition: var(--transition); border: 1px solid transparent; }
-        .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
-        .nav-item.active { background: var(--accent-glow); color: var(--accent); border-color: rgba(14, 165, 233, 0.2); }
-        .nav-item i { width: 20px; text-align: center; font-size: 15px; }
-        .user-profile { padding: 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #6366f1); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-        
-        /* ─── Typography & Cards ─── */
-        h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
-        h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-        .text-muted { color: var(--text-muted); font-size: 14px; }
-        
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: var(--transition); }
-        .card:hover { border-color: rgba(255,255,255,0.1); }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-        .stat-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
-        
-        /* ─── Tables ─── */
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); border-bottom: 1px solid var(--border); }
-        td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
-        tr:hover td { color: var(--text-main); background: rgba(255,255,255,0.01); }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-        .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-
-        /* ─── Forms ─── */
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-control { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; color: var(--text-main); font-size: 14px; transition: var(--transition); }
-        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .form-control:read-only { opacity: 0.5; cursor: not-allowed; }
-        
-        /* ─── Custom Searchable Select ─── */
-        .search-select { position: relative; }
-        .search-select input { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; color: var(--text-main); font-size: 14px; transition: var(--transition); }
-        .search-select input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-        .search-select-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-surface); border: 1px solid var(--accent); border-top: none; max-height: 180px; overflow-y: auto; z-index: 50; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .search-select-dropdown.show { display: block; }
-        .search-select-item { padding: 8px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-        .search-select-item:last-child { border-bottom: none; }
-        .search-select-item:hover { background: var(--bg-hover); color: var(--text-main); }
-        .search-select-item .meta { font-size: 11px; display: flex; gap: 8px; }
-        .search-select-item .meta span { background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
-
-        /* ─── Buttons ─── */
-        .btn { padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; transition: var(--transition); }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 2px 8px var(--accent-glow); }
-        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-        .btn-ghost:hover { border-color: var(--text-dim); color: var(--text-main); }
-        .btn-icon { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: transparent; color: var(--text-dim); border: 1px solid transparent; }
-        .btn-icon:hover { color: var(--accent); background: var(--accent-glow); border-color: rgba(14,165,233,0.2); }
-
-        /* ─── Modals ─── */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal { background: var(--bg-surface); border: 1px solid var(--border); width: 100%; max-width: 800px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: scaleIn 0.2s ease-out; display: flex; flex-direction: column; max-height: 90vh; }
-        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 24px; overflow-y: auto; }
-        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
-        .close-modal { background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
-        .close-modal:hover { color: var(--danger); }
-
-        /* ─── Dynamic Slots ─── */
-        .slot-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; position: relative; animation: slideUp 0.3s ease-out; }
-        .slot-remove { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 12px; }
-        .slot-remove:hover { color: var(--danger); }
-        .slot-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
-        
-        .section-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0 16px; color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-        .section-divider i { color: var(--accent); }
-
-        /* ─── Toast Notifications ─── */
-        #toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-        .toast { padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: slideInRight 0.3s ease-out; display: flex; align-items: center; gap: 8px; }
-        .toast-success { background: var(--success); }
-        .toast-error { background: var(--danger); }
-
-        .hidden { display: none !important; }
-        
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); position: fixed; z-index: 100; }
-            .sidebar.active { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-        }
-        .menu-toggle { display: none; background: none; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; }
-        @media (max-width: 768px) { .menu-toggle { display: block; } }
+        :root { --bg-body:#050a13;--bg-surface:#0c1322;--bg-card:#111827;--bg-hover:#1e293b;--accent:#0ea5e9;--accent-hover:#38bdf8;--accent-glow:rgba(14,165,233,0.15);--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--text-main:#f8fafc;--text-muted:#94a3b8;--text-dim:#64748b;--border:rgba(255,255,255,0.06);--radius:12px;--transition:all 0.2s cubic-bezier(0.4,0,0.2,1); }
+        * { box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif; }
+        body { background:var(--bg-body);color:var(--text-main);min-height:100vh;display:flex;overflow-x:hidden; }
+        @keyframes fadeIn { from{opacity:0}to{opacity:1} } @keyframes slideUp { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)} } @keyframes scaleIn { from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)} } @keyframes slideInRight { from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1} }
+        .sidebar { width:240px;background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100%;z-index:50; }
+        .main-content { flex:1;margin-left:240px;padding:24px;min-height:100vh; }
+        .sidebar-header { padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px; }
+        .brand-icon { width:32px;height:32px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:12px; }
+        .brand-text { font-size:16px;font-weight:700;letter-spacing:-0.5px; }
+        .nav-links { flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:2px; }
+        .nav-item { display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition); }
+        .nav-item:hover { background:var(--bg-hover);color:var(--text-main); } .nav-item.active { background:var(--accent-glow);color:var(--accent); }
+        .nav-item i { width:18px;text-align:center;font-size:13px; }
+        .user-profile { padding:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px; }
+        .avatar { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px; }
+        h1 { font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:2px; } .text-muted { color:var(--text-muted);font-size:12px; }
+        .card { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:var(--transition); }
+        .stats-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px; }
+        .stat-card { padding:16px;display:flex;flex-direction:column;gap:6px; } .stat-card:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+        .stat-icon { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px; }
+        .stat-value { font-size:24px;font-weight:700;letter-spacing:-1px; }
+        .table-wrap { overflow-x:auto; } table { width:100%;border-collapse:collapse; }
+        th { padding:10px 12px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);border-bottom:1px solid var(--border); }
+        td { padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);color:var(--text-muted); } tr:hover td { color:var(--text-main);background:rgba(255,255,255,0.01); }
+        .badge { padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600; } .badge-success { background:rgba(16,185,129,0.1);color:var(--success); } .badge-danger { background:rgba(239,68,68,0.1);color:var(--danger); }
+        .form-group { margin-bottom:12px; } .form-group label { display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px; }
+        .form-control { width:100%;background:var(--bg-body);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text-main);font-size:13px;transition:var(--transition); }
+        .form-control:focus { outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow); } .form-control:read-only { opacity:0.5;cursor:not-allowed; }
+        .search-select { position:relative; } .search-select input { width:100%;background:var(--bg-body);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text-main);font-size:13px;transition:var(--transition); }
+        .search-select input:focus { outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);border-bottom-left-radius:0;border-bottom-right-radius:0;z-index:10;position:relative; }
+        .search-select-dropdown { position:absolute;top:100%;left:0;right:0;background:var(--bg-surface);border:1px solid var(--accent);border-top:none;max-height:160px;overflow-y:auto;z-index:50;border-bottom-left-radius:6px;border-bottom-right-radius:6px;display:none;box-shadow:0 10px 25px rgba(0,0,0,0.5); }
+        .search-select-dropdown.show { display:block; } .search-select-item { padding:6px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-bottom:1px solid var(--border); }
+        .search-select-item:last-child { border-bottom:none; } .search-select-item:hover { background:var(--bg-hover);color:var(--text-main); }
+        .search-select-item .meta { font-size:10px;display:flex;gap:4px; } .search-select-item .meta span { background:rgba(255,255,255,0.05);padding:1px 4px;border-radius:3px; }
+        .btn { padding:6px 12px;border-radius:6px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;font-size:12px;transition:var(--transition); }
+        .btn-primary { background:var(--accent);color:white; } .btn-primary:hover { background:var(--accent-hover); } .btn-ghost { background:transparent;color:var(--text-muted);border:1px solid var(--border); }
+        .btn-icon { width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:4px;background:transparent;color:var(--text-dim);border:1px solid transparent; } .btn-icon:hover { color:var(--accent);background:var(--accent-glow);border-color:rgba(14,165,233,0.2); }
+        .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto; }
+        .modal { background:var(--bg-surface);border:1px solid var(--border);width:100%;max-width:800px;border-radius:12px;box-shadow:0 25px 50px rgba(0,0,0,0.5);animation:scaleIn 0.2s ease-out;display:flex;flex-direction:column;margin:40px 0; }
+        .modal-header { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg-surface);z-index:10;border-radius:12px 12px 0 0; }
+        .modal-body { padding:20px;overflow-y:auto; } .modal-footer { padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--bg-surface);border-radius:0 0 12px 12px; }
+        .close-modal { background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer; } .close-modal:hover { color:var(--danger); }
+        .slot-card { background:var(--bg-body);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:8px;position:relative;animation:slideUp 0.3s ease-out; }
+        .slot-remove { position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:10px; } .slot-remove:hover { color:var(--danger); }
+        .slot-title { font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px; }
+        .grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:8px; } .grid-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; } .grid-4 { display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px; }
+        .section-divider { display:flex;align-items:center;gap:8px;margin:16px 0 12px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600; }
+        .section-divider::after { content:'';flex:1;height:1px;background:var(--border); } .section-divider i { color:var(--accent);font-size:12px; }
+        #toast-container { position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:4px; }
+        .toast { padding:10px 16px;border-radius:6px;font-size:12px;font-weight:500;color:white;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:slideInRight 0.3s ease-out;display:flex;align-items:center;gap:8px; }
+        .toast-success { background:var(--success); } .toast-error { background:var(--danger); }
+        .hidden { display:none !important; }
+        @media (max-width:768px) { .sidebar{transform:translateX(-100%);position:fixed;z-index:100;} .sidebar.active{transform:translateX(0);} .main-content{margin-left:0;} .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+        .menu-toggle { display:none;background:none;border:none;color:var(--text-main);font-size:16px;cursor:pointer; } @media (max-width:768px) { .menu-toggle{display:block;} }
     </style>
 </head>
 <body>
-
     <div id="toast-container"></div>
-
-    <!-- Login -->
-    <div id="login-view" style="position:fixed; inset:0; background:var(--bg-body); z-index:9999; display:flex; align-items:center; justify-content:center;">
-        <div class="card" style="width:100%; max-width:360px; animation:scaleIn 0.3s;">
-            <div style="text-align:center; margin-bottom:24px;">
-                <div class="brand-icon" style="margin:0 auto 12px; width:48px; height:48px; font-size:18px;"><i class="fas fa-dna"></i></div>
-                <h2>OncoCollect</h2>
-                <p class="text-muted">Secure Research Portal</p>
-            </div>
-            <form id="login-form">
-                <div class="form-group"><label>Username</label><input type="text" id="username" class="form-control" required></div>
-                <div class="form-group"><label>Password</label><input type="password" id="password" class="form-control" required></div>
-                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
-            </form>
+    <div id="login-view" style="position:fixed;inset:0;background:var(--bg-body);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div class="card" style="width:100%;max-width:340px;animation:scaleIn 0.3s;">
+            <div style="text-align:center;margin-bottom:20px;"><div class="brand-icon" style="margin:0 auto 8px;width:40px;height:40px;font-size:16px;"><i class="fas fa-dna"></i></div><h2>OncoCollect</h2><p class="text-muted">Secure Research Portal</p></div>
+            <form id="login-form"><div class="form-group"><label>Username</label><input type="text" id="username" class="form-control" required></div><div class="form-group"><label>Password</label><input type="password" id="password" class="form-control" required></div><button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;">Sign In</button></form>
         </div>
     </div>
-
-    <!-- App Shell -->
-    <div id="app-view" style="display:none; width:100%;">
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="brand-icon">O</div>
-                <span class="brand-text">OncoCollect</span>
-            </div>
-            <div class="nav-links">
-                <a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Records</a>
-                <a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Analytics</a>
-                <a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> Users</a>
-            </div>
-            <div class="user-profile">
-                <div class="avatar" id="user-avatar">A</div>
-                <div style="flex:1;">
-                    <div style="font-weight:600; font-size:13px;" id="user-name">Admin</div>
-                    <div style="font-size:11px; color:var(--text-dim);" id="user-role-text">Role</div>
-                </div>
-                <button class="btn-icon" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </nav>
-
+    <div id="app-view" style="display:none;width:100%;">
+        <nav class="sidebar" id="sidebar"><div class="sidebar-header"><div class="brand-icon">O</div><span class="brand-text">OncoCollect</span></div><div class="nav-links"><a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a><a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Records</a><a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Analytics</a><a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> Users</a></div><div class="user-profile"><div class="avatar" id="user-avatar">A</div><div style="flex:1;"><div style="font-weight:600;font-size:12px;" id="user-name">Admin</div><div style="font-size:10px;color:var(--text-dim);" id="user-role-text">Role</div></div><button class="btn-icon" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i></button></div></nav>
         <div class="main-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
-                    <div>
-                        <h1 id="page-heading">Dashboard</h1>
-                        <p class="text-muted" id="page-subheading">Overview</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dashboard View -->
-            <section id="view-dashboard" class="animate-fade">
-                <div class="stats-grid">
-                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(14,165,233,0.1); color:var(--accent);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="text-muted">Patients</div></div>
-                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="text-muted">Antibiotics</div></div>
-                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.1); color:var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="text-muted">Cultures</div></div>
-                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(239,68,68,0.1); color:var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="text-muted">Mortality</div></div>
-                </div>
-                <div class="card" style="padding:0;">
-                    <div style="padding:16px 24px; border-bottom:1px solid var(--border);"><h2>Recent Admissions</h2></div>
-                    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div>
-                </div>
-            </section>
-
-            <!-- Records View -->
-            <section id="view-records" class="hidden animate-fade">
-                <div class="card" style="padding:16px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                    <input type="text" id="global-search" class="form-control" style="flex:1; min-width:200px;" placeholder="Search ID, Diagnosis..." onkeyup="app.filterRecords()">
-                    <select id="filter-outcome" class="form-control" style="width:auto;" onchange="app.filterRecords()"><option value="">All Outcomes</option><option value="Discharged well">Discharged</option><option value="Died">Deceased</option></select>
-                    <button class="btn btn-ghost" onclick="app.exportCSV()"><i class="fas fa-download"></i> CSV</button>
-                    <button class="btn btn-primary" onclick="app.showRecordModal()"><i class="fas fa-plus"></i> New Entry</button>
-                </div>
-                <div class="card" style="padding:0; overflow:hidden;">
-                    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Age/Sex</th><th>Diagnosis</th><th>Cancer</th><th>Outcome</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="records-body"></tbody></table></div>
-                </div>
-            </section>
-
-            <!-- Analytics View -->
-            <section id="view-analytics" class="hidden animate-fade">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:16px;">
-                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">SEX DISTRIBUTION</h3><canvas id="chart-sex"></canvas></div>
-                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">AGE DEMOGRAPHICS</h3><canvas id="chart-age"></canvas></div>
-                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">CANCER TYPES</h3><canvas id="chart-cancer"></canvas></div>
-                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">AWaRe CLASSIFICATION</h3><canvas id="chart-aware"></canvas></div>
-                </div>
-            </section>
-
-            <!-- Users View -->
-            <section id="view-users" class="hidden animate-fade">
-                <div class="card" style="padding:16px; margin-bottom:16px; display:flex; justify-content:flex-end;">
-                    <button class="btn btn-primary" onclick="app.showUserModal()"><i class="fas fa-user-plus"></i> Add User</button>
-                </div>
-                <div class="card" style="padding:0; overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead><tbody id="users-body"></tbody></table></div></div>
-            </section>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><div style="display:flex;align-items:center;gap:10px;"><button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button><div><h1 id="page-heading">Dashboard</h1><p class="text-muted" id="page-subheading">Overview</p></div></div></div>
+            <section id="view-dashboard" class="animate-fade"><div class="stats-grid"><div class="card stat-card"><div class="stat-icon" style="background:rgba(14,165,233,0.1);color:var(--accent);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="text-muted">Patients</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1);color:var(--success);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="text-muted">Antibiotics</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="text-muted">Cultures</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="text-muted">Mortality</div></div></div><div class="card" style="padding:0;"><div style="padding:12px 16px;border-bottom:1px solid var(--border);"><h2>Recent</h2></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div></div></section>
+            <section id="view-records" class="hidden animate-fade"><div class="card" style="padding:12px;margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><input type="text" id="global-search" class="form-control" style="flex:1;min-width:150px;" placeholder="Search ID, Diagnosis..." onkeyup="app.filterRecords()"><select id="filter-outcome" class="form-control" style="width:auto;" onchange="app.filterRecords()"><option value="">All Outcomes</option><option value="Discharged well">Discharged</option><option value="Died">Deceased</option></select><button class="btn btn-ghost" onclick="app.exportCSV()"><i class="fas fa-download"></i> CSV</button><button class="btn btn-primary" onclick="app.showRecordModal()"><i class="fas fa-plus"></i> New Entry</button></div><div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Age/Sex</th><th>Diagnosis</th><th>Cancer</th><th>Outcome</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="records-body"></tbody></table></div></div></section>
+            <section id="view-analytics" class="hidden animate-fade"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;"><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">SEX</h3><canvas id="chart-sex"></canvas></div><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">AGE</h3><canvas id="chart-age"></canvas></div><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">CANCER</h3><canvas id="chart-cancer"></canvas></div><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">AWaRe</h3><canvas id="chart-aware"></canvas></div></div></section>
+            <section id="view-users" class="hidden animate-fade"><div class="card" style="padding:12px;margin-bottom:12px;display:flex;justify-content:flex-end;"><button class="btn btn-primary" onclick="app.showUserModal()"><i class="fas fa-user-plus"></i> Add User</button></div><div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead><tbody id="users-body"></tbody></table></div></div></section>
         </div>
     </div>
-
-    <!-- MODAL: Record Form -->
-    <div id="modal-record" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 id="modal-record-title">New Patient Record</h2>
-                <button class="close-modal" onclick="app.closeModals()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="record-form" onsubmit="app.saveRecord(event)">
-                    
-                    <div class="section-divider"><i class="fas fa-user"></i> Demographics</div>
-                    <div class="grid-3">
-                        <div class="form-group"><label>Study ID</label><input type="text" id="Study_ID" readonly class="form-control"></div>
-                        <div class="form-group"><label>Age</label><input type="number" id="Age" required class="form-control"></div>
-                        <div class="form-group"><label>Sex</label><select id="Sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
-                    </div>
-                    <div class="grid-3">
-                        <div class="form-group"><label>Admission</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div>
-                        <div class="form-group"><label>Discharge</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div>
-                        <div class="form-group"><label>LOS</label><input type="number" id="LOS" readonly class="form-control"></div>
-                    </div>
-
-                    <div class="section-divider"><i class="fas fa-dna"></i> Oncology</div>
-                    <div class="grid-3">
-                        <div class="form-group"><label>Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div>
-                        <div class="form-group"><label>Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div>
-                        <div class="form-group"><label>Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div>
-                    </div>
-
-                    <div class="section-divider"><i class="fas fa-pills"></i> Antibiotics <button type="button" class="btn btn-ghost btn-sm" onclick="app.addAbxSlot()" style="margin-left:auto; padding:4px 10px; font-size:11px;"><i class="fas fa-plus"></i> Add</button></div>
-                    <div id="abx-container"></div>
-                    <p id="abx-limit" class="hidden" style="color:var(--warning); font-size:11px; margin-top:4px;">Maximum 5 reached.</p>
-
-                    <div class="section-divider"><i class="fas fa-vial"></i> Cultures <button type="button" class="btn btn-ghost btn-sm" onclick="app.addCultSlot()" style="margin-left:auto; padding:4px 10px; font-size:11px;"><i class="fas fa-plus"></i> Add</button></div>
-                    <div id="cult-container"></div>
-                    <p id="cult-limit" class="hidden" style="color:var(--warning); font-size:11px; margin-top:4px;">Maximum 3 reached.</p>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="app.closeModals()">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="btn-submit-record" onclick="document.getElementById('record-form').requestSubmit()">Save Record</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: User Form -->
-    <div id="modal-user" class="modal-overlay">
-        <div class="modal" style="max-width:400px;">
-            <div class="modal-header"><h2>Add User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
-            <div class="modal-body">
-                <form id="user-form" onsubmit="app.saveUser(event)">
-                    <div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div>
-                    <div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div>
-                    <div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div>
-                </form>
-            </div>
-            <div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('user-form').requestSubmit()">Create</button></div>
-        </div>
-    </div>
+    <div id="modal-record" class="modal-overlay"><div class="modal"><div class="modal-header"><h2 id="modal-record-title" style="font-size:16px;">New Patient Record</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div><div class="modal-body"><form id="record-form" onsubmit="app.saveRecord(event)">
+        <div class="section-divider"><i class="fas fa-user"></i> A. Demographics</div><div class="grid-3"><div class="form-group"><label>A1. Study ID</label><input type="text" id="Study_ID" readonly class="form-control"></div><div class="form-group"><label>A2. Age</label><input type="number" id="Age" required class="form-control"></div><div class="form-group"><label>A3. Sex</label><select id="Sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div></div>
+        <div class="section-divider"><i class="fas fa-hospital"></i> B. Admission</div><div class="grid-3"><div class="form-group"><label>B1. Admission Date</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div><div class="form-group"><label>B2. Discharge Date</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div><div class="form-group"><label>B3. LOS</label><input type="number" id="LOS" readonly class="form-control"></div></div><div class="grid-3"><div class="form-group"><label>B4. Type</label><select id="Admission_Type" class="form-control"><option>Emergency</option><option>Elective</option></select></div><div class="form-group"><label>B5. Ward</label><select id="Ward" class="form-control" onchange="app.toggleOther(this,'Ward_Other')"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select><input type="text" id="Ward_Other" class="form-control hidden" style="margin-top:4px;" placeholder="Specify Ward"></div><div class="form-group"><label>B6. Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div></div><div class="grid-2"><div class="form-group"><label>B7. Readmission 30d</label><select id="Readmission_30d" class="form-control"><option>No</option><option>Yes</option><option>Not documented</option></select></div><div class="form-group"><label>E3. De-escalation</label><select id="De_escalation" class="form-control"><option>Yes</option><option>No</option><option>Not applicable</option><option>Not documented</option></select></div></div>
+        <div class="section-divider"><i class="fas fa-dna"></i> A. Oncology</div><div class="grid-3"><div class="form-group"><label>A4. Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div><div class="form-group"><label>A5. Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div><div class="form-group"><label>A6. Name</label><select id="Cancer_Name" class="form-control" onchange="app.toggleOther(this,'Cancer_Name_Other')"><option>AML</option><option>Breast</option><option>Lung</option><option>Prostate</option><option>Other</option></select><input type="text" id="Cancer_Name_Other" class="form-control hidden" style="margin-top:4px;" placeholder="Specify"></div></div><div class="grid-3"><div class="form-group"><label>A7. Stage</label><select id="Stage" class="form-control"><option>Stage I</option><option>Stage II</option><option>Stage III</option><option>Stage IV</option><option>Not documented</option></select></div><div class="form-group"><label>A8. Treatment</label><select id="Treatment" class="form-control"><option>Chemotherapy</option><option>Radiotherapy</option><option>Both</option><option>Surgery</option><option>Supported care only</option></select></div><div class="form-group"><label>A9. Comorbidities</label><select id="Comorbidities" class="form-control" onchange="app.toggleOther(this,'Comorbidities_Other')"><option>None</option><option>DM</option><option>CKD</option><option>Liver disease</option><option>Other</option></select><input type="text" id="Comorbidities_Other" class="form-control hidden" style="margin-top:4px;" placeholder="Specify"></div></div><div class="grid-2"><div class="form-group"><label>A10. Immunosuppression</label><select id="Immunosuppression" class="form-control"><option>Yes</option><option>No</option><option>Not documented</option></select></div></div>
+        <div class="section-divider"><i class="fas fa-pills"></i> C & E. Antibiotics <button type="button" class="btn btn-ghost" onclick="app.addAbxSlot()" style="margin-left:auto;padding:2px 8px;font-size:10px;"><i class="fas fa-plus"></i> Add</button></div><div id="abx-container"></div><p id="abx-limit" class="hidden" style="color:var(--warning);font-size:10px;margin-top:2px;">Max 5.</p>
+        <div class="section-divider"><i class="fas fa-vial"></i> D. Cultures <button type="button" class="btn btn-ghost" onclick="app.addCultSlot()" style="margin-left:auto;padding:2px 8px;font-size:10px;"><i class="fas fa-plus"></i> Add</button></div><div id="cult-container"></div><p id="cult-limit" class="hidden" style="color:var(--warning);font-size:10px;margin-top:2px;">Max 3.</p>
+    </form></div><div class="modal-footer"><button class="btn btn-ghost" onclick="app.closeModals()">Cancel</button><button type="submit" class="btn btn-primary" id="btn-submit-record" onclick="document.getElementById('record-form').requestSubmit()">Save</button></div></div></div>
+    <div id="modal-user" class="modal-overlay"><div class="modal" style="max-width:360px;"><div class="modal-header"><h2 style="font-size:14px;">Add User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div><div class="modal-body"><form id="user-form" onsubmit="app.saveUser(event)"><div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div><div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div><div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div></form></div><div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('user-form').requestSubmit()">Create</button></div></div></div>
 
     <script>
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwu-wJBBdrgJLE1vdjNQlrj9tgAXOd_1QafreJDCWjIiGUFKHdGNrPjzfbYTnBdYHih0w/exec'; 
-
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzQBuxERt1bJCUJAiYqNmcrcEbG0MDDPC7yLRJkJWluXcT5oMeo15G08Jo6jHjbCCYF/exec'; 
         class ResearchApp {
-            constructor() {
-                this.user = null; this.rawData = []; this.filteredData = [];
-                this.antibioticsList = []; this.charts = {}; this.formMode = 'new';
-                this.init();
+            constructor() { this.user=null;this.rawData=[];this.filteredData=[];this.antibioticsList=[];this.charts={};this.formMode='new';this.init(); }
+            init() { document.getElementById('login-form').addEventListener('submit',(e)=>this.login(e)); document.addEventListener('click',(e)=>{if(!e.target.closest('.search-select'))document.querySelectorAll('.search-select-dropdown').forEach(dd=>dd.classList.remove('show'));}); }
+            showToast(msg,type='success'){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast toast-${type}`;t.innerHTML=`<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;c.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),200);},3000);}
+            login(e){e.preventDefault();this.apiCall({action:'login',username:document.getElementById('username').value,password:document.getElementById('password').value},res=>{if(res.success){this.user=res.user;this.showApp();}else this.showToast(res.message||'Login failed','error');});}
+            logout(){location.reload();}
+            showApp(){document.getElementById('login-view').style.display='none';document.getElementById('app-view').style.display='flex';document.getElementById('user-name').textContent=this.user.username;document.getElementById('user-role-text').textContent=this.user.role;document.getElementById('user-avatar').textContent=this.user.username.charAt(0);if(this.user.role==='Admin'||this.user.role==='SuperAdmin'){document.getElementById('nav-analytics').classList.remove('hidden');document.getElementById('nav-users').classList.remove('hidden');}this.loadData();this.loadAntibiotics();this.navigate('dashboard');}
+            navigate(view){['dashboard','records','analytics','users'].forEach(v=>{document.getElementById('view-'+v).classList.add('hidden');document.getElementById('nav-'+v).classList.remove('active');});document.getElementById('view-'+view).classList.remove('hidden');document.getElementById('nav-'+view).classList.add('active');const h={'dashboard':['Dashboard','Clinical Overview'],'records':['Patient Records','Manage Data'],'analytics':['Data Analytics','Visual Statistics'],'users':['User Management','Access Control']};document.getElementById('page-heading').textContent=h[view][0];document.getElementById('page-subheading').textContent=h[view][1];if(view==='analytics')this.renderCharts();document.getElementById('sidebar').classList.remove('active');}
+            apiCall(p,cb){fetch(GAS_URL,{method:'POST',body:JSON.stringify(p)}).then(r=>r.json()).then(cb).catch(e=>this.showToast('Network Error','error'));}
+            loadData(){this.apiCall({action:'read'},res=>{this.rawData=res||[];this.filteredData=[...this.rawData];this.renderRecords();this.updateStats();this.renderRecent();});}
+            loadAntibiotics(){this.apiCall({action:'getAntibiotics'},res=>{this.antibioticsList=res||[];});}
+            loadUsers(){this.apiCall({action:'getUsers'},res=>{this.users=res||[];this.renderUsers();});}
+            toggleOther(sel,otherId){const el=document.getElementById(otherId);if(sel.value==='Other'){el.classList.remove('hidden');el.focus();}else{el.classList.add('hidden');el.value='';}}
+            openAbxSearch(inputEl,dropdownEl){document.querySelectorAll('.search-select-dropdown').forEach(dd=>dd.classList.remove('show'));dropdownEl.classList.add('show');this.filterAbxList(inputEl.value,dropdownEl);}
+            filterAbxList(term,dropdownEl){const filtered=this.antibioticsList.filter(a=>a.name.toLowerCase().includes(term.toLowerCase())||a.class.toLowerCase().includes(term.toLowerCase()));dropdownEl.innerHTML='';if(!filtered.length){dropdownEl.innerHTML='<div style="padding:6px 12px;font-size:11px;color:var(--text-dim);">No match</div>';return;}filtered.forEach(a=>{const item=document.createElement('div');item.className='search-select-item';item.innerHTML=`${a.name}<div class="meta"><span>${a.class}</span><span>${a.category}</span></div>`;item.addEventListener('click',()=>this.selectAbx(item,a.name,a.class,a.category));dropdownEl.appendChild(item);});}
+            selectAbx(el,name,cls,cat){const slot=el.closest('.slot-card');slot.querySelector('.abx-name-input').value=name;slot.querySelector('.abx-class-input').value=cls;slot.querySelector('.abx-cat-input').value=cat;el.closest('.search-select-dropdown').classList.remove('show');}
+            
+            addAbxSlot(data=null){
+                const current=document.querySelectorAll('.abx-slot').length;if(current>=5){document.getElementById('abx-limit').classList.remove('hidden');return;}const i=current+1;
+                const div=document.createElement('div');div.className='slot-card abx-slot';div.id=`abx_slot_${i}`;
+                div.innerHTML=`<button type="button" class="slot-remove" onclick="app.removeSlot(this,'abx')"><i class="fas fa-times"></i></button><div class="slot-title"><i class="fas fa-pills"></i> Episode #${i}</div>
+                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C1. Name</label><div class="search-select"><input type="text" class="abx-name-input" value="${data?data.name:''}" placeholder="Search WHO..." onfocus="app.openAbxSearch(this,this.nextElementSibling)" oninput="app.filterAbxList(this.value,this.nextElementSibling)"><div class="search-select-dropdown"></div></div></div><div class="form-group" style="margin:0;"><label>C2. Class</label><input type="text" class="form-control abx-class-input" readonly value="${data?data.cls:''}"></div><div class="form-group" style="margin:0;"><label>C9. AWaRe</label><input type="text" class="form-control abx-cat-input" readonly value="${data?data.cat:''}"></div></div>
+                    <div class="grid-4" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C3. Route</label><select class="form-control abx-route-input"><option ${data&&data.route==='IV'?'selected':''}>IV</option><option ${data&&data.route==='Oral'?'selected':''}>Oral</option><option ${data&&data.route==='IM'?'selected':''}>IM</option></select></div><div class="form-group" style="margin:0;"><label>C4. Dose</label><input type="text" class="form-control abx-dose-input" value="${data?data.dose:''}"></div><div class="form-group" style="margin:0;"><label>C5. Freq/day</label><input type="text" class="form-control abx-freq-input" value="${data?data.freq:''}"></div><div class="form-group" style="margin:0;"><label>C8. Duration</label><input type="number" class="form-control abx-dur-input" value="${data?data.dur:''}"></div></div>
+                    <div class="grid-4" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C6. Start</label><input type="date" class="form-control abx-start-input" value="${data?data.start:''}"></div><div class="form-group" style="margin:0;"><label>C7. Stop</label><input type="date" class="form-control abx-stop-input" value="${data?data.stop:''}"></div><div class="form-group" style="margin:0;"><label>C10. DDD</label><input type="number" step="0.01" class="form-control abx-ddd-input" value="${data?data.ddd:''}"></div><div class="form-group" style="margin:0;"><label>C11. Grams</label><input type="number" step="0.01" class="form-control abx-grams-input" value="${data?data.grams:''}"></div></div>
+                    <div class="grid-4" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C12. DDD Calc</label><input type="number" step="0.01" class="form-control abx-dddcalc-input" value="${data?data.dddcalc:''}"></div><div class="form-group" style="margin:0;"><label>C13. DOT</label><input type="number" class="form-control abx-dot-input" value="${data?data.dot:''}"></div><div class="form-group" style="margin:0;"><label>E1. Indication</label><select class="form-control abx-ind-input"><option ${data&&data.ind==='Febrile neutropenia'?'selected':''}>Febrile neutropenia</option><option ${data&&data.ind==='Confirmed infection'?'selected':''}>Confirmed infection</option><option ${data&&data.ind==='Empirical'?'selected':''}>Empirical</option><option ${data&&data.ind==='Surgical prophylaxis'?'selected':''}>Surgical prophylaxis</option></select></div><div class="form-group" style="margin:0;"><label>E2. Therapy</label><select class="form-control abx-therapy-input"><option ${data&&data.therapy==='Empirical'?'selected':''}>Empirical</option><option ${data&&data.therapy==='Targeted'?'selected':''}>Targeted</option><option ${data&&data.therapy==='Both'?'selected':''}>Both</option></select></div></div>
+                    <div class="grid-2" style="gap:6px;"><div class="form-group" style="margin:0;"><label>E4. Febrile Neutro?</label><select class="form-control abx-feb-input"><option ${data&&data.feb==='No'?'selected':''}>No</option><option ${data&&data.feb==='Yes'?'selected':''}>Yes</option></select></div><div class="form-group" style="margin:0;"><label>E5. Episodes</label><input type="number" class="form-control abx-episodes-input" value="${data?data.episodes:''}"></div></div>`;
+                document.getElementById('abx-container').appendChild(div);
+                if(current+1>=5)document.getElementById('abx-limit').classList.remove('hidden');
             }
-
-            init() {
-                document.getElementById('login-form').addEventListener('submit', (e) => this.login(e));
-                // Close custom dropdowns if clicked outside
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.search-select')) {
-                        document.querySelectorAll('.search-select-dropdown').forEach(dd => dd.classList.remove('show'));
-                    }
-                });
+            addCultSlot(data=null){
+                const current=document.querySelectorAll('.cult-slot').length;if(current>=3){document.getElementById('cult-limit').classList.remove('hidden');return;}const i=current+1;
+                const div=document.createElement('div');div.className='slot-card cult-slot';div.id=`cult_slot_${i}`;
+                div.innerHTML=`<button type="button" class="slot-remove" onclick="app.removeSlot(this,'cult')"><i class="fas fa-times"></i></button><div class="slot-title"><i class="fas fa-vial"></i> Culture #${i}</div>
+                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>D1. Sent?</label><select class="form-control cult-sent-input"><option ${data&&data.sent==='No'?'selected':''}>No</option><option ${data&&data.sent==='Yes'?'selected':''}>Yes</option></select></div><div class="form-group" style="margin:0;"><label>D2. Date</label><input type="date" class="form-control cult-date-input" value="${data?data.date:''}"></div><div class="form-group" style="margin:0;"><label>D3. Type</label><select class="form-control cult-type-input"><option ${data&&data.type==='Blood'?'selected':''}>Blood</option><option ${data&&data.type==='Urine'?'selected':''}>Urine</option><option ${data&&data.type==='Sputum'?'selected':''}>Sputum</option><option ${data&&data.type==='Wound'?'selected':''}>Wound</option></select></div></div>
+                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>D4. Result</label><select class="form-control cult-res-input"><option ${data&&data.res==='Positive'?'selected':''}>Positive</option><option ${data&&data.res==='Negative'?'selected':''}>Negative</option><option ${data&&data.res==='No Growth'?'selected':''}>No Growth</option></select></div><div class="form-group" style="margin:0;"><label>D5. Organism</label><input type="text" class="form-control cult-org-input" value="${data?data.org:''}"></div><div class="form-group" style="margin:0;"><label>D6. Gram</label><select class="form-control cult-gram-input"><option ${data&&data.gram==='Gram positive'?'selected':''}>Gram positive</option><option ${data&&data.gram==='Gram negative'?'selected':''}>Gram negative</option><option ${data&&data.gram==='N/A'?'selected':''}>N/A</option></select></div></div>
+                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>D7. AST?</label><select class="form-control cult-ast-input"><option ${data&&data.ast==='Yes'?'selected':''}>Yes</option><option ${data&&data.ast==='No'?'selected':''}>No</option></select></div><div class="form-group" style="margin:0;"><label>D8. Resistance</label><input type="text" class="form-control cult-resist-input" value="${data?data.resist:''}"></div><div class="form-group" style="margin:0;"><label>D9. MDR?</label><select class="form-control cult-mdr-input"><option ${data&&data.mdr==='No'?'selected':''}>No</option><option ${data&&data.mdr==='Yes'?'selected':''}>Yes</option></select></div></div>
+                    <div class="grid-2" style="gap:6px;"><div class="form-group" style="margin:0;"><label>D10. XDR?</label><select class="form-control cult-xdr-input"><option ${data&&data.xdr==='No'?'selected':''}>No</option><option ${data&&data.xdr==='Yes'?'selected':''}>Yes</option></select></div><div class="form-group" style="margin:0;"><label>D11. ESKAPE?</label><select class="form-control cult-eskape-input"><option ${data&&data.eskape==='No'?'selected':''}>No</option><option ${data&&data.eskape==='Yes'?'selected':''}>Yes</option></select></div></div>`;
+                document.getElementById('cult-container').appendChild(div);
+                if(current+1>=3)document.getElementById('cult-limit').classList.remove('hidden');
             }
-
-            /* ─── Toast System ─── */
-            showToast(msg, type = 'success') {
-                const c = document.getElementById('toast-container');
-                const t = document.createElement('div');
-                t.className = `toast toast-${type}`;
-                t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;
-                c.appendChild(t);
-                setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(20px)'; setTimeout(() => t.remove(), 200); }, 3000);
-            }
-
-            /* ─── Auth & Nav ─── */
-            login(e) {
-                e.preventDefault();
-                this.apiCall({ action: 'login', username: document.getElementById('username').value, password: document.getElementById('password').value }, (res) => {
-                    if(res.success) { this.user = res.user; this.showApp(); } 
-                    else { this.showToast(res.message || 'Login failed', 'error'); }
-                });
-            }
-            logout() { location.reload(); }
-            showApp() {
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('app-view').style.display = 'flex';
-                document.getElementById('user-name').textContent = this.user.username;
-                document.getElementById('user-role-text').textContent = this.user.role;
-                document.getElementById('user-avatar').textContent = this.user.username.charAt(0);
-                if(this.user.role === 'Admin' || this.user.role === 'SuperAdmin') {
-                    document.getElementById('nav-analytics').classList.remove('hidden');
-                    document.getElementById('nav-users').classList.remove('hidden');
+            removeSlot(btn,type){btn.closest('.slot-card').remove();this.reindexSlots(type);document.getElementById(`${type}-limit`).classList.add('hidden');}
+            reindexSlots(type){document.querySelectorAll(`.${type}-slot`).forEach((slot,i)=>{slot.id=`${type}_slot_${i+1}`;slot.querySelector('.slot-title').innerHTML=`<i class="fas fa-${type==='abx'?'pills':'vial'}"></i> ${type==='abx'?'Episode':'Culture'} #${i+1}`;});}
+            
+            showRecordModal(mode='new',rec=null){
+                this.formMode=mode;document.getElementById('record-form').reset();document.getElementById('abx-container').innerHTML='';document.getElementById('cult-container').innerHTML='';document.getElementById('abx-limit').classList.add('hidden');document.getElementById('cult-limit').classList.add('hidden');document.querySelectorAll('.other-field').forEach(el=>el.classList.add('hidden'));
+                const isEditable=mode!=='view';document.querySelectorAll('#record-form input,#record-form select').forEach(el=>{if(el.id!=='Study_ID')el.disabled=!isEditable;});document.getElementById('btn-submit-record').classList.toggle('hidden',!isEditable);
+                if(mode==='new'){document.getElementById('Study_ID').value='PID-'+Math.floor(100000+Math.random()*900000);document.getElementById('modal-record-title').textContent='New Patient Record';document.getElementById('btn-submit-record').textContent='Save Record';}
+                else{
+                    document.getElementById('Study_ID').value=rec.Study_ID;document.getElementById('Age').value=rec.Age;document.getElementById('Sex').value=rec.Sex;document.getElementById('Admission_Date').value=rec.Admission_Date;document.getElementById('Discharge_Date').value=rec.Discharge_Date;document.getElementById('LOS').value=rec.LOS;
+                    this.setVal('Admission_Type',rec.Admission_Type);this.setVal('Ward',rec.Ward);this.checkOther('Ward',rec.Ward,'Ward_Other',rec.Ward_Other);this.setVal('Outcome',rec.Outcome);this.setVal('Readmission_30d',rec.Readmission_30d);this.setVal('De_escalation',rec.De_escalation);
+                    document.getElementById('Diagnosis').value=rec.Diagnosis||'';this.setVal('Cancer_Type',rec.Cancer_Type);this.checkOther('Cancer_Name',rec.Cancer_Name,'Cancer_Name_Other',rec.Cancer_Name_Other);this.setVal('Stage',rec.Stage);this.setVal('Treatment',rec.Treatment);this.checkOther('Comorbidities',rec.Comorbidities,'Comorbidities_Other',rec.Comorbidities_Other);this.setVal('Immunosuppression',rec.Immunosuppression);
+                    for(let i=1;i<=5;i++)if(rec[`Abx_${i}_Name`])this.addAbxSlot({name:rec[`Abx_${i}_Name`],cls:rec[`Abx_${i}_Class`],cat:rec[`Abx_${i}_Category`],route:rec[`Abx_${i}_Route`],dose:rec[`Abx_${i}_Dose`],freq:rec[`Abx_${i}_Freq`],start:rec[`Abx_${i}_Start`],stop:rec[`Abx_${i}_Stop`],dur:rec[`Abx_${i}_Duration`],ddd:rec[`Abx_${i}_DDD`],grams:rec[`Abx_${i}_Grams`],dddcalc:rec[`Abx_${i}_DDD_Calc`],dot:rec[`Abx_${i}_DOT`],ind:rec[`Abx_${i}_Indication`],therapy:rec[`Abx_${i}_Therapy`],feb:rec[`Abx_${i}_Febrile_Neutro`],episodes:rec[`Abx_${i}_Febrile_Episodes`]});
+                    for(let i=1;i<=3;i++)if(rec[`Cult_${i}_Type`])this.addCultSlot({sent:rec[`Cult_${i}_Sent`],date:rec[`Cult_${i}_Date`],type:rec[`Cult_${i}_Type`],res:rec[`Cult_${i}_Result`],org:rec[`Cult_${i}_Organism`],gram:rec[`Cult_${i}_Gram`],ast:rec[`Cult_${i}_AST`],resist:rec[`Cult_${i}_Resist`],mdr:rec[`Cult_${i}_MDR`],xdr:rec[`Cult_${i}_XDR`],eskape:rec[`Cult_${i}_ESKAPE`]});
+                    document.getElementById('modal-record-title').textContent=mode==='edit'?'Edit Record':'View Record';document.getElementById('btn-submit-record').textContent='Update Record';
                 }
-                this.loadData(); this.loadAntibiotics(); this.navigate('dashboard');
+                document.getElementById('modal-record').style.display='flex';
             }
-            navigate(view) {
-                ['dashboard', 'records', 'analytics', 'users'].forEach(v => {
-                    document.getElementById('view-' + v).classList.add('hidden');
-                    document.getElementById('nav-' + v).classList.remove('active');
-                });
-                document.getElementById('view-' + view).classList.remove('hidden');
-                document.getElementById('nav-' + view).classList.add('active');
-                const h = { 'dashboard': ['Dashboard', 'Clinical Overview'], 'records': ['Patient Records', 'Manage Data'], 'analytics': ['Data Analytics', 'Visual Statistics'], 'users': ['User Management', 'Access Control'] };
-                document.getElementById('page-heading').textContent = h[view][0];
-                document.getElementById('page-subheading').textContent = h[view][1];
-                if(view === 'analytics') this.renderCharts();
-                document.getElementById('sidebar').classList.remove('active');
-            }
+            setVal(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
+            checkOther(selectId,dbVal,otherId,otherDbVal){const sel=document.getElementById(selectId);if(!sel)return;const opt=Array.from(sel.options).find(o=>o.value===dbVal);if(opt){sel.value=dbVal;}else if(dbVal){sel.value='Other';document.getElementById(otherId).classList.remove('hidden');document.getElementById(otherId).value=otherDbVal||dbVal;}}
 
-            /* ─── Data Calls ─── */
-            apiCall(p, cb) {
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify(p) }).then(r => r.json()).then(cb).catch(e => this.showToast('Network Error', 'error'));
+            saveRecord(e){
+                e.preventDefault();const payload={action:'save',user:this.user.username,data:{}};
+                ['Study_ID','Age','Sex','Admission_Date','Discharge_Date','LOS','Admission_Type','Ward','Ward_Other','Diagnosis','Cancer_Type','Cancer_Name','Cancer_Name_Other','Stage','Treatment','Comorbidities','Comorbidities_Other','Immunosuppression','Outcome','Readmission_30d','De_escalation'].forEach(f=>payload.data[f]=document.getElementById(f).value);
+                const abxSlots=document.querySelectorAll('.abx-slot');
+                for(let i=0;i<5;i++){const s=abxSlots[i];payload.data[`Abx_${i+1}_Name`]=s?s.querySelector('.abx-name-input').value:'';payload.data[`Abx_${i+1}_Class`]=s?s.querySelector('.abx-class-input').value:'';payload.data[`Abx_${i+1}_Category`]=s?s.querySelector('.abx-cat-input').value:'';payload.data[`Abx_${i+1}_Route`]=s?s.querySelector('.abx-route-input').value:'';payload.data[`Abx_${i+1}_Dose`]=s?s.querySelector('.abx-dose-input').value:'';payload.data[`Abx_${i+1}_Freq`]=s?s.querySelector('.abx-freq-input').value:'';payload.data[`Abx_${i+1}_Start`]=s?s.querySelector('.abx-start-input').value:'';payload.data[`Abx_${i+1}_Stop`]=s?s.querySelector('.abx-stop-input').value:'';payload.data[`Abx_${i+1}_Duration`]=s?s.querySelector('.abx-dur-input').value:'';payload.data[`Abx_${i+1}_DDD`]=s?s.querySelector('.abx-ddd-input').value:'';payload.data[`Abx_${i+1}_Grams`]=s?s.querySelector('.abx-grams-input').value:'';payload.data[`Abx_${i+1}_DDD_Calc`]=s?s.querySelector('.abx-dddcalc-input').value:'';payload.data[`Abx_${i+1}_DOT`]=s?s.querySelector('.abx-dot-input').value:'';payload.data[`Abx_${i+1}_Indication`]=s?s.querySelector('.abx-ind-input').value:'';payload.data[`Abx_${i+1}_Therapy`]=s?s.querySelector('.abx-therapy-input').value:'';payload.data[`Abx_${i+1}_Febrile_Neutro`]=s?s.querySelector('.abx-feb-input').value:'';payload.data[`Abx_${i+1}_Febrile_Episodes`]=s?s.querySelector('.abx-episodes-input').value:'';}
+                const cultSlots=document.querySelectorAll('.cult-slot');
+                for(let i=0;i<3;i++){const s=cultSlots[i];payload.data[`Cult_${i+1}_Sent`]=s?s.querySelector('.cult-sent-input').value:'';payload.data[`Cult_${i+1}_Date`]=s?s.querySelector('.cult-date-input').value:'';payload.data[`Cult_${i+1}_Type`]=s?s.querySelector('.cult-type-input').value:'';payload.data[`Cult_${i+1}_Result`]=s?s.querySelector('.cult-res-input').value:'';payload.data[`Cult_${i+1}_Organism`]=s?s.querySelector('.cult-org-input').value:'';payload.data[`Cult_${i+1}_Gram`]=s?s.querySelector('.cult-gram-input').value:'';payload.data[`Cult_${i+1}_AST`]=s?s.querySelector('.cult-ast-input').value:'';payload.data[`Cult_${i+1}_Resist`]=s?s.querySelector('.cult-resist-input').value:'';payload.data[`Cult_${i+1}_MDR`]=s?s.querySelector('.cult-mdr-input').value:'';payload.data[`Cult_${i+1}_XDR`]=s?s.querySelector('.cult-xdr-input').value:'';payload.data[`Cult_${i+1}_ESKAPE`]=s?s.querySelector('.cult-eskape-input').value:'';}
+                this.apiCall(payload,res=>{if(res.success){this.closeModals();this.loadData();this.showToast(res.message);}else this.showToast(res.message||'Error','error');});
             }
-            loadData() {
-                this.apiCall({ action: 'read' }, (res) => { this.rawData = res || []; this.filteredData = [...this.rawData]; this.renderRecords(); this.updateStats(); this.renderRecent(); });
-            }
-            loadAntibiotics() {
-                this.apiCall({ action: 'getAntibiotics' }, (res) => { this.antibioticsList = res || []; });
-            }
-            loadUsers() {
-                this.apiCall({ action: 'getUsers' }, (res) => { this.users = res || []; this.renderUsers(); });
-            }
-
-            /* ─── Custom Searchable Abx Logic ─── */
-            openAbxSearch(inputEl, dropdownEl) {
-                document.querySelectorAll('.search-select-dropdown').forEach(dd => dd.classList.remove('show')); // close others
-                dropdownEl.classList.add('show');
-                this.filterAbxList(inputEl.value, dropdownEl);
-            }
-            filterAbxList(term, dropdownEl) {
-                const filtered = this.antibioticsList.filter(a => a.name.toLowerCase().includes(term.toLowerCase()) || a.class.toLowerCase().includes(term.toLowerCase()));
-                let html = '';
-                if(filtered.length === 0) { html = '<div style="padding:8px 14px; font-size:13px; color:var(--text-dim);">No match found</div>'; }
-                else {
-                    filtered.forEach(a => {
-                        html += `<div class="search-select-item" onclick="app.selectAbx(this, '${a.name}', '${a.class}', '${a.category}')">
-                            ${a.name}
-                            <div class="meta"><span>${a.class}</span><span>${a.category}</span></div>
-                        </div>`;
-                    });
-                }
-                dropdownEl.innerHTML = html;
-            }
-            selectAbx(el, name, cls, cat) {
-                const slot = el.closest('.slot-card');
-                slot.querySelector('.abx-name-input').value = name;
-                slot.querySelector('.abx-class-input').value = cls;
-                slot.querySelector('.abx-cat-input').value = cat;
-                el.closest('.search-select-dropdown').classList.remove('show');
-            }
-
-            /* ─── Dynamic Form Slots ─── */
-            addAbxSlot(data = null) {
-                const current = document.querySelectorAll('.abx-slot').length;
-                if(current >= 5) { document.getElementById('abx-limit').classList.remove('hidden'); return; }
-                const i = current + 1;
-                const html = `<div class="slot-card abx-slot" id="abx_slot_${i}">
-                    <button type="button" class="slot-remove" onclick="app.removeSlot(this, 'abx')"><i class="fas fa-times"></i></button>
-                    <div class="slot-title"><i class="fas fa-pills"></i> Episode #${i}</div>
-                    <div class="grid-3" style="gap:8px;">
-                        <div class="form-group" style="margin:0;">
-                            <label>Name</label>
-                            <div class="search-select">
-                                <input type="text" class="abx-name-input" value="${data ? data.name : ''}" placeholder="Search WHO list..." onfocus="app.openAbxSearch(this, this.nextElementSibling)" oninput="app.filterAbxList(this.value, this.nextElementSibling)">
-                                <div class="search-select-dropdown"></div>
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin:0;"><label>Class</label><input type="text" class="form-control abx-class-input" readonly value="${data ? data.cls : ''}"></div>
-                        <div class="form-group" style="margin:0;"><label>AWaRe</label><input type="text" class="form-control abx-cat-input" readonly value="${data ? data.cat : ''}"></div>
-                    </div>
-                </div>`;
-                document.getElementById('abx-container').insertAdjacentHTML('beforeend', html);
-                if(current + 1 >= 5) document.getElementById('abx-limit').classList.remove('hidden');
-            }
-
-            addCultSlot(data = null) {
-                const current = document.querySelectorAll('.cult-slot').length;
-                if(current >= 3) { document.getElementById('cult-limit').classList.remove('hidden'); return; }
-                const i = current + 1;
-                const html = `<div class="slot-card cult-slot" id="cult_slot_${i}">
-                    <button type="button" class="slot-remove" onclick="app.removeSlot(this, 'cult')"><i class="fas fa-times"></i></button>
-                    <div class="slot-title"><i class="fas fa-vial"></i> Culture #${i}</div>
-                    <div class="grid-3" style="gap:8px;">
-                        <div class="form-group" style="margin:0;"><label>Type</label><select class="form-control cult-type-input"><option ${data && data.type==='Blood'?'selected':''}>Blood</option><option ${data && data.type==='Urine'?'selected':''}>Urine</option><option ${data && data.type==='Sputum'?'selected':''}>Sputum</option></select></div>
-                        <div class="form-group" style="margin:0;"><label>Organism</label><input type="text" class="form-control cult-org-input" value="${data ? data.org : ''}"></div>
-                        <div class="form-group" style="margin:0;"><label>XDR?</label><select class="form-control cult-xdr-input"><option ${data && data.xdr==='No'?'selected':''}>No</option><option ${data && data.xdr==='Yes'?'selected':''}>Yes</option></select></div>
-                    </div>
-                </div>`;
-                document.getElementById('cult-container').insertAdjacentHTML('beforeend', html);
-                if(current + 1 >= 3) document.getElementById('cult-limit').classList.remove('hidden');
-            }
-
-            removeSlot(btn, type) {
-                btn.closest('.slot-card').remove();
-                this.reindexSlots(type);
-                document.getElementById(`${type}-limit`).classList.add('hidden');
-            }
-
-            reindexSlots(type) {
-                const slots = document.querySelectorAll(`.${type}-slot`);
-                slots.forEach((slot, index) => {
-                    const i = index + 1;
-                    slot.id = `${type}_slot_${i}`;
-                    slot.querySelector('.slot-title').innerHTML = `<i class="fas fa-${type==='abx'?'pills':'vial'}"></i> ${type==='abx'?'Episode':'Culture'} #${i}`;
-                });
-            }
-
-            showRecordModal(mode = 'new', rec = null) {
-                this.formMode = mode;
-                document.getElementById('record-form').reset();
-                document.getElementById('abx-container').innerHTML = '';
-                document.getElementById('cult-container').innerHTML = '';
-                document.getElementById('abx-limit').classList.add('hidden');
-                document.getElementById('cult-limit').classList.add('hidden');
-
-                const isEditable = mode !== 'view';
-                document.querySelectorAll('#record-form input, #record-form select').forEach(el => { if(el.id !== 'Study_ID') el.disabled = !isEditable; });
-                document.getElementById('btn-submit-record').classList.toggle('hidden', !isEditable);
-
-                if(mode === 'new') {
-                    document.getElementById('Study_ID').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
-                    document.getElementById('modal-record-title').textContent = 'New Patient Record';
-                    document.getElementById('btn-submit-record').textContent = 'Save Record';
-                } else {
-                    document.getElementById('Study_ID').value = rec.Study_ID;
-                    document.getElementById('Age').value = rec.Age;
-                    document.getElementById('Sex').value = rec.Sex;
-                    document.getElementById('Admission_Date').value = rec.Admission_Date;
-                    document.getElementById('Discharge_Date').value = rec.Discharge_Date;
-                    document.getElementById('LOS').value = rec.LOS;
-                    document.getElementById('Diagnosis').value = rec.Diagnosis || '';
-                    document.getElementById('Cancer_Type').value = rec.Cancer_Type || '';
-                    document.getElementById('Outcome').value = rec.Outcome || '';
-
-                    for(let i=1; i<=5; i++) { if(rec[`Abx_${i}_Name`]) this.addAbxSlot({name: rec[`Abx_${i}_Name`], cls: rec[`Abx_${i}_Class`], cat: rec[`Abx_${i}_Category`]}); }
-                    for(let i=1; i<=3; i++) { if(rec[`Cult_${i}_Type`]) this.addCultSlot({type: rec[`Cult_${i}_Type`], org: rec[`Cult_${i}_Organism`], xdr: rec[`Cult_${i}_XDR`]}); }
-
-                    document.getElementById('modal-record-title').textContent = mode === 'edit' ? 'Edit Record' : 'View Record';
-                    document.getElementById('btn-submit-record').textContent = 'Update Record';
-                }
-                document.getElementById('modal-record').style.display = 'flex';
-            }
-
-            saveRecord(e) {
-                e.preventDefault();
-                const payload = { action: 'save', user: this.user.username, data: {} };
-                ['Study_ID', 'Age', 'Sex', 'Admission_Date', 'Discharge_Date', 'LOS', 'Diagnosis', 'Cancer_Type', 'Outcome'].forEach(f => payload.data[f] = document.getElementById(f).value);
-                
-                const abxSlots = document.querySelectorAll('.abx-slot');
-                for(let i=0; i<5; i++) {
-                    const slot = abxSlots[i];
-                    payload.data[`Abx_${i+1}_Name`] = slot ? slot.querySelector('.abx-name-input').value : '';
-                    payload.data[`Abx_${i+1}_Class`] = slot ? slot.querySelector('.abx-class-input').value : '';
-                    payload.data[`Abx_${i+1}_Category`] = slot ? slot.querySelector('.abx-cat-input').value : '';
-                }
-
-                const cultSlots = document.querySelectorAll('.cult-slot');
-                for(let i=0; i<3; i++) {
-                    const slot = cultSlots[i];
-                    payload.data[`Cult_${i+1}_Type`] = slot ? slot.querySelector('.cult-type-input').value : '';
-                    payload.data[`Cult_${i+1}_Organism`] = slot ? slot.querySelector('.cult-org-input').value : '';
-                    payload.data[`Cult_${i+1}_XDR`] = slot ? slot.querySelector('.cult-xdr-input').value : '';
-                }
-
-                this.apiCall(payload, (res) => {
-                    if(res.success) { this.closeModals(); this.loadData(); this.showToast(res.message); }
-                    else { this.showToast(res.message || 'Error', 'error'); }
-                });
-            }
-
-            calcLOS() {
-                const s = document.getElementById('Admission_Date').value;
-                const e = document.getElementById('Discharge_Date').value;
-                if(s && e) document.getElementById('LOS').value = Math.round((new Date(e) - new Date(s)) / 86400000);
-            }
-
-            /* ─── Rendering ─── */
-            renderRecords() {
-                const tbody = document.getElementById('records-body');
-                tbody.innerHTML = '';
-                const isAdmin = this.user.role === 'Admin' || this.user.role === 'SuperAdmin';
-                this.filteredData.forEach(r => {
-                    const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
-                    let actions = `<button class="btn-icon" onclick="app.showRecordModal('view', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-eye"></i></button>`;
-                    if(isAdmin) actions += `<button class="btn-icon" onclick="app.showRecordModal('edit', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-pencil-alt"></i></button>`;
-                    tbody.innerHTML += `<tr>
-                        <td style="font-weight:600; color:var(--accent);">${r.Study_ID || '-'}</td>
-                        <td>${r.Age} / ${r.Sex}</td>
-                        <td>${r.Diagnosis || '-'}</td>
-                        <td>${r.Cancer_Name || '-'}</td>
-                        <td><span class="badge ${bc}">${r.Outcome}</span></td>
-                        <td style="text-align:right;">${actions}</td>
-                    </tr>`;
-                });
-            }
-            renderRecent() {
-                const tbody = document.getElementById('dash-recent-body');
-                tbody.innerHTML = '';
-                [...this.rawData].reverse().slice(0, 5).forEach(r => {
-                    const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
-                    tbody.innerHTML += `<tr><td style="color:var(--accent); font-weight:600;">${r.Study_ID}</td><td>${r.Diagnosis || '-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td></tr>`;
-                });
-            }
-            updateStats() {
-                const total = this.rawData.length;
-                document.getElementById('stat-total').textContent = total;
-                let abxCount=0, cultCount=0;
-                this.rawData.forEach(r => { for(let i=1;i<=5;i++) if(r[`Abx_${i}_Name`]) abxCount++; for(let i=1;i<=3;i++) if(r[`Cult_${i}_Type`]) cultCount++; });
-                document.getElementById('stat-abx').textContent = abxCount;
-                document.getElementById('stat-cult').textContent = cultCount;
-                document.getElementById('stat-mort').textContent = total ? Math.round((this.rawData.filter(r=>r.Outcome==='Died').length/total)*100)+'%' : '0%';
-            }
-
-            /* ─── Charts ─── */
-            renderCharts() {
-                if(!this.rawData.length) return;
-                Object.values(this.charts).forEach(c => c.destroy()); this.charts = {};
-                const m = '#64748b', g = 'rgba(255,255,255,0.05)';
-                const sexData = this.rawData.reduce((a,r)=>{const s=r.Sex||'Unknown';a[s]=(a[s]||0)+1;return a;},{});
-                this.charts.sex = new Chart(document.getElementById('chart-sex'), {type:'doughnut',data:{labels:Object.keys(sexData),datasets:[{data:Object.values(sexData),backgroundColor:['#0ea5e9','#f59e0b','#10b981']}]},options:{plugins:{legend:{labels:{color:m}}}}});
-                const ageBins={'0-18':0,'19-35':0,'36-50':0,'51-65':0,'65+':0};
-                this.rawData.forEach(r=>{const a=parseInt(r.Age);if(!a)return;if(a<=18)ageBins['0-18']++;else if(a<=35)ageBins['19-35']++;else if(a<=50)ageBins['36-50']++;else if(a<=65)ageBins['51-65']++;else ageBins['65+']++;});
-                this.charts.age = new Chart(document.getElementById('chart-age'), {type:'bar',data:{labels:Object.keys(ageBins),datasets:[{data:Object.values(ageBins),backgroundColor:'#0ea5e9',borderRadius:4}]},options:{scales:{x:{ticks:{color:m},grid:{display:false}},y:{ticks:{color:m},grid:{color:g}}},plugins:{legend:{display:false}}}});
-                const cancerData = this.rawData.reduce((a,r)=>{const t=r.Cancer_Type||'Unknown';a[t]=(a[t]||0)+1;return a;},{});
-                this.charts.cancer = new Chart(document.getElementById('chart-cancer'), {type:'doughnut',data:{labels:Object.keys(cancerData),datasets:[{data:Object.values(cancerData),backgroundColor:['#10b981','#ef4444','#0ea5e9']}]},options:{plugins:{legend:{labels:{color:m}}}}});
-                let awareData={'Access':0,'Watch':0,'Reserve':0};
-                this.rawData.forEach(r=>{for(let i=1;i<=5;i++){const c=r[`Abx_${i}_Category`];if(c&&awareData[c]!==undefined)awareData[c]++;}});
-                this.charts.aware = new Chart(document.getElementById('chart-aware'), {type:'doughnut',data:{labels:Object.keys(awareData),datasets:[{data:Object.values(awareData),backgroundColor:['#10b981','#f59e0b','#ef4444']}]},options:{plugins:{legend:{labels:{color:m}}}}});
-            }
-
-            /* ─── Utils ─── */
-            filterRecords() {
-                const term = document.getElementById('global-search').value.toLowerCase();
-                const outcome = document.getElementById('filter-outcome').value;
-                this.filteredData = this.rawData.filter(r => {
-                    const matchText = !term || (r.Study_ID&&r.Study_ID.toLowerCase().includes(term)) || (r.Diagnosis&&r.Diagnosis.toLowerCase().includes(term));
-                    const matchOutcome = !outcome || r.Outcome === outcome;
-                    return matchText && matchOutcome;
-                });
-                this.renderRecords();
-            }
-            exportCSV() {
-                if(!this.rawData.length) return this.showToast("No data", 'error');
-                const h = Object.keys(this.rawData[0]); let csv = h.join(",") + "\n";
-                this.rawData.forEach(r => csv += h.map(k => `"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(",") + "\n");
-                const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'Data.csv'; a.click();
-            }
-            showUserModal() { document.getElementById('user-form').reset(); document.getElementById('modal-user').style.display = 'flex'; }
-            saveUser(e) {
-                e.preventDefault();
-                this.apiCall({action:'addUser', username:document.getElementById('u-name').value, password:document.getElementById('u-pass').value, role:document.getElementById('u-role').value}, res => {
-                    if(res.success) { this.closeModals(); this.loadUsers(); this.showToast('User created'); } else this.showToast(res.message, 'error');
-                });
-            }
-            renderUsers() {
-                const tbody = document.getElementById('users-body'); tbody.innerHTML = '';
-                this.users.forEach(u => tbody.innerHTML += `<tr><td style="font-weight:600;">${u.username}</td><td style="color:var(--accent)">${u.role}</td><td><span class="badge badge-success">Active</span></td></tr>`);
-            }
-            closeModals() { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); }
+            calcLOS(){const s=document.getElementById('Admission_Date').value,e=document.getElementById('Discharge_Date').value;if(s&&e)document.getElementById('LOS').value=Math.round((new Date(e)-new Date(s))/86400000);}
+            renderRecords(){const tbody=document.getElementById('records-body');tbody.innerHTML='';const isAdmin=this.user.role==='Admin'||this.user.role==='SuperAdmin';this.filteredData.forEach(r=>{const bc=r.Outcome==='Died'?'badge-danger':'badge-success';let actions=`<button class="btn-icon" onclick="app.showRecordModal('view',app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-eye"></i></button>`;if(isAdmin)actions+=`<button class="btn-icon" onclick="app.showRecordModal('edit',app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-pencil-alt"></i></button>`;tbody.innerHTML+=`<tr><td style="font-weight:600;color:var(--accent);">${r.Study_ID||'-'}</td><td>${r.Age}/${r.Sex}</td><td>${r.Diagnosis||'-'}</td><td>${r.Cancer_Name||'-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td><td style="text-align:right;">${actions}</td></tr>`;});}
+            renderRecent(){const tbody=document.getElementById('dash-recent-body');tbody.innerHTML='';[...this.rawData].reverse().slice(0,5).forEach(r=>{const bc=r.Outcome==='Died'?'badge-danger':'badge-success';tbody.innerHTML+=`<tr><td style="color:var(--accent);font-weight:600;">${r.Study_ID}</td><td>${r.Diagnosis||'-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td></tr>`;});}
+            updateStats(){const t=this.rawData.length;document.getElementById('stat-total').textContent=t;let a=0,c=0;this.rawData.forEach(r=>{for(let i=1;i<=5;i++)if(r[`Abx_${i}_Name`])a++;for(let i=1;i<=3;i++)if(r[`Cult_${i}_Type`])c++;});document.getElementById('stat-abx').textContent=a;document.getElementById('stat-cult').textContent=c;document.getElementById('stat-mort').textContent=t?Math.round((this.rawData.filter(r=>r.Outcome==='Died').length/t)*100)+'%':'0%';}
+            renderCharts(){if(!this.rawData.length)return;Object.values(this.charts).forEach(c=>c.destroy());this.charts={};const m='#64748b',g='rgba(255,255,255,0.05)';const sd=this.rawData.reduce((a,r)=>{const s=r.Sex||'Unknown';a[s]=(a[s]||0)+1;return a;},{});this.charts.sex=new Chart(document.getElementById('chart-sex'),{type:'doughnut',data:{labels:Object.keys(sd),datasets:[{data:Object.values(sd),backgroundColor:['#0ea5e9','#f59e0b','#10b981']}]},options:{plugins:{legend:{labels:{color:m}}}}});const ab={'0-18':0,'19-35':0,'36-50':0,'51-65':0,'65+':0};this.rawData.forEach(r=>{const a=parseInt(r.Age);if(!a)return;if(a<=18)ab['0-18']++;else if(a<=35)ab['19-35']++;else if(a<=50)ab['36-50']++;else if(a<=65)ab['51-65']++;else ab['65+']++;});this.charts.age=new Chart(document.getElementById('chart-age'),{type:'bar',data:{labels:Object.keys(ab),datasets:[{data:Object.values(ab),backgroundColor:'#0ea5e9',borderRadius:4}]},options:{scales:{x:{ticks:{color:m},grid:{display:false}},y:{ticks:{color:m},grid:{color:g}}},plugins:{legend:{display:false}}}});const cd=this.rawData.reduce((a,r)=>{const t=r.Cancer_Type||'Unknown';a[t]=(a[t]||0)+1;return a;},{});this.charts.cancer=new Chart(document.getElementById('chart-cancer'),{type:'doughnut',data:{labels:Object.keys(cd),datasets:[{data:Object.values(cd),backgroundColor:['#10b981','#ef4444','#0ea5e9']}]},options:{plugins:{legend:{labels:{color:m}}}}});let wd={'Access':0,'Watch':0,'Reserve':0};this.rawData.forEach(r=>{for(let i=1;i<=5;i++){const c=r[`Abx_${i}_Category`];if(c&&wd[c]!==undefined)wd[c]++;}});this.charts.aware=new Chart(document.getElementById('chart-aware'),{type:'doughnut',data:{labels:Object.keys(wd),datasets:[{data:Object.values(wd),backgroundColor:['#10b981','#f59e0b','#ef4444']}]},options:{plugins:{legend:{labels:{color:m}}}}});}
+            filterRecords(){const term=document.getElementById('global-search').value.toLowerCase();const outcome=document.getElementById('filter-outcome').value;this.filteredData=this.rawData.filter(r=>{const mt=!term||(r.Study_ID&&r.Study_ID.toLowerCase().includes(term))||(r.Diagnosis&&r.Diagnosis.toLowerCase().includes(term));const mo=!outcome||r.Outcome===outcome;return mt&&mo;});this.renderRecords();}
+            exportCSV(){if(!this.rawData.length)return this.showToast("No data",'error');const h=Object.keys(this.rawData[0]);let csv=h.join(",")+"\n";this.rawData.forEach(r=>csv+=h.map(k=>`"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(",")+"\n");const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Data.csv';a.click();}
+            showUserModal(){document.getElementById('user-form').reset();document.getElementById('modal-user').style.display='flex';}
+            saveUser(e){e.preventDefault();this.apiCall({action:'addUser',username:document.getElementById('u-name').value,password:document.getElementById('u-pass').value,role:document.getElementById('u-role').value},res=>{if(res.success){this.closeModals();this.loadUsers();this.showToast('User created');}else this.showToast(res.message,'error');});}
+            renderUsers(){const tbody=document.getElementById('users-body');tbody.innerHTML='';this.users.forEach(u=>tbody.innerHTML+=`<tr><td style="font-weight:600;">${u.username}</td><td style="color:var(--accent)">${u.role}</td><td><span class="badge badge-success">Active</span></td></tr>`);}
+            closeModals(){document.querySelectorAll('.modal-overlay').forEach(el=>el.style.display='none');}
         }
         const app = new ResearchApp();
     </script>
