@@ -12,8 +12,10 @@
         * { box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif; }
         body { background:var(--bg-body);color:var(--text-main);min-height:100vh;display:flex;overflow-x:hidden; }
         @keyframes fadeIn { from{opacity:0}to{opacity:1} } @keyframes slideUp { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)} } @keyframes scaleIn { from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)} } @keyframes slideInRight { from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1} }
+        
         .sidebar { width:240px;background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100%;z-index:50; }
-        .main-content { flex:1;margin-left:240px;padding:24px;min-height:100vh; }
+        .main-content { flex:1;margin-left:240px;padding:24px;min-height:100vh;background:radial-gradient(circle at top right,rgba(14,165,233,0.03),transparent 40%); }
+        
         .sidebar-header { padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px; }
         .brand-icon { width:32px;height:32px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:12px; }
         .brand-text { font-size:16px;font-weight:700;letter-spacing:-0.5px; }
@@ -23,42 +25,57 @@
         .nav-item i { width:18px;text-align:center;font-size:13px; }
         .user-profile { padding:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px; }
         .avatar { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px; }
+        
         h1 { font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:2px; } .text-muted { color:var(--text-muted);font-size:12px; }
         .card { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:var(--transition); }
+        
         .stats-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px; }
         .stat-card { padding:16px;display:flex;flex-direction:column;gap:6px; } .stat-card:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2); }
         .stat-icon { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px; }
         .stat-value { font-size:24px;font-weight:700;letter-spacing:-1px; }
+        
         .table-wrap { overflow-x:auto; } table { width:100%;border-collapse:collapse; }
         th { padding:10px 12px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);border-bottom:1px solid var(--border); }
         td { padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);color:var(--text-muted); } tr:hover td { color:var(--text-main);background:rgba(255,255,255,0.01); }
         .badge { padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600; } .badge-success { background:rgba(16,185,129,0.1);color:var(--success); } .badge-danger { background:rgba(239,68,68,0.1);color:var(--danger); }
+
         .form-group { margin-bottom:12px; } .form-group label { display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px; }
         .form-control { width:100%;background:var(--bg-body);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text-main);font-size:13px;transition:var(--transition); }
         .form-control:focus { outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow); } .form-control:read-only { opacity:0.5;cursor:not-allowed; }
+        
         .search-select { position:relative; } .search-select input { width:100%;background:var(--bg-body);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text-main);font-size:13px;transition:var(--transition); }
         .search-select input:focus { outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);border-bottom-left-radius:0;border-bottom-right-radius:0;z-index:10;position:relative; }
         .search-select-dropdown { position:absolute;top:100%;left:0;right:0;background:var(--bg-surface);border:1px solid var(--accent);border-top:none;max-height:160px;overflow-y:auto;z-index:50;border-bottom-left-radius:6px;border-bottom-right-radius:6px;display:none;box-shadow:0 10px 25px rgba(0,0,0,0.5); }
         .search-select-dropdown.show { display:block; } .search-select-item { padding:6px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-bottom:1px solid var(--border); }
         .search-select-item:last-child { border-bottom:none; } .search-select-item:hover { background:var(--bg-hover);color:var(--text-main); }
         .search-select-item .meta { font-size:10px;display:flex;gap:4px; } .search-select-item .meta span { background:rgba(255,255,255,0.05);padding:1px 4px;border-radius:3px; }
+
         .btn { padding:6px 12px;border-radius:6px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;font-size:12px;transition:var(--transition); }
         .btn-primary { background:var(--accent);color:white; } .btn-primary:hover { background:var(--accent-hover); } .btn-ghost { background:transparent;color:var(--text-muted);border:1px solid var(--border); }
         .btn-icon { width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:4px;background:transparent;color:var(--text-dim);border:1px solid transparent; } .btn-icon:hover { color:var(--accent);background:var(--accent-glow);border-color:rgba(14,165,233,0.2); }
+        
+        /* Spinning animation for sync */
+        .spin-animation i { animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto; }
         .modal { background:var(--bg-surface);border:1px solid var(--border);width:100%;max-width:800px;border-radius:12px;box-shadow:0 25px 50px rgba(0,0,0,0.5);animation:scaleIn 0.2s ease-out;display:flex;flex-direction:column;margin:40px 0; }
         .modal-header { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg-surface);z-index:10;border-radius:12px 12px 0 0; }
         .modal-body { padding:20px;overflow-y:auto; } .modal-footer { padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--bg-surface);border-radius:0 0 12px 12px; }
         .close-modal { background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer; } .close-modal:hover { color:var(--danger); }
+
         .slot-card { background:var(--bg-body);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:8px;position:relative;animation:slideUp 0.3s ease-out; }
         .slot-remove { position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:10px; } .slot-remove:hover { color:var(--danger); }
         .slot-title { font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px; }
         .grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:8px; } .grid-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; } .grid-4 { display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px; }
+        
         .section-divider { display:flex;align-items:center;gap:8px;margin:16px 0 12px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600; }
         .section-divider::after { content:'';flex:1;height:1px;background:var(--border); } .section-divider i { color:var(--accent);font-size:12px; }
+
         #toast-container { position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:4px; }
         .toast { padding:10px 16px;border-radius:6px;font-size:12px;font-weight:500;color:white;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:slideInRight 0.3s ease-out;display:flex;align-items:center;gap:8px; }
         .toast-success { background:var(--success); } .toast-error { background:var(--danger); }
+
         .hidden { display:none !important; }
         @media (max-width:768px) { .sidebar{transform:translateX(-100%);position:fixed;z-index:100;} .sidebar.active{transform:translateX(0);} .main-content{margin-left:0;} .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
         .menu-toggle { display:none;background:none;border:none;color:var(--text-main);font-size:16px;cursor:pointer; } @media (max-width:768px) { .menu-toggle{display:block;} }
@@ -72,8 +89,17 @@
             <form id="login-form"><div class="form-group"><label>Username</label><input type="text" id="username" class="form-control" required></div><div class="form-group"><label>Password</label><input type="password" id="password" class="form-control" required></div><button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;">Sign In</button></form>
         </div>
     </div>
+
     <div id="app-view" style="display:none;width:100%;">
-        <nav class="sidebar" id="sidebar"><div class="sidebar-header"><div class="brand-icon">O</div><span class="brand-text">OncoCollect</span></div><div class="nav-links"><a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a><a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Records</a><a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Analytics</a><a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> Users</a></div><div class="user-profile"><div class="avatar" id="user-avatar">A</div><div style="flex:1;"><div style="font-weight:600;font-size:12px;" id="user-name">Admin</div><div style="font-size:10px;color:var(--text-dim);" id="user-role-text">Role</div></div><button class="btn-icon" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i></button></div></nav>
+        <nav class="sidebar" id="sidebar"><div class="sidebar-header"><div class="brand-icon">O</div><span class="brand-text">OncoCollect</span></div><div class="nav-links"><a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a><a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Records</a><a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Analytics</a><a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> Users</a></div>
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">A</div>
+                <div style="flex:1;"><div style="font-weight:600;font-size:12px;" id="user-name">Admin</div><div style="font-size:10px;color:var(--text-dim);" id="user-role-text">Role</div></div>
+                <!-- Sync & Logout Buttons in Sidebar -->
+                <button class="btn-icon" id="btn-sync" onclick="app.syncData()" title="Sync Data from Sheet"><i class="fas fa-sync-alt"></i></button>
+                <button class="btn-icon" onclick="app.logout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
         <div class="main-content">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><div style="display:flex;align-items:center;gap:10px;"><button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button><div><h1 id="page-heading">Dashboard</h1><p class="text-muted" id="page-subheading">Overview</p></div></div></div>
             <section id="view-dashboard" class="animate-fade"><div class="stats-grid"><div class="card stat-card"><div class="stat-icon" style="background:rgba(14,165,233,0.1);color:var(--accent);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="text-muted">Patients</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1);color:var(--success);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="text-muted">Antibiotics</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="text-muted">Cultures</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="text-muted">Mortality</div></div></div><div class="card" style="padding:0;"><div style="padding:12px 16px;border-bottom:1px solid var(--border);"><h2>Recent</h2></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div></div></section>
@@ -93,16 +119,43 @@
 
     <script>
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbzQBuxERt1bJCUJAiYqNmcrcEbG0MDDPC7yLRJkJWluXcT5oMeo15G08Jo6jHjbCCYF/exec'; 
+
         class ResearchApp {
             constructor() { this.user=null;this.rawData=[];this.filteredData=[];this.antibioticsList=[];this.charts={};this.formMode='new';this.init(); }
             init() { document.getElementById('login-form').addEventListener('submit',(e)=>this.login(e)); document.addEventListener('click',(e)=>{if(!e.target.closest('.search-select'))document.querySelectorAll('.search-select-dropdown').forEach(dd=>dd.classList.remove('show'));}); }
             showToast(msg,type='success'){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast toast-${type}`;t.innerHTML=`<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;c.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),200);},3000);}
+            
             login(e){e.preventDefault();this.apiCall({action:'login',username:document.getElementById('username').value,password:document.getElementById('password').value},res=>{if(res.success){this.user=res.user;this.showApp();}else this.showToast(res.message||'Login failed','error');});}
             logout(){location.reload();}
             showApp(){document.getElementById('login-view').style.display='none';document.getElementById('app-view').style.display='flex';document.getElementById('user-name').textContent=this.user.username;document.getElementById('user-role-text').textContent=this.user.role;document.getElementById('user-avatar').textContent=this.user.username.charAt(0);if(this.user.role==='Admin'||this.user.role==='SuperAdmin'){document.getElementById('nav-analytics').classList.remove('hidden');document.getElementById('nav-users').classList.remove('hidden');}this.loadData();this.loadAntibiotics();this.navigate('dashboard');}
+            
             navigate(view){['dashboard','records','analytics','users'].forEach(v=>{document.getElementById('view-'+v).classList.add('hidden');document.getElementById('nav-'+v).classList.remove('active');});document.getElementById('view-'+view).classList.remove('hidden');document.getElementById('nav-'+view).classList.add('active');const h={'dashboard':['Dashboard','Clinical Overview'],'records':['Patient Records','Manage Data'],'analytics':['Data Analytics','Visual Statistics'],'users':['User Management','Access Control']};document.getElementById('page-heading').textContent=h[view][0];document.getElementById('page-subheading').textContent=h[view][1];if(view==='analytics')this.renderCharts();document.getElementById('sidebar').classList.remove('active');}
+
             apiCall(p,cb){fetch(GAS_URL,{method:'POST',body:JSON.stringify(p)}).then(r=>r.json()).then(cb).catch(e=>this.showToast('Network Error','error'));}
-            loadData(){this.apiCall({action:'read'},res=>{this.rawData=res||[];this.filteredData=[...this.rawData];this.renderRecords();this.updateStats();this.renderRecent();});}
+            
+            // Updated loadData to accept a callback for sync button
+            loadData(callback=null) { 
+                this.apiCall({action:'read'},res=>{
+                    this.rawData=res||[];this.filteredData=[...this.rawData];this.renderRecords();this.updateStats();this.renderRecent();
+                    // Auto-refresh charts if on analytics view
+                    if(!document.getElementById('view-analytics').classList.contains('hidden')) this.renderCharts();
+                    if(callback) callback();
+                }); 
+            }
+            
+            // Sync Button Logic
+            syncData() {
+                const btn = document.getElementById('btn-sync');
+                btn.classList.add('spin-animation');
+                btn.disabled = true;
+                
+                this.loadData(() => {
+                    btn.classList.remove('spin-animation');
+                    btn.disabled = false;
+                    this.showToast('Data synced with sheet');
+                });
+            }
+
             loadAntibiotics(){this.apiCall({action:'getAntibiotics'},res=>{this.antibioticsList=res||[];});}
             loadUsers(){this.apiCall({action:'getUsers'},res=>{this.users=res||[];this.renderUsers();});}
             toggleOther(sel,otherId){const el=document.getElementById(otherId);if(sel.value==='Other'){el.classList.remove('hidden');el.focus();}else{el.classList.add('hidden');el.value='';}}
