@@ -7,181 +7,112 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* =========================================
-           ULTIMATE THEME VARIABLES
-           ========================================= */
         :root {
-            --bg-dark: #0F172A;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --bg-sidebar: #0B1120;
-            --primary: #6366F1; /* Indigo */
-            --primary-hover: #4F46E5;
-            --accent: #10B981; /* Emerald */
-            --accent-glow: rgba(16, 185, 129, 0.3);
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border: rgba(255, 255, 255, 0.1);
-            --glass: rgba(255, 255, 255, 0.05);
-            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --radius: 16px;
-            --font-head: 'Outfit', sans-serif;
-            --font-body: 'Inter', sans-serif;
+            --bg-dark: #0F172A; --bg-card: rgba(30, 41, 59, 0.7); --bg-sidebar: #0B1120;
+            --primary: #6366F1; --primary-hover: #4F46E5; --accent: #10B981; --accent-glow: rgba(16, 185, 129, 0.3);
+            --danger: #EF4444; --warning: #F59E0B; --info: #3B82F6;
+            --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05); --radius: 16px;
+            --font-head: 'Outfit', sans-serif; --font-body: 'Inter', sans-serif;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-body); background: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
         
-        /* =========================================
-           ANIMATIONS
-           ========================================= */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        
         .animate-fade { animation: fadeIn 0.4s ease-out; }
-        .animate-slide-up { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
-        /* Background Orbs */
-        .bg-orbs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
-        .bg-orbs .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: float 10s ease-in-out infinite; }
-        .bg-orbs .orb:nth-child(1) { width: 500px; height: 500px; background: var(--accent); top: -10%; left: -10%; animation-delay: 0s; }
-        .bg-orbs .orb:nth-child(2) { width: 400px; height: 400px; background: var(--primary); bottom: -10%; right: -10%; animation-delay: 2s; }
-        .bg-orbs .orb:nth-child(3) { width: 300px; height: 300px; background: var(--warning); top: 40%; left: 60%; animation-delay: 4s; }
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle at top right, #1e1b4b, transparent); }
+        .login-card { width: 100%; max-width: 440px; padding: 40px; background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; }
+        .login-logo { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin: 0 auto 24px; }
 
-        /* =========================================
-           COMPONENTS
-           ========================================= */
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-family: var(--font-body); position: relative; overflow: hidden; }
-        .btn:active { transform: scale(0.97); }
-        .btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%); transition: width 0.6s ease, height 0.6s ease; }
-        .btn:active::after { width: 300px; height: 300px; }
-        
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4); }
-        
-        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--text-main); background: rgba(99, 102, 241, 0.05); }
-        
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: #fff; }
-        
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; transition: all 0.3s; }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--primary); opacity: 0; transition: opacity 0.3s; }
-        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--primary); }
-        .card:hover::before { opacity: 1; }
-
-        /* Forms */
-        .form-group { margin-bottom: 16px; position: relative; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-control { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; font-size: 14px; color: var(--text-main); font-family: var(--font-body); transition: all 0.3s ease; }
-        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); background: rgba(0,0,0,0.4); }
-        .form-control[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: not-allowed; border-color: transparent; }
-
-        /* "Other" Input Animation */
-        .other-input-wrapper { margin-top: 8px; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Sidebar */
-        .sidebar { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: transform 0.3s ease; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: transform 0.3s; }
         .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
         .brand-text { font-family: var(--font-head); font-size: 20px; font-weight: 700; background: linear-gradient(to right, #fff, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
         .nav-links { flex: 1; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
         .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text-main); border-color: var(--border); }
-        .nav-item i { width: 20px; text-align: center; }
         .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); border-color: rgba(99, 102, 241, 0.2); }
-        
         .user-profile { padding: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; }
-        
-        /* Main Content */
-        .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 1600px; background: var(--bg-dark); min-height: 100vh; }
-        
-        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-        .page-title h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; color: var(--text-main); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 1600px; min-height: 100vh; }
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;}
+        .page-title h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; }
         .page-title p { color: var(--text-muted); margin-top: 4px; }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; transition: transform 0.3s; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: transform 0.3s; }
         .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary); opacity: 0; transition: opacity 0.3s; }
-        .stat-card:hover::before { opacity: 1; }
         .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
         .stat-value { font-size: 32px; font-weight: 700; font-family: var(--font-head); margin-bottom: 4px; }
         .stat-label { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
-        /* Toolbar */
-        .toolbar { display: flex; gap: 16px; background: var(--bg-card); padding: 16px; border-radius: var(--radius); margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
-        .search-box { flex: 1; position: relative; min-width: 250px; }
-        .search-box input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 12px 16px 12px 40px; border-radius: 8px; color: white; transition: all 0.3s; }
-        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+        .chart-card h3 { font-family: var(--font-head); font-size: 16px; margin-bottom: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .toolbar { display: flex; gap: 16px; background: var(--bg-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+        .search-box { flex: 1; position: relative; min-width: 200px; }
+        .search-box input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px 12px 40px; border-radius: 8px; color: white; }
+        .search-box input:focus { border-color: var(--primary); outline: none; }
         .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         
-        /* Tables */
-        .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-soft); }
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.2s; font-family: var(--font-body); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .btn-ghost { background: var(--glass); color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+        .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: rgba(0,0,0,0.2); padding: 16px 24px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
-        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        tr:last-child td { border-bottom: none; }
+        th { background: rgba(0,0,0,0.2); padding: 16px 24px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; white-space: nowrap; }
         tr:hover td { background: rgba(255,255,255,0.02); }
 
-        /* Badges */
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--accent); } 
-        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); } 
-        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; font-size: 14px; }
+        .form-control:focus { border-color: var(--primary); outline: none; }
+        select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 16px) center; padding-right: 40px; }
 
-        /* Dynamic Blocks */
-        .dynamic-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 16px; position: relative; }
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
-        .card-title { font-size: 14px; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 8px; }
-        .remove-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .remove-btn:hover { background: var(--danger); color: white; }
-
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
-        .modal { background: #1E293B; border: 1px solid var(--border); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); animation: slideInUp 0.3s; position: relative; }
-        .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
-        .modal-close:hover { color: white; }
-
-        /* Section Headers */
         .section-header { font-size: 18px; font-weight: 700; margin: 40px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; color: var(--text-main); }
         .section-header i { color: var(--primary); }
 
-        /* Mobile Responsive */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-info { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .modal { background: #1E293B; border: 1px solid var(--border); width: 100%; max-width: 900px; border-radius: 20px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: slideInUp 0.3s; }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+
+        .hidden { display: none !important; }
+
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 100; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; }
-            .menu-toggle { display: block; font-size: 24px; cursor: pointer; color: var(--text-main); }
+            .charts-grid { grid-template-columns: 1fr; }
         }
-        .menu-toggle { display: none; }
-
-        /* Toast */
-        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 999; display: flex; flex-direction: column; gap: 12px; }
-        .toast { padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 12px; min-width: 350px; animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-left: 4px solid var(--accent); backdrop-filter: blur(10px); background: rgba(30, 41, 59, 0.95); }
-        .toast.error { border-left-color: var(--danger); }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); background: none; border: none; }
+        @media (max-width: 768px) { .menu-toggle { display: block; } }
     </style>
 </head>
 <body>
 
-    <div class="bg-orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
-    <div id="toast-container"></div>
-
-    <!-- Login View -->
     <div id="login-view">
-        <div class="login-card" style="width: 100%; max-width: 440px; padding: 40px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: slideInUp 0.6s ease-out;">
-            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin: 0 auto 24px; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);"><i class="fas fa-dna"></i></div>
-            <h2 style="text-align: center; margin-bottom: 8px; font-family: var(--font-head); font-size: 24px;">Research Portal</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Secure Oncology Database Access</p>
+        <div class="login-card animate-fade">
+            <div class="login-logo"><i class="fas fa-dna"></i></div>
+            <h2 style="text-align: center; margin-bottom: 8px; font-family: var(--font-head);">Research Portal</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px;">Secure Oncology Database Access</p>
             <form id="login-form">
                 <div class="form-group"><input type="text" id="username" class="form-control" placeholder="Username" required></div>
                 <div class="form-group"><input type="password" id="password" class="form-control" placeholder="Password" required></div>
@@ -190,35 +121,31 @@
         </div>
     </div>
 
-    <!-- App Layout -->
     <div id="app-view" style="display: none; width: 100%;">
-        <!-- Sidebar -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <i class="fas fa-dna" style="color: var(--primary); font-size: 24px;"></i>
                 <span class="brand-text">OncoCollect</span>
             </div>
-            
             <div class="nav-links">
                 <a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
                 <a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Patient Records</a>
+                <a onclick="app.navigate('analytics')" class="nav-item" id="nav-analytics"><i class="fas fa-chart-pie"></i> Data Analytics</a>
                 <a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> User Management</a>
             </div>
-
             <div class="user-profile">
                 <div class="avatar" id="user-avatar">A</div>
                 <div style="flex: 1;">
                     <div style="font-weight: 600; font-size: 14px;" id="user-name">Admin</div>
-                    <div style="font-size: 11px; color: var(--text-muted);" id="user-role">SuperAdmin</div>
+                    <div style="font-size: 11px; color: var(--text-muted);" id="user-role-text">Role</div>
                 </div>
                 <button class="btn btn-icon" onclick="app.logout()" style="background:transparent; color: var(--text-muted);"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </nav>
 
-        <!-- Main Content -->
         <div class="main-content">
             <div class="header-area">
-                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
                 <div class="page-title">
                     <h1 id="page-heading">Dashboard</h1>
                     <p id="page-subheading">Overview of research metrics</p>
@@ -226,214 +153,142 @@
                 <div id="header-actions"></div>
             </div>
 
-            <!-- VIEW: DASHBOARD -->
             <section id="view-dashboard" class="animate-fade">
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-users"></i></div>
-                        <div class="stat-content">
-                            <h4>Total Patients</h4>
-                            <div class="value" id="stat-total">0</div>
-                            <div class="trend" style="color: var(--primary);"><i class="fas fa-arrow-up"></i> Database Size</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);"><i class="fas fa-pills"></i></div>
-                        <div class="stat-content">
-                            <h4>Antibiotics Used</h4>
-                            <div class="value" id="stat-abx">0</div>
-                            <div class="trend" style="color: var(--accent);"><i class="fas fa-capsules"></i> Treatments</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-vial"></i></div>
-                        <div class="stat-content">
-                            <h4>Microbiology</h4>
-                            <div class="value" id="stat-cult">0</div>
-                            <div class="trend" style="color: var(--warning);"><i class="fas fa-bacteria"></i> Samples</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-heartbeat"></i></div>
-                        <div class="stat-content">
-                            <h4>Mortality Rate</h4>
-                            <div class="value" id="stat-mortality">0%</div>
-                            <div class="trend" style="color: var(--danger);"><i class="fas fa-heartbeat"></i> Clinical Outcome</div>
-                        </div>
-                    </div>
+                    <div class="stat-card"><div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total Patients</div></div>
+                    <div class="stat-card"><div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="stat-label">Antibiotic Courses</div></div>
+                    <div class="stat-card"><div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="stat-label">Culture Samples</div></div>
+                    <div class="stat-card"><div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="stat-label">Mortality Rate</div></div>
+                </div>
+                <div style="background: var(--bg-card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 24px;">
+                    <h3 style="font-family: var(--font-head); margin-bottom: 16px;">Recent Admissions</h3>
+                    <div class="table-container" style="border:none;"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Admission</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div>
                 </div>
             </section>
 
-            <!-- VIEW: RECORDS -->
             <section id="view-records" class="hidden animate-fade">
                 <div class="toolbar">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="global-search" placeholder="Search by ID, Diagnosis..." onkeyup="app.filterRecords()">
-                    </div>
-                    <select id="filter-outcome" class="form-control" style="width: auto;" onchange="app.filterRecords()">
-                        <option value="">All Outcomes</option>
-                        <option value="Discharged well">Discharged</option>
-                        <option value="Died">Deceased</option>
-                    </select>
-                    <button class="btn btn-primary" onclick="app.showAddModal()"><i class="fas fa-plus"></i> New Entry</button>
+                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="global-search" placeholder="Search ID, Diagnosis, Cancer..." onkeyup="app.filterRecords()"></div>
+                    <select id="filter-outcome" class="form-control" style="width: auto;" onchange="app.filterRecords()"><option value="">All Outcomes</option><option value="Discharged well">Discharged</option><option value="Died">Deceased</option></select>
+                    <button class="btn btn-ghost" onclick="app.exportCSV()"><i class="fas fa-download"></i> CSV</button>
+                    <button class="btn btn-primary" onclick="app.showRecordModal()"><i class="fas fa-plus"></i> New Entry</button>
                 </div>
+                <div class="table-container"><table><thead><tr><th>Study ID</th><th>Age/Sex</th><th>Diagnosis</th><th>Cancer</th><th>Admission</th><th>Outcome</th><th style="text-align: right;">Actions</th></tr></thead><tbody id="records-body"></tbody></table></div>
+            </section>
 
-                <div class="table-container">
-                    <table id="records-table">
-                        <thead>
-                            <tr>
-                                <th>Study ID</th>
-                                <th>Age/Sex</th>
-                                <th>Diagnosis</th>
-                                <th>Cancer</th>
-                                <th>Admission</th>
-                                <th>Outcome</th>
-                                <th style="text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="records-body"></tbody>
-                    </table>
+            <section id="view-analytics" class="hidden animate-fade">
+                <div class="charts-grid">
+                    <div class="chart-card"><h3><i class="fas fa-venus-mars" style="margin-right:8px;"></i>Sex Distribution</h3><canvas id="chart-sex"></canvas></div>
+                    <div class="chart-card"><h3><i class="fas fa-hourglass-half" style="margin-right:8px;"></i>Age Demographics</h3><canvas id="chart-age"></canvas></div>
+                    <div class="chart-card"><h3><i class="fas fa-ribbon" style="margin-right:8px;"></i>Cancer Types</h3><canvas id="chart-cancer"></canvas></div>
+                    <div class="chart-card"><h3><i class="fas fa-procedures" style="margin-right:8px;"></i>Outcomes</h3><canvas id="chart-outcome"></canvas></div>
+                    <div class="chart-card"><h3><i class="fas fa-shield-virus" style="margin-right:8px;"></i>AWaRe Classification</h3><canvas id="chart-aware"></canvas></div>
+                    <div class="chart-card"><h3><i class="fas fa-biohazard" style="margin-right:8px;"></i>Resistance (XDR)</h3><canvas id="chart-resist"></canvas></div>
                 </div>
             </section>
 
-            <!-- VIEW: USER MANAGEMENT (SuperAdmin) -->
             <section id="view-users" class="hidden animate-fade">
                 <div class="toolbar">
-                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="user-search" placeholder="Search users..." onkeyup="app.filterUsers()"></div>
-                    <button class="btn btn-primary" onclick="app.showAddUserModal()"><i class="fas fa-user-plus"></i> Add User</button>
+                    <div style="flex:1;"></div>
+                    <button class="btn btn-primary" onclick="app.showUserModal()"><i class="fas fa-user-plus"></i> Add User</button>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>Username</th><th>Role</th><th>Status</th><th style="text-align: right;">Actions</th></tr></thead>
-                        <tbody id="users-body"></tbody>
-                    </table>
-                </div>
+                <div class="table-container"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead><tbody id="users-body"></tbody></table></div>
             </section>
         </div>
     </div>
 
-    <!-- MODALS -->
-    <!-- 1. Add Record Modal -->
+    <!-- MODAL: RECORD FORM -->
     <div id="modal-record" class="modal-overlay">
-        <div class="modal" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-            <div class="modal-header">
-                <h2>New Patient Record</h2>
-                <button class="modal-close" onclick="app.closeModals()">&times;</button>
-            </div>
+        <div class="modal">
+            <div class="modal-header"><h2>New Patient Record</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
             <form id="record-form" onsubmit="app.saveRecord(event)">
-                <!-- Demographics -->
                 <div class="section-header" style="margin-top:0;"><i class="fas fa-user"></i> Demographics & Admission</div>
-                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                    <div class="form-group"><label>Study ID</label><input type="text" id="form-id" readonly class="form-control"></div>
-                    <div class="form-group"><label>Age</label><input type="number" id="form-age" required class="form-control"></div>
-                    <div class="form-group"><label>Sex</label><select id="form-sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
-                    <div class="form-group"><label>Admission Date</label><input type="date" id="form-admit" class="form-control" onchange="app.calcLOS()"></div>
-                    <div class="form-group"><label>Discharge Date</label><input type="date" id="form-discharge" class="form-control" onchange="app.calcLOS()"></div>
-                    <div class="form-group"><label>LOS (Days)</label><input type="number" id="form-los" readonly class="form-control"></div>
-                    <div class="form-group"><label>Ward</label><select id="form-ward" class="form-control other-trigger"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select>
-                    <div class="other-input-wrapper hidden"><input type="text" name="Ward_Other" class="form-control" placeholder="Specify Ward"></div></div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Study ID</label><input type="text" id="Study_ID" readonly class="form-control"></div>
+                    <div class="form-group"><label>Age</label><input type="number" id="Age" required class="form-control"></div>
+                    <div class="form-group"><label>Sex</label><select id="Sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    <div class="form-group"><label>Admission Date</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div>
+                    <div class="form-group"><label>Discharge Date</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div>
+                    <div class="form-group"><label>LOS (Days)</label><input type="number" id="LOS" readonly class="form-control"></div>
+                    <div class="form-group"><label>Ward</label><select id="Ward" class="form-control"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select></div>
                 </div>
 
-                <!-- Oncology -->
-                <div class="section-header"><i class="fas fa-ribbon"></i> Oncology Details</div>
-                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                    <div class="form-group"><label>Diagnosis</label><input type="text" id="form-diagnosis" class="form-control"></div>
-                    <div class="form-group"><label>Cancer Type</label><select id="form-type" class="form-control"><option>Solid Tumor</option><option>Hematological</option></select></div>
-                    <div class="form-group"><label>Specific Name</label><input type="text" id="form-name" class="form-control"></div>
-                    <div class="form-group"><label>Stage</label><select id="form-stage" class="form-control"><option>I</option><option>II</option><option>III</option><option>IV</option></select></div>
-                    <div class="form-group"><label>Treatment</label><select id="form-treatment" class="form-control other-trigger"><option>Chemo</option><option>Radio</option><option>Surgery</option><option>Palliative</option><option>Other</option></select>
-                    <div class="other-input-wrapper hidden"><input type="text" name="Treatment_Other" class="form-control" placeholder="Specify Treatment"></div></div>
-                    <div class="form-group"><label>Outcome</label><select id="form-outcome" class="form-control"><option>Discharged Well</option><option>Died</option><option>Referred</option></select></div>
+                <div class="section-header"><i class="fas fa-dna"></i> Oncology Details</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div>
+                    <div class="form-group"><label>Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div>
+                    <div class="form-group"><label>Specific Name</label><input type="text" id="Cancer_Name" class="form-control"></div>
+                    <div class="form-group"><label>Stage</label><select id="Stage" class="form-control"><option>Stage I</option><option>Stage II</option><option>Stage III</option><option>Stage IV</option><option>Not documented</option></select></div>
+                    <div class="form-group"><label>Treatment</label><select id="Treatment" class="form-control"><option>Chemotherapy</option><option>Radiotherapy</option><option>Both</option><option>Surgery</option><option>Supported care only</option></select></div>
+                    <div class="form-group"><label>Immunosuppression</label><select id="Immunosuppression" class="form-control"><option>Yes</option><option>No</option><option>Not documented</option></select></div>
+                    <div class="form-group"><label>Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div>
                 </div>
 
-                <!-- Antibiotics (Searchable WHO 2023) -->
-                <div class="section-header"><i class="fas fa-pills"></i> Antibiotic Episodes</div>
-                <div id="antibiotic-container"></div>
+                <div class="section-header"><i class="fas fa-pills"></i> Antibiotics (Max 5)</div>
+                <div id="abx-slots"></div>
 
-                <!-- Cultures (XDR Details) -->
-                <div class="section-header"><i class="fas fa-flask"></i> Microbiology Cultures</div>
-                <div id="culture-container"></div>
-
-                <!-- Outcomes -->
-                <div class="section-header"><i class="fas fa-clipboard-check"></i> Outcomes</div>
-                <div class="stats-grid">
-                    <div class="form-group"><label>Readmission (30d)</label><select id="form-readmit" class="form-control"><option>No</option><option>Yes</option><option>Unknown</option></select></div>
-                    <div class="form-group"><label>De-escalation</label><select id="form-dees" class="form-control"><option>Yes</option><option>No</option><option>N/A</option></select></div>
-                </div>
+                <div class="section-header"><i class="fas fa-vial"></i> Cultures (Max 3)</div>
+                <div id="cult-slots"></div>
 
                 <div style="text-align: right; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
-                    <button type="button" class="btn" onclick="app.closeModals()" style="color: var(--text-muted); margin-right: 12px;">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="padding: 14px 40px;">Save Record</button>
+                    <button type="button" class="btn btn-ghost" onclick="app.closeModals()" style="margin-right: 12px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Record</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 2. Add User Modal -->
+    <!-- MODAL: USER FORM -->
     <div id="modal-user" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Manage User</h2>
-                <button class="modal-close" onclick="app.closeModals()">&times;</button>
-            </div>
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header"><h2>Add System User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
             <form id="user-form" onsubmit="app.saveUser(event)">
                 <div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div>
                 <div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div>
-                <div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option><option>SuperAdmin</option></select></div>
+                <div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 16px;">Create User</button>
             </form>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURATION
-        // ==========================================
-        // UPDATE THIS WITH YOUR NEW DEPLOYMENT URL
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwQc2dXEAKzT_n32JPtuLff__6Xo3rffL5WQObCnFSas9opkiWbzRu2SnEbqjRehCN8Bw/exec'; 
+        // =========================================================================
+        // CONFIG - PASTE YOUR DEPLOYED WEB APP URL HERE
+        // =========================================================================
+        const GAS_URL = 'PASTE_YOUR_WEB_APP_URL_HERE'; 
 
         class ResearchApp {
             constructor() {
                 this.user = null;
-                this.data = [];
-                this.abxCount = 0;
-                this.cultCount = 0;
-                this.whoDatabase = [];
-                this.whoMap = {};
-                this.users = [];
+                this.rawData = [];
+                this.filteredData = [];
+                this.antibioticsList = [];
+                this.charts = {};
                 this.init();
             }
 
             init() {
                 document.getElementById('login-form').addEventListener('submit', (e) => this.login(e));
-                document.getElementById('record-form').addEventListener('submit', (e) => this.saveRecord(e));
-                document.getElementById('user-form').addEventListener('submit', (e) => this.saveUser(e));
-                this.setupOtherFields();
+                this.generateFormSlots();
             }
 
-            /* ==========================================
-               AUTH
-               ========================================== */
+            /* ─── AUTH ─── */
             login(e) {
                 e.preventDefault();
                 const u = document.getElementById('username').value;
                 const p = document.getElementById('password').value;
-                
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }) })
-                .then(r => r.json())
-                .then(res => {
+                this.apiCall({ action: 'login', username: u, password: p }, (res) => {
                     if(res.success) {
                         this.user = res.user;
                         this.showApp();
                         this.loadData();
-                        if(this.user.role === 'SuperAdmin') this.loadUsers();
-                        else {
-                            // If not SuperAdmin, hide the Users tab immediately
-                            document.getElementById('nav-users').style.display = 'none';
+                        this.loadAntibiotics();
+                        if(this.user.role === 'Admin') {
+                            document.getElementById('nav-users').classList.remove('hidden');
+                            this.loadUsers();
                         }
                     } else {
-                        alert(res.message);
+                        alert(res.message || 'Login failed');
                     }
                 });
             }
@@ -444,374 +299,258 @@
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('app-view').style.display = 'flex';
                 document.getElementById('user-name').textContent = this.user.username;
+                document.getElementById('user-role-text').textContent = this.user.role;
                 document.getElementById('user-avatar').textContent = this.user.username.charAt(0).toUpperCase();
-                document.getElementById('user-role').textContent = this.user.role;
-                
-                // Show Users tab only for SuperAdmin
-                if (this.user.role === 'SuperAdmin') {
-                    document.getElementById('nav-users').style.display = 'flex'; 
-                } else {
-                    document.getElementById('nav-users').style.display = 'none';
-                }
                 this.navigate('dashboard');
             }
 
-            /* ==========================================
-               NAVIGATION
-               ========================================== */
+            /* ─── NAVIGATION ─── */
             navigate(view) {
-                ['view-dashboard', 'view-records', 'view-users'].forEach(id => document.getElementById(id).classList.add('hidden'));
-                ['nav-dashboard', 'nav-records', 'nav-users'].forEach(id => document.getElementById(id).classList.remove('active'));
-                
+                ['dashboard', 'records', 'analytics', 'users'].forEach(v => {
+                    document.getElementById('view-' + v).classList.add('hidden');
+                    document.getElementById('nav-' + v).classList.remove('active');
+                });
                 document.getElementById('view-' + view).classList.remove('hidden');
                 document.getElementById('nav-' + view).classList.add('active');
 
-                const headers = {
-                    'dashboard': ['Dashboard', 'Overview of metrics'],
-                    'records': ['Patient Records', 'Manage study data'],
-                    'users': ['User Management', 'Control system access']
-                };
+                const headers = { 'dashboard': ['Dashboard', 'Overview of metrics'], 'records': ['Patient Records', 'Manage study data'], 'analytics': ['Data Analytics', 'Statistical breakdowns'], 'users': ['User Management', 'Control system access'] };
                 document.getElementById('page-heading').textContent = headers[view][0];
                 document.getElementById('page-subheading').textContent = headers[view][1];
-
-                // Update header actions based on view
-                const actions = document.getElementById('header-actions');
-                if (view === 'records') {
-                    actions.innerHTML = `<button class="btn btn-primary" onclick="app.showAddModal()"><i class="fas fa-plus"></i> New Entry</button>`;
-                } else {
-                    actions.innerHTML = '';
-                }
+                
+                if(view === 'analytics') this.renderCharts();
+                document.getElementById('sidebar').classList.remove('active');
             }
 
-            /* ==========================================
-               DATA HANDLING
-               ========================================== */
-            loadData() {
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'read' }) })
+            /* ─── DATA CALLS ─── */
+            apiCall(payload, callback) {
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
                 .then(r => r.json())
-                .then(res => {
-                    this.data = res || [];
+                .then(callback)
+                .catch(e => console.error("API Error:", e));
+            }
+
+            loadData() {
+                this.apiCall({ action: 'read' }, (res) => {
+                    this.rawData = res || [];
+                    this.filteredData = [...this.rawData];
                     this.renderRecords();
                     this.updateStats();
+                    this.renderRecent();
+                });
+            }
+
+            loadAntibiotics() {
+                this.apiCall({ action: 'getAntibiotics' }, (res) => {
+                    this.antibioticsList = res || [];
+                    this.generateFormSlots(); 
                 });
             }
 
             loadUsers() {
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getUsers' }) })
-                .then(r => r.json())
-                .then(res => {
+                this.apiCall({ action: 'getUsers' }, (res) => {
                     this.users = res || [];
                     this.renderUsers();
                 });
             }
 
-            saveRecord(e) {
-                e.preventDefault();
-                const btn = e.target.querySelector('button[type="submit"]');
-                const orig = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; btn.disabled = true;
+            /* ─── FORM LOGIC ─── */
+            generateFormSlots() {
+                let abxHtml = '';
+                for(let i=1; i<=5; i++) {
+                    abxHtml += `<div style="background:rgba(0,0,0,0.2); border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <span style="font-weight:600; color:var(--primary);">Episode #${i}</span>
+                        </div>
+                        <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                            <div class="form-group" style="margin:0;"><label>Name</label><input type="text" id="Abx_${i}_Name" class="form-control abx-input" list="abx-datalist"></div>
+                            <div class="form-group" style="margin:0;"><label>Class</label><input type="text" id="Abx_${i}_Class" class="form-control abx-class" readonly></div>
+                            <div class="form-group" style="margin:0;"><label>AWaRe</label><input type="text" id="Abx_${i}_Category" class="form-control abx-cat" readonly></div>
+                            <div class="form-group" style="margin:0;"><label>Indication</label><select id="Abx_${i}_Indication" class="form-control"><option>Empirical</option><option>Targeted</option><option>Prophylaxis</option></select></div>
+                        </div>
+                    </div>`;
+                }
+                document.getElementById('abx-slots').innerHTML = abxHtml + `<datalist id="abx-datalist">${this.antibioticsList.map(a => `<option value="${a.name}">`).join('')}</datalist>`;
 
-                const record = {
-                    id: document.getElementById('form-id').value,
-                    Age: document.getElementById('form-age').value,
-                    Sex: document.getElementById('form-sex').value,
-                    A4: document.getElementById('form-diagnosis').value,
-                    A6: document.getElementById('form-name').value,
-                    B1: document.getElementById('form-admit').value,
-                    B6: document.getElementById('form-outcome').value,
-                    B3: document.getElementById('form-los').value,
-                    B5: document.getElementById('form-ward').value,
-                    // Flattened Data for Backend
-                    Ward_Other: document.querySelector('input[name="Ward_Other"]') ? document.querySelector('input[name="Ward_Other"]').value : '',
-                    Treatment_Other: document.querySelector('input[name="Treatment_Other']') ? document.querySelector('input[name="Treatment_Other"]').value : '',
-                    antibiotics: [], cultures: []
-                };
+                let cultHtml = '';
+                for(let i=1; i<=3; i++) {
+                    cultHtml += `<div style="background:rgba(0,0,0,0.2); border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:12px;">
+                        <div style="margin-bottom:12px;"><span style="font-weight:600; color:var(--warning);">Culture #${i}</span></div>
+                        <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                            <div class="form-group" style="margin:0;"><label>Type</label><select id="Cult_${i}_Type" class="form-control"><option>Blood</option><option>Urine</option><option>Sputum</option><option>Wound</option></select></div>
+                            <div class="form-group" style="margin:0;"><label>Result</label><select id="Cult_${i}_Result" class="form-control"><option>Positive</option><option>Negative</option><option>No Growth</option></select></div>
+                            <div class="form-group" style="margin:0;"><label>Organism</label><input type="text" id="Cult_${i}_Organism" class="form-control"></div>
+                            <div class="form-group" style="margin:0;"><label>XDR?</label><select id="Cult_${i}_XDR" class="form-control"><option>No</option><option>Yes</option></select></div>
+                        </div>
+                    </div>`;
+                }
+                document.getElementById('cult-slots').innerHTML = cultHtml;
 
-                // Process Antibiotics (Flattened)
-                document.querySelectorAll('#antibiotic-container .dynamic-card').forEach(block => {
-                    const i = this.abxCount + 1;
-                    const getVal = (sel) => block.querySelector(sel)?.value || '';
-                    record[`Abx_${i}_Name`] = getVal('input[list]');
-                    record[`Abx_${i}_Class`] = getVal('input[name*="Class"]');
-                    record[`Abx_${i}_Category`] = getVal('input[name*="Category"]');
-                    record[`Abx_${i}_Route`] = getVal('select[name*="Route"]');
-                    record[`Abx_${i}_Dose`] = getVal('input[name*="Dose"]');
-                    record[`Abx_${i}_Freq`] = getVal('input[name*="Freq"]');
-                    record[`Abx_${i}_Duration`] = getVal('input[name*="Duration"]');
-                    record[`Abx_${i}_Indication`] = getVal('select[name*="Indication"]');
-                    this.abxCount++;
+                // Autocomplete listener
+                document.querySelectorAll('.abx-input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const found = this.antibioticsList.find(a => a.name.toLowerCase() === e.target.value.toLowerCase());
+                        if(found) {
+                            e.target.closest('div').parentElement.querySelector('.abx-class').value = found.class;
+                            e.target.closest('div').parentElement.querySelector('.abx-cat').value = found.category;
+                        }
+                    });
                 });
-                this.abxCount = 0; // Reset counter for next form save
-
-                // Process Cultures (Flattened)
-                document.querySelectorAll('#culture-container .dynamic-card').forEach(block => {
-                    const i = this.cultCount + 1;
-                    const getVal = (sel) => block.querySelector(sel)?.value || '';
-                    record[`Cult_${i}_Type`] = getVal('select[name*="Type"]');
-                    record[`Cult_${i}_Result`] = getVal('select[name*="Result"]');
-                    record[`Cult_${i}_Organism`] = getVal('input[name*="Organism"]');
-                    record[`Cult_${i}_XDR`] = getVal('select[name*="XDR"]');
-                    record[`Cult_${i}_XDR_Details`] = getVal('input[name*="XDR_Details"]');
-                    this.cultCount++;
-                });
-                this.cultCount = 0;
-
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'saveRecordToSheet', record: record, user: this.user }) })
-                .then(r => r.json())
-                .then(res => {
-                    if(res.success) {
-                        this.closeModals();
-                        this.loadData();
-                        alert('Record saved successfully');
-                    } else {
-                        this.toast(res.message, 'error');
-                    }
-                })
-                .finally(() => { btn.innerHTML = orig; btn.disabled = false; });
             }
 
-            /* ==========================================
-               UI RENDERING
-               ========================================== */
+            showRecordModal() {
+                document.getElementById('record-form').reset();
+                document.getElementById('Study_ID').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('modal-record').style.display = 'flex';
+            }
+
+            saveRecord(e) {
+                e.preventDefault();
+                const payload = { action: 'save', user: this.user.username, data: {} };
+                const fields = ['Study_ID', 'Age', 'Sex', 'Admission_Date', 'Discharge_Date', 'LOS', 'Ward', 'Diagnosis', 'Cancer_Type', 'Cancer_Name', 'Stage', 'Treatment', 'Immunosuppression', 'Outcome'];
+                fields.forEach(f => payload.data[f] = document.getElementById(f).value);
+                
+                for(let i=1; i<=5; i++) {
+                    payload.data[`Abx_${i}_Name`] = document.getElementById(`Abx_${i}_Name`).value;
+                    payload.data[`Abx_${i}_Class`] = document.getElementById(`Abx_${i}_Class`).value;
+                    payload.data[`Abx_${i}_Category`] = document.getElementById(`Abx_${i}_Category`).value;
+                    payload.data[`Abx_${i}_Indication`] = document.getElementById(`Abx_${i}_Indication`).value;
+                }
+                for(let i=1; i<=3; i++) {
+                    payload.data[`Cult_${i}_Type`] = document.getElementById(`Cult_${i}_Type`).value;
+                    payload.data[`Cult_${i}_Result`] = document.getElementById(`Cult_${i}_Result`).value;
+                    payload.data[`Cult_${i}_Organism`] = document.getElementById(`Cult_${i}_Organism`).value;
+                    payload.data[`Cult_${i}_XDR`] = document.getElementById(`Cult_${i}_XDR`).value;
+                }
+
+                this.apiCall(payload, (res) => {
+                    if(res.success) { this.closeModals(); this.loadData(); alert('Saved successfully'); }
+                    else { alert(res.message || 'Error saving'); }
+                });
+            }
+
+            calcLOS() {
+                const s = document.getElementById('Admission_Date').value;
+                const e = document.getElementById('Discharge_Date').value;
+                if(s && e) document.getElementById('LOS').value = Math.round((new Date(e) - new Date(s)) / 86400000);
+            }
+
+            /* ─── RENDERING ─── */
             renderRecords() {
                 const tbody = document.getElementById('records-body');
                 tbody.innerHTML = '';
-                this.data.forEach(r => {
-                    const badgeClass = r.B6 === 'Died' ? 'badge-danger' : r.B6 === 'Discharged Well' ? 'badge-success' : 'badge-warning';
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="font-weight:600; color:var(--primary);">${r.id || 'PID'}</td>
-                            <td>${r.Age} / ${r.Sex}</td>
-                            <td>${r.A4 || '-'}</td>
-                            <td>${r.A6 || '-'}</td>
-                            <td>${r.B1 || '-'}</td>
-                            <td><span class="badge ${badgeClass}">${r.B6 || 'N/A'}</span></td>
-                            <td style="text-align:right;">
-                                <button class="btn btn-icon" style="background:var(--glass); color:white;"><i class="fas fa-eye"></i></button>
-                            </td>
-                        </tr>
-                    `;
+                this.filteredData.forEach(r => {
+                    const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
+                    tbody.innerHTML += `<tr>
+                        <td style="font-weight:600; color:var(--primary);">${r.Study_ID || '-'}</td>
+                        <td>${r.Age || '-'} / ${r.Sex || '-'}</td>
+                        <td>${r.Diagnosis || '-'}</td>
+                        <td>${r.Cancer_Name || '-'}</td>
+                        <td>${r.Admission_Date || '-'}</td>
+                        <td><span class="badge ${bc}">${r.Outcome || 'N/A'}</span></td>
+                        <td style="text-align:right;"><button class="btn btn-icon btn-ghost" onclick="alert('Detailed view coming soon')"><i class="fas fa-eye"></i></button></td>
+                    </tr>`;
+                });
+            }
+
+            renderRecent() {
+                const tbody = document.getElementById('dash-recent-body');
+                tbody.innerHTML = '';
+                [...this.rawData].reverse().slice(0, 5).forEach(r => {
+                    const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
+                    tbody.innerHTML += `<tr><td>${r.Study_ID}</td><td>${r.Diagnosis || '-'}</td><td>${r.Admission_Date || '-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td></tr>`;
+                });
+            }
+
+            updateStats() {
+                const total = this.rawData.length;
+                document.getElementById('stat-total').textContent = total;
+                
+                let abxCount = 0, cultCount = 0;
+                this.rawData.forEach(r => {
+                    for(let i=1; i<=5; i++) { if(r[`Abx_${i}_Name`]) abxCount++; }
+                    for(let i=1; i<=3; i++) { if(r[`Cult_${i}_Type`]) cultCount++; }
+                });
+                document.getElementById('stat-abx').textContent = abxCount;
+                document.getElementById('stat-cult').textContent = cultCount;
+
+                const deaths = this.rawData.filter(r => r.Outcome === 'Died').length;
+                document.getElementById('stat-mort').textContent = total ? Math.round((deaths/total)*100) + '%' : '0%';
+            }
+
+            /* ─── CHARTS ─── */
+            renderCharts() {
+                if(!this.rawData.length) return;
+                Object.values(this.charts).forEach(c => c.destroy());
+                this.charts = {};
+                const muted = '#94A3B8';
+                const grid = 'rgba(255,255,255,0.1)';
+
+                const sexData = this.rawData.reduce((acc, r) => { const s = r.Sex || 'Unknown'; acc[s] = (acc[s]||0) + 1; return acc; }, {});
+                this.charts.sex = new Chart(document.getElementById('chart-sex'), { type: 'doughnut', data: { labels: Object.keys(sexData), datasets: [{ data: Object.values(sexData), backgroundColor: ['#6366F1', '#10B981', '#F59E0B'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
+
+                const ageBins = { '0-18':0, '19-35':0, '36-50':0, '51-65':0, '65+':0 };
+                this.rawData.forEach(r => { const a=parseInt(r.Age); if(!a) return; if(a<=18) ageBins['0-18']++; else if(a<=35) ageBins['19-35']++; else if(a<=50) ageBins['36-50']++; else if(a<=65) ageBins['51-65']++; else ageBins['65+']++; });
+                this.charts.age = new Chart(document.getElementById('chart-age'), { type: 'bar', data: { labels: Object.keys(ageBins), datasets: [{ label: 'Patients', data: Object.values(ageBins), backgroundColor: '#6366F1', borderRadius: 4 }] }, options: { scales: { x: { ticks: { color: muted }, grid: { display: false } }, y: { ticks: { color: muted }, grid: { color: grid } } }, plugins: { legend: { display: false } } } });
+
+                const cancerData = this.rawData.reduce((acc, r) => { const t = r.Cancer_Type || 'Unknown'; acc[t] = (acc[t]||0) + 1; return acc; }, {});
+                this.charts.cancer = new Chart(document.getElementById('chart-cancer'), { type: 'doughnut', data: { labels: Object.keys(cancerData), datasets: [{ data: Object.values(cancerData), backgroundColor: ['#10B981', '#EF4444', '#3B82F6'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
+
+                const outData = this.rawData.reduce((acc, r) => { const o = r.Outcome || 'Unknown'; acc[o] = (acc[o]||0) + 1; return acc; }, {});
+                this.charts.outcome = new Chart(document.getElementById('chart-outcome'), { type: 'doughnut', data: { labels: Object.keys(outData), datasets: [{ data: Object.values(outData), backgroundColor: ['#10B981', '#EF4444', '#F59E0B', '#3B82F6'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
+
+                let awareData = { 'Access': 0, 'Watch': 0, 'Reserve': 0 };
+                this.rawData.forEach(r => { for(let i=1; i<=5; i++) { const cat = r[`Abx_${i}_Category`]; if(cat && awareData[cat] !== undefined) awareData[cat]++; } });
+                this.charts.aware = new Chart(document.getElementById('chart-aware'), { type: 'doughnut', data: { labels: Object.keys(awareData), datasets: [{ data: Object.values(awareData), backgroundColor: ['#10B981', '#F59E0B', '#EF4444'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
+
+                let resistData = { 'XDR_Positive': 0 };
+                this.rawData.forEach(r => { for(let i=1; i<=3; i++) { if(r[`Cult_${i}_XDR`] === 'Yes') resistData['XDR_Positive']++; } });
+                this.charts.resist = new Chart(document.getElementById('chart-resist'), { type: 'bar', data: { labels: ['XDR Positive Cultures'], datasets: [{ label: 'Count', data: Object.values(resistData), backgroundColor: '#EF4444', borderRadius: 4 }] }, options: { scales: { x: { ticks: { color: muted }, grid: { display: false } }, y: { ticks: { color: muted }, grid: { color: grid } } }, plugins: { legend: { display: false } } } });
+            }
+
+            /* ─── UTILS ─── */
+            filterRecords() {
+                const term = document.getElementById('global-search').value.toLowerCase();
+                const outcome = document.getElementById('filter-outcome').value;
+                this.filteredData = this.rawData.filter(r => {
+                    const matchText = !term || (r.Study_ID && r.Study_ID.toLowerCase().includes(term)) || (r.Diagnosis && r.Diagnosis.toLowerCase().includes(term)) || (r.Cancer_Name && r.Cancer_Name.toLowerCase().includes(term));
+                    const matchOutcome = !outcome || r.Outcome === outcome;
+                    return matchText && matchOutcome;
+                });
+                this.renderRecords();
+            }
+
+            exportCSV() {
+                if(!this.rawData.length) return alert("No data to export");
+                const headers = Object.keys(this.rawData[0]);
+                let csv = headers.join(",") + "\n";
+                this.rawData.forEach(row => {
+                    csv += headers.map(h => `"${(row[h]||'').toString().replace(/"/g, '""')}"`).join(",") + "\n";
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'ResearchData.csv'; a.click();
+            }
+
+            showUserModal() { document.getElementById('user-form').reset(); document.getElementById('modal-user').style.display = 'flex'; }
+            
+            saveUser(e) {
+                e.preventDefault();
+                const payload = { action: 'addUser', username: document.getElementById('u-name').value, password: document.getElementById('u-pass').value, role: document.getElementById('u-role').value };
+                this.apiCall(payload, (res) => {
+                    if(res.success) { this.closeModals(); this.loadUsers(); alert('User added'); }
+                    else { alert(res.message); }
                 });
             }
 
             renderUsers() {
                 const tbody = document.getElementById('users-body');
                 tbody.innerHTML = '';
-                // Fallback if backend is empty (for demo)
-                const list = this.users.length ? this.users : [
-                    { username: 'admin', role: 'SuperAdmin', active: true }
-                ];
-                
-                list.forEach(u => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="font-weight:600;">${u.username}</td>
-                            <td><span class="badge badge-warning">${u.role}</span></td>
-                            <td><span class="badge badge-success">Active</span></td>
-                            <td style="text-align:right;">
-                                ${this.user.role === 'SuperAdmin' && u.username !== this.user.username ? 
-                                `<button class="btn btn-icon btn-danger" onclick="if(confirm('Delete ' + u.username + '?')) app.deleteUser('${u.username}')" style="background:rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-trash"></i></button>` : ''}
-                            </td>
-                        </tr>
-                    `;
+                this.users.forEach(u => {
+                    tbody.innerHTML += `<tr><td style="font-weight:600;">${u.username}</td><td><span class="badge badge-info">${u.role}</span></td><td><span class="badge badge-success">Active</span></td></tr>`;
                 });
             }
 
-            updateStats() {
-                const total = this.data.length;
-                this.animateValue("stat-total", 0, total, 1000);
-                
-                const abxCount = this.data.reduce((acc, r) => acc + (r.Abx_1_Name ? 1 : 0) + (r.Abx_2_Name ? 1 : 0), 0);
-                this.animateValue("stat-abx", 0, abxCount, 1000);
-
-                const cultCount = this.data.reduce((acc, r) => acc + (r.Cult_1_Type ? 1 : 0) + (r.Cult_2_Type ? 1 : 0), 0);
-                this.animateValue("stat-cult", 0, cultCount, 1000);
-
-                const deaths = this.data.filter(r => r.B6 === 'Died').length;
-                const rate = total ? Math.round((deaths/total)*100) : 0;
-                this.animateValue("stat-mortality", 0, rate, 1000, "%");
-            }
-
-            animateValue(id, start, end, duration, suffix = "") {
-                if (start === end) return;
-                const range = end - start;
-                let current = start;
-                const increment = end > start ? 1 : -1;
-                const stepTime = Math.abs(Math.floor(duration / range));
-                const obj = document.getElementById(id);
-                
-                const timer = setInterval(function() {
-                    current += increment;
-                    obj.innerHTML = current + suffix;
-                    if (current == end) { clearInterval(timer); }
-                }, Math.max(stepTime, 20));
-            }
-
-            /* ==========================================
-               INTERACTIONS
-               ========================================== */
-            showAddModal() {
-                document.getElementById('form-id').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
-                document.getElementById('modal-record').style.display = 'flex';
-            }
-
-            showAddUserModal() {
-                document.getElementById('modal-user').style.display = 'modal-overlay'; // Use overlay wrapper
-                document.querySelector('#modal-user .modal').style.display = 'flex';
-            }
-
-            closeModals() {
-                document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
-                document.getElementById('record-form').reset();
-                document.getElementById('user-form').reset();
-            }
-
-            saveUser(e) {
-                e.preventDefault();
-                const u = document.getElementById('u-name').value;
-                const p = document.getElementById('u-pass').value;
-                const role = document.getElementById('u-role').value;
-                
-                // Call backend to add user
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'addUser', username: u, password: p, role: role }) })
-                .then(r => r.json())
-                .then(res => {
-                    if(res.success) {
-                        this.closeModals();
-                        this.loadUsers();
-                        alert('User added');
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            }
-
-            deleteUser(username) {
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteUser', username: username }) })
-                .then(r => r.json())
-                .then(res => {
-                    if(res.success) {
-                        this.loadUsers();
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            }
-
-            /* ==========================================
-               DYNAMIC BUILDERS
-               ========================================== */
-            addAntibioticBlock() {
-                this.abxCount++;
-                const id = this.abxCount;
-                this.whoDatabase.forEach(d => this.whoMap[d.name] = d); // Refresh map
-                const container = document.getElementById('antibiotic-container');
-                const options = this.whoDatabase.map(d => `<option value="${d.name}">`).join('');
-
-                const html = `
-                    <div class="dynamic-card">
-                        <div class="card-header">
-                            <h4><i class="fas fa-pills"></i> Episode #${id}</h4>
-                            <button type="button" class="remove-btn" onclick="this.closest('.dynamic-card').remove()">&times;</button>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="form-group">
-                                <label>Name (Search)</label>
-                                <input type="text" list="abx-list-${id}" name="Abx_Name_${id}" class="form-control" placeholder="Type to search..." oninput="app.handleAbxInput(this)">
-                                <datalist id="abx-list-${id}">${options}</datalist>
-                            </div>
-                            <div class="form-group"><label>Class</label><input type="text" name="Abx_Class_${id}" class="form-control" readonly></div>
-                            <div class="form-group"><label>Category (AWaRe)</label><input type="text" name="Abx_Category_${id}" class="form-control" readonly></div>
-                            <div class="form-group"><label>Route</label><select name="Abx_Route_${id}" class="form-control"><option>IV</option><option>Oral</option><option>IM</option></select></div>
-                            <div class="form-group"><label>Dose</label><input type="text" name="Abx_Dose_${id}" class="form-control"></div>
-                            <div class="form-group"><label>Freq</label><input type="text" name="Abx_Freq_${id}" class="form-control"></div>
-                            <div class="form-group"><label>Duration</label><input type="number" name="Abx_Duration_${id}" class="form-control"></div>
-                            <div class="form-group"><label>Indication</label><select name="Abx_Indication_${id}" class="form-control"><option>Empirical</option><option>Targeted</option><option>Prophylaxis</option></select></div>
-                        </div>
-                    </div>`;
-                container.appendChild(div);
-            }
-
-            handleAbxInput(input) {
-                const block = input.closest('.dynamic-card');
-                const val = input.value.trim();
-                const match = this.whoMap[val];
-                if (match) {
-                    block.querySelector('input[name*="Class"]').value = match.class;
-                    block.querySelector('input[name*="Category"]').value = match.category;
-                } else {
-                    block.querySelector('input[name*="Class"]').value = "";
-                    block.querySelector('input[name*="Category"]').value = "";
-                }
-            }
-
-            addCultureBlock() {
-                this.cultCount++;
-                const id = this.cultCount;
-                const html = `
-                    <div class="dynamic-card">
-                        <div class="card-header">
-                            <span class="block-title">Culture #${id}</span>
-                            <button type="button" class="remove-btn" onclick="this.closest('.dynamic-card').remove()">&times;</button>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="form-group"><label>Type</label><select name="Cult_Type_${id}" class="form-control"><option>Blood</option><option>Urine</option><option>Sputum</option><option>Wound</option></select></div>
-                            <div class="form-group"><label>Result</label><select name="Cult_Result_${id}" class="form-control"><option>Positive</option><option>Negative</option><option>Contaminated</option></select></div>
-                            <div class="form-group"><label>Organism</label><input type="text" name="Cult_Organism_${id}" class="form-control"></div>
-                            <div class="form-group">
-                                <label>D10. XDR Criteria?</label>
-                                <select name="Cult_XDR_${id}" class="form-control" onchange="app.toggleXDR(this,${id})">
-                                    <option value="No">No</option><option value="Yes">Yes</option>
-                                </select>
-                            </div>
-                            <div class="form-group hidden" id="xdr-details-${id}" style="grid-column: span 3;">
-                                <label class="text-accent">XDR Details</label>
-                                <input type="text" name="Cult_XDR_Details_${id}" class="form-control" placeholder="Enter details...">
-                            </div>
-                        </div>
-                    </div>`;
-                document.getElementById('culture-container').insertAdjacentHTML('beforeend', html);
-            }
-
-            toggleXDR(select, id) {
-                const div = document.getElementById(`xdr-details-${id}`);
-                if(select.value === 'Yes') div.classList.remove('hidden');
-                else div.classList.add('hidden');
-            }
-
-            /* ==========================================
-               UTILITIES
-               ========================================== */
-            setupOtherFields() {
-                document.body.addEventListener('change', (e) => {
-                    if (e.target.classList.contains('other-trigger')) {
-                        const wrapper = e.target.parentElement.querySelector('.other-input-wrapper');
-                        const input = wrapper.querySelector('input');
-                        if (e.target.value === 'Other') {
-                            wrapper.classList.remove('hidden');
-                            input.setAttribute('required', 'required');
-                        } else {
-                            wrapper.classList.add('hidden');
-                            input.removeAttribute('required');
-                            input.value = '';
-                        }
-                    }
-                });
-            }
-
-            calcLOS() {
-                const s = document.getElementById('form-admit').value;
-                const e = document.getElementById('form-discharge').value;
-                if(s && e) document.getElementById('form-los').value = (new Date(e) - new Date(s)) / 86400000);
-            }
-
-            toast(msg, type='success') {
-                const div = document.createElement('div');
-                div.className = `toast ${type}`;
-                div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i> ${msg}`;
-                document.getElementById('toast-container').appendChild(div);
-                setTimeout(() => { div.remove(); }, 3000);
-            }
+            closeModals() { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); }
         }
 
         const app = new ResearchApp();
