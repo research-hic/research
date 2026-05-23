@@ -3,342 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oncology Research System</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>OncoCollect | Premium Research DB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0F172A; --bg-card: rgba(30, 41, 59, 0.7); --bg-sidebar: #0B1120;
-            --primary: #6366F1; --primary-hover: #4F46E5; --accent: #10B981;
-            --danger: #EF4444; --warning: #F59E0B; --info: #3B82F6;
-            --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255, 255, 255, 0.1);
-            --glass: rgba(255, 255, 255, 0.05); --radius: 16px;
-            --font-head: 'Outfit', sans-serif; --font-body: 'Inter', sans-serif;
+            --bg-body: #050a13; --bg-surface: #0c1322; --bg-card: #111827; --bg-hover: #1e293b;
+            --accent: #0ea5e9; --accent-hover: #38bdf8; --accent-glow: rgba(14, 165, 233, 0.15);
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --text-main: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
+            --border: rgba(255,255,255,0.06); --radius: 12px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-body); background: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
-        
-        /* Background Orbs Animation */
-        .bg-orbs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 20s infinite alternate ease-in-out; }
-        .orb-1 { width: 400px; height: 400px; background: var(--primary); top: -10%; left: -5%; }
-        .orb-2 { width: 500px; height: 500px; background: var(--accent); bottom: -15%; right: -10%; animation-delay: -5s; }
-        .orb-3 { width: 300px; height: 300px; background: var(--warning); top: 40%; left: 40%; animation-delay: -10s; }
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, -50px) scale(1.1); } }
 
-        /* UI Animations */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+        
+        /* ─── Animations ─── */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .animate-fade { animation: fadeIn 0.5s ease-out; }
-        .animate-slide-up { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { width: 100%; max-width: 440px; padding: 40px; background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; z-index: 1000; animation: scaleIn 0.5s ease-out; }
-        .login-logo { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin: 0 auto 24px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); }
-
-        .sidebar { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: transform 0.3s; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
-        .brand-text { font-family: var(--font-head); font-size: 20px; font-weight: 700; background: linear-gradient(to right, #fff, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-links { flex: 1; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
-        .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text-main); border-color: var(--border); }
-        .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); border-color: rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); }
-        .user-profile { padding: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
-
-        .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 1600px; min-height: 100vh; position: relative; z-index: 1; }
-        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;}
-        .page-title h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; }
-        .page-title p { color: var(--text-muted); margin-top: 4px; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: transform 0.3s, box-shadow 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-color: var(--primary); }
-        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
-        .stat-value { font-size: 32px; font-weight: 700; font-family: var(--font-head); margin-bottom: 4px; }
-        .stat-label { color: var(--text-muted); font-size: 14px; font-weight: 500; }
-
-        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; animation: slideInUp 0.5s ease-out; }
-        .chart-card h3 { font-family: var(--font-head); font-size: 16px; margin-bottom: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .toolbar { display: flex; gap: 16px; background: var(--bg-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
-        .search-box { flex: 1; position: relative; min-width: 200px; }
-        .search-box input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px 12px 40px; border-radius: 8px; color: white; }
-        .search-box input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
-        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        /* ─── Layout ─── */
+        .sidebar { width: 260px; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: var(--transition); }
+        .main-content { flex: 1; margin-left: 260px; padding: 32px; min-height: 100vh; background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.03), transparent 40%); }
         
-        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.2s; font-family: var(--font-body); }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .btn-danger:hover { background: var(--danger); color: white; }
-        .btn-ghost { background: var(--glass); color: var(--text-muted); border: 1px solid var(--border); }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--glass); color: var(--text-muted); border: 1px solid transparent; }
-        .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
-
-        .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; }
+        /* ─── Sidebar ─── */
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; box-shadow: 0 4px 12px var(--accent-glow); }
+        .brand-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+        .nav-links { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-muted); font-size: 14px; font-weight: 500; cursor: pointer; transition: var(--transition); border: 1px solid transparent; }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
+        .nav-item.active { background: var(--accent-glow); color: var(--accent); border-color: rgba(14, 165, 233, 0.2); }
+        .nav-item i { width: 20px; text-align: center; font-size: 15px; }
+        .user-profile { padding: 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #6366f1); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        
+        /* ─── Typography & Cards ─── */
+        h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+        h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+        .text-muted { color: var(--text-muted); font-size: 14px; }
+        
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: var(--transition); }
+        .card:hover { border-color: rgba(255,255,255,0.1); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .stat-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+        
+        /* ─── Tables ─── */
+        .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: rgba(0,0,0,0.2); padding: 16px 24px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; white-space: nowrap; }
-        tr:hover td { background: rgba(99, 102, 241, 0.05); }
+        th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+        td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+        tr:hover td { color: var(--text-main); background: rgba(255,255,255,0.01); }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; font-size: 14px; transition: border 0.3s, box-shadow 0.3s; }
-        .form-control:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
-        .form-control:read-only { opacity: 0.7; cursor: not-allowed; }
-        select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 16px) center; padding-right: 40px; }
+        /* ─── Forms ─── */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; color: var(--text-main); font-size: 14px; transition: var(--transition); }
+        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .form-control:read-only { opacity: 0.5; cursor: not-allowed; }
         
-        .other-field { margin-top: 10px; display: none; animation: slideInUp 0.3s ease-out; }
+        /* ─── Custom Searchable Select ─── */
+        .search-select { position: relative; }
+        .search-select input { width: 100%; background: var(--bg-body); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; color: var(--text-main); font-size: 14px; transition: var(--transition); }
+        .search-select input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+        .search-select-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-surface); border: 1px solid var(--accent); border-top: none; max-height: 180px; overflow-y: auto; z-index: 50; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .search-select-dropdown.show { display: block; }
+        .search-select-item { padding: 8px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        .search-select-item:last-child { border-bottom: none; }
+        .search-select-item:hover { background: var(--bg-hover); color: var(--text-main); }
+        .search-select-item .meta { font-size: 11px; display: flex; gap: 8px; }
+        .search-select-item .meta span { background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
 
-        .section-header { font-size: 18px; font-weight: 700; margin: 40px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; color: var(--text-main); }
-        .section-header i { color: var(--primary); }
+        /* ─── Buttons ─── */
+        .btn { padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; transition: var(--transition); }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 2px 8px var(--accent-glow); }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--text-dim); color: var(--text-main); }
+        .btn-icon { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: transparent; color: var(--text-dim); border: 1px solid transparent; }
+        .btn-icon:hover { color: var(--accent); background: var(--accent-glow); border-color: rgba(14,165,233,0.2); }
 
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
-        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .badge-info { background: rgba(59, 130, 246, 0.2); color: var(--info); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
-        .modal { background: #1E293B; border: 1px solid var(--border); width: 100%; max-width: 900px; border-radius: 20px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: scaleIn 0.3s ease-out; }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
-        .close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; }
+        /* ─── Modals ─── */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal { background: var(--bg-surface); border: 1px solid var(--border); width: 100%; max-width: 800px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: scaleIn 0.2s ease-out; display: flex; flex-direction: column; max-height: 90vh; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 24px; overflow-y: auto; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+        .close-modal { background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
         .close-modal:hover { color: var(--danger); }
 
-        .dynamic-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 16px; position: relative; animation: slideInUp 0.4s ease-out; }
-        .remove-slot { position: absolute; top: 10px; right: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; }
-        .remove-slot:hover { color: var(--danger); }
+        /* ─── Dynamic Slots ─── */
+        .slot-card { background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; position: relative; animation: slideUp 0.3s ease-out; }
+        .slot-remove { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 12px; }
+        .slot-remove:hover { color: var(--danger); }
+        .slot-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+        
+        .section-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0 16px; color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section-divider i { color: var(--accent); }
+
+        /* ─── Toast Notifications ─── */
+        #toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast { padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: slideInRight 0.3s ease-out; display: flex; align-items: center; gap: 8px; }
+        .toast-success { background: var(--success); }
+        .toast-error { background: var(--danger); }
 
         .hidden { display: none !important; }
-
+        
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); position: fixed; z-index: 100; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; }
-            .charts-grid { grid-template-columns: 1fr; }
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
         }
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); background: none; border: none; }
+        .menu-toggle { display: none; background: none; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; }
         @media (max-width: 768px) { .menu-toggle { display: block; } }
     </style>
 </head>
 <body>
 
-    <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+    <div id="toast-container"></div>
 
-    <div id="login-view">
-        <div class="login-card animate-fade">
-            <div class="login-logo"><i class="fas fa-dna"></i></div>
-            <h2 style="text-align: center; margin-bottom: 8px; font-family: var(--font-head);">Research Portal</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px;">Secure Oncology Database Access</p>
+    <!-- Login -->
+    <div id="login-view" style="position:fixed; inset:0; background:var(--bg-body); z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div class="card" style="width:100%; max-width:360px; animation:scaleIn 0.3s;">
+            <div style="text-align:center; margin-bottom:24px;">
+                <div class="brand-icon" style="margin:0 auto 12px; width:48px; height:48px; font-size:18px;"><i class="fas fa-dna"></i></div>
+                <h2>OncoCollect</h2>
+                <p class="text-muted">Secure Research Portal</p>
+            </div>
             <form id="login-form">
-                <div class="form-group"><input type="text" id="username" class="form-control" placeholder="Username" required></div>
-                <div class="form-group"><input type="password" id="password" class="form-control" placeholder="Password" required></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px;">Sign In</button>
+                <div class="form-group"><label>Username</label><input type="text" id="username" class="form-control" required></div>
+                <div class="form-group"><label>Password</label><input type="password" id="password" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">Sign In</button>
             </form>
         </div>
     </div>
 
-    <div id="app-view" style="display: none; width: 100%;">
+    <!-- App Shell -->
+    <div id="app-view" style="display:none; width:100%;">
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <i class="fas fa-dna" style="color: var(--primary); font-size: 24px;"></i>
+                <div class="brand-icon">O</div>
                 <span class="brand-text">OncoCollect</span>
             </div>
             <div class="nav-links">
                 <a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Patient Records</a>
-                <a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Data Analytics</a>
-                <a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> User Management</a>
+                <a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Records</a>
+                <a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Analytics</a>
+                <a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> Users</a>
             </div>
             <div class="user-profile">
                 <div class="avatar" id="user-avatar">A</div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 14px;" id="user-name">Admin</div>
-                    <div style="font-size: 11px; color: var(--text-muted);" id="user-role-text">Role</div>
+                <div style="flex:1;">
+                    <div style="font-weight:600; font-size:13px;" id="user-name">Admin</div>
+                    <div style="font-size:11px; color:var(--text-dim);" id="user-role-text">Role</div>
                 </div>
-                <button class="btn btn-icon" onclick="app.logout()" style="background:transparent; color: var(--text-muted);"><i class="fas fa-sign-out-alt"></i></button>
+                <button class="btn-icon" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </nav>
 
         <div class="main-content">
-            <div class="header-area">
-                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
-                <div class="page-title">
-                    <h1 id="page-heading">Dashboard</h1>
-                    <p id="page-subheading">Overview of research metrics</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
+                    <div>
+                        <h1 id="page-heading">Dashboard</h1>
+                        <p class="text-muted" id="page-subheading">Overview</p>
+                    </div>
                 </div>
-                <div id="header-actions"></div>
             </div>
 
+            <!-- Dashboard View -->
             <section id="view-dashboard" class="animate-fade">
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total Patients</div></div>
-                    <div class="stat-card"><div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="stat-label">Antibiotic Courses</div></div>
-                    <div class="stat-card"><div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="stat-label">Culture Samples</div></div>
-                    <div class="stat-card"><div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="stat-label">Mortality Rate</div></div>
+                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(14,165,233,0.1); color:var(--accent);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="text-muted">Patients</div></div>
+                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1); color:var(--success);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="text-muted">Antibiotics</div></div>
+                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.1); color:var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="text-muted">Cultures</div></div>
+                    <div class="card stat-card"><div class="stat-icon" style="background:rgba(239,68,68,0.1); color:var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="text-muted">Mortality</div></div>
                 </div>
-                <div style="background: var(--bg-card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 24px;">
-                    <h3 style="font-family: var(--font-head); margin-bottom: 16px;">Recent Admissions</h3>
-                    <div class="table-container" style="border:none;"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Admission</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div>
+                <div class="card" style="padding:0;">
+                    <div style="padding:16px 24px; border-bottom:1px solid var(--border);"><h2>Recent Admissions</h2></div>
+                    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div>
                 </div>
             </section>
 
+            <!-- Records View -->
             <section id="view-records" class="hidden animate-fade">
-                <div class="toolbar">
-                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="global-search" placeholder="Search ID, Diagnosis, Cancer..." onkeyup="app.filterRecords()"></div>
-                    <select id="filter-outcome" class="form-control" style="width: auto;" onchange="app.filterRecords()"><option value="">All Outcomes</option><option value="Discharged well">Discharged</option><option value="Died">Deceased</option></select>
+                <div class="card" style="padding:16px; margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <input type="text" id="global-search" class="form-control" style="flex:1; min-width:200px;" placeholder="Search ID, Diagnosis..." onkeyup="app.filterRecords()">
+                    <select id="filter-outcome" class="form-control" style="width:auto;" onchange="app.filterRecords()"><option value="">All Outcomes</option><option value="Discharged well">Discharged</option><option value="Died">Deceased</option></select>
                     <button class="btn btn-ghost" onclick="app.exportCSV()"><i class="fas fa-download"></i> CSV</button>
                     <button class="btn btn-primary" onclick="app.showRecordModal()"><i class="fas fa-plus"></i> New Entry</button>
                 </div>
-                <div class="table-container"><table><thead><tr><th>Study ID</th><th>Age/Sex</th><th>Diagnosis</th><th>Cancer</th><th>Admission</th><th>Outcome</th><th style="text-align: right;">Actions</th></tr></thead><tbody id="records-body"></tbody></table></div>
-            </section>
-
-            <section id="view-analytics" class="hidden animate-fade">
-                <div class="charts-grid">
-                    <div class="chart-card"><h3><i class="fas fa-venus-mars" style="margin-right:8px;"></i>Sex Distribution</h3><canvas id="chart-sex"></canvas></div>
-                    <div class="chart-card"><h3><i class="fas fa-hourglass-half" style="margin-right:8px;"></i>Age Demographics</h3><canvas id="chart-age"></canvas></div>
-                    <div class="chart-card"><h3><i class="fas fa-ribbon" style="margin-right:8px;"></i>Cancer Types</h3><canvas id="chart-cancer"></canvas></div>
-                    <div class="chart-card"><h3><i class="fas fa-procedures" style="margin-right:8px;"></i>Outcomes</h3><canvas id="chart-outcome"></canvas></div>
-                    <div class="chart-card"><h3><i class="fas fa-shield-virus" style="margin-right:8px;"></i>AWaRe Classification</h3><canvas id="chart-aware"></canvas></div>
-                    <div class="chart-card"><h3><i class="fas fa-biohazard" style="margin-right:8px;"></i>Resistance (XDR)</h3><canvas id="chart-resist"></canvas></div>
+                <div class="card" style="padding:0; overflow:hidden;">
+                    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Age/Sex</th><th>Diagnosis</th><th>Cancer</th><th>Outcome</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="records-body"></tbody></table></div>
                 </div>
             </section>
 
+            <!-- Analytics View -->
+            <section id="view-analytics" class="hidden animate-fade">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:16px;">
+                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">SEX DISTRIBUTION</h3><canvas id="chart-sex"></canvas></div>
+                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">AGE DEMOGRAPHICS</h3><canvas id="chart-age"></canvas></div>
+                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">CANCER TYPES</h3><canvas id="chart-cancer"></canvas></div>
+                    <div class="card"><h3 style="font-size:14px; margin-bottom:16px; color:var(--text-dim);">AWaRe CLASSIFICATION</h3><canvas id="chart-aware"></canvas></div>
+                </div>
+            </section>
+
+            <!-- Users View -->
             <section id="view-users" class="hidden animate-fade">
-                <div class="toolbar">
-                    <div style="flex:1;"></div>
+                <div class="card" style="padding:16px; margin-bottom:16px; display:flex; justify-content:flex-end;">
                     <button class="btn btn-primary" onclick="app.showUserModal()"><i class="fas fa-user-plus"></i> Add User</button>
                 </div>
-                <div class="table-container"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead><tbody id="users-body"></tbody></table></div>
+                <div class="card" style="padding:0; overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead><tbody id="users-body"></tbody></table></div></div>
             </section>
         </div>
     </div>
 
-    <!-- MODAL: RECORD FORM -->
+    <!-- MODAL: Record Form -->
     <div id="modal-record" class="modal-overlay">
         <div class="modal">
-            <div class="modal-header"><h2 id="modal-record-title">New Patient Record</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
-            <form id="record-form" onsubmit="app.saveRecord(event)">
-                <div class="section-header" style="margin-top:0;"><i class="fas fa-user"></i> Demographics & Admission</div>
-                <div class="form-grid">
-                    <div class="form-group"><label>Study ID</label><input type="text" id="Study_ID" readonly class="form-control"></div>
-                    <div class="form-group"><label>Age</label><input type="number" id="Age" required class="form-control"></div>
-                    <div class="form-group"><label>Sex</label><select id="Sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
-                    <div class="form-group"><label>Admission Date</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div>
-                    <div class="form-group"><label>Discharge Date</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div>
-                    <div class="form-group"><label>LOS (Days)</label><input type="number" id="LOS" readonly class="form-control"></div>
-                    <div class="form-group">
-                        <label>Ward</label>
-                        <select id="Ward" class="form-control" onchange="app.toggleOther(this, 'Ward_Other')"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select>
-                        <div class="other-field" id="Ward_Other_Group"><input type="text" id="Ward_Other" class="form-control" placeholder="Specify Ward"></div>
+            <div class="modal-header">
+                <h2 id="modal-record-title">New Patient Record</h2>
+                <button class="close-modal" onclick="app.closeModals()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="record-form" onsubmit="app.saveRecord(event)">
+                    
+                    <div class="section-divider"><i class="fas fa-user"></i> Demographics</div>
+                    <div class="grid-3">
+                        <div class="form-group"><label>Study ID</label><input type="text" id="Study_ID" readonly class="form-control"></div>
+                        <div class="form-group"><label>Age</label><input type="number" id="Age" required class="form-control"></div>
+                        <div class="form-group"><label>Sex</label><select id="Sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
                     </div>
-                </div>
-
-                <div class="section-header"><i class="fas fa-dna"></i> Oncology Details</div>
-                <div class="form-grid">
-                    <div class="form-group"><label>Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div>
-                    <div class="form-group"><label>Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div>
-                    <div class="form-group">
-                        <label>Specific Name</label>
-                        <select id="Cancer_Name" class="form-control" onchange="app.toggleOther(this, 'Cancer_Name_Other')"><option>AML</option><option>Breast</option><option>Lung</option><option>Prostate</option><option>Other</option></select>
-                        <div class="other-field" id="Cancer_Name_Other_Group"><input type="text" id="Cancer_Name_Other" class="form-control" placeholder="Specify Cancer Name"></div>
+                    <div class="grid-3">
+                        <div class="form-group"><label>Admission</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div>
+                        <div class="form-group"><label>Discharge</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div>
+                        <div class="form-group"><label>LOS</label><input type="number" id="LOS" readonly class="form-control"></div>
                     </div>
-                    <div class="form-group"><label>Stage</label><select id="Stage" class="form-control"><option>Stage I</option><option>Stage II</option><option>Stage III</option><option>Stage IV</option><option>Not documented</option></select></div>
-                    <div class="form-group"><label>Treatment</label><select id="Treatment" class="form-control"><option>Chemotherapy</option><option>Radiotherapy</option><option>Both</option><option>Surgery</option><option>Supported care only</option></select></div>
-                    <div class="form-group"><label>Immunosuppression</label><select id="Immunosuppression" class="form-control"><option>Yes</option><option>No</option><option>Not documented</option></select></div>
-                    <div class="form-group"><label>Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div>
-                </div>
 
-                <div class="section-header"><i class="fas fa-pills"></i> Antibiotics <button type="button" class="btn btn-ghost btn-sm" onclick="app.addAbxSlot()" style="margin-left:auto;"><i class="fas fa-plus"></i> Add</button></div>
-                <div id="abx-container"></div>
-                <p id="abx-limit" class="hidden" style="color:var(--warning); font-size:12px; margin-top:5px;">Maximum 5 antibiotics reached.</p>
+                    <div class="section-divider"><i class="fas fa-dna"></i> Oncology</div>
+                    <div class="grid-3">
+                        <div class="form-group"><label>Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div>
+                        <div class="form-group"><label>Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div>
+                        <div class="form-group"><label>Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div>
+                    </div>
 
-                <div class="section-header"><i class="fas fa-vial"></i> Cultures <button type="button" class="btn btn-ghost btn-sm" onclick="app.addCultSlot()" style="margin-left:auto;"><i class="fas fa-plus"></i> Add</button></div>
-                <div id="cult-container"></div>
-                <p id="cult-limit" class="hidden" style="color:var(--warning); font-size:12px; margin-top:5px;">Maximum 3 cultures reached.</p>
+                    <div class="section-divider"><i class="fas fa-pills"></i> Antibiotics <button type="button" class="btn btn-ghost btn-sm" onclick="app.addAbxSlot()" style="margin-left:auto; padding:4px 10px; font-size:11px;"><i class="fas fa-plus"></i> Add</button></div>
+                    <div id="abx-container"></div>
+                    <p id="abx-limit" class="hidden" style="color:var(--warning); font-size:11px; margin-top:4px;">Maximum 5 reached.</p>
 
-                <div style="text-align: right; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
-                    <button type="button" class="btn btn-ghost" onclick="app.closeModals()" style="margin-right: 12px;">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btn-submit-record">Save Record</button>
-                </div>
-            </form>
+                    <div class="section-divider"><i class="fas fa-vial"></i> Cultures <button type="button" class="btn btn-ghost btn-sm" onclick="app.addCultSlot()" style="margin-left:auto; padding:4px 10px; font-size:11px;"><i class="fas fa-plus"></i> Add</button></div>
+                    <div id="cult-container"></div>
+                    <p id="cult-limit" class="hidden" style="color:var(--warning); font-size:11px; margin-top:4px;">Maximum 3 reached.</p>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="app.closeModals()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-record" onclick="document.getElementById('record-form').requestSubmit()">Save Record</button>
+            </div>
         </div>
     </div>
 
-    <!-- MODAL: USER FORM -->
+    <!-- MODAL: User Form -->
     <div id="modal-user" class="modal-overlay">
-        <div class="modal" style="max-width: 500px;">
-            <div class="modal-header"><h2>Add System User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
-            <form id="user-form" onsubmit="app.saveUser(event)">
-                <div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div>
-                <div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div>
-                <div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 16px;">Create User</button>
-            </form>
+        <div class="modal" style="max-width:400px;">
+            <div class="modal-header"><h2>Add User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
+            <div class="modal-body">
+                <form id="user-form" onsubmit="app.saveUser(event)">
+                    <div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div>
+                    <div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('user-form').requestSubmit()">Create</button></div>
         </div>
     </div>
 
     <script>
-        // =========================================================================
-        // CONFIG - PASTE YOUR DEPLOYED WEB APP URL HERE
-        // =========================================================================
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwu-wJBBdrgJLE1vdjNQlrj9tgAXOd_1QafreJDCWjIiGUFKHdGNrPjzfbYTnBdYHih0w/exec'; 
 
         class ResearchApp {
             constructor() {
-                this.user = null;
-                this.rawData = [];
-                this.filteredData = [];
-                this.antibioticsList = [];
-                this.charts = {};
-                this.formMode = 'new'; // 'new', 'edit', 'view'
+                this.user = null; this.rawData = []; this.filteredData = [];
+                this.antibioticsList = []; this.charts = {}; this.formMode = 'new';
                 this.init();
             }
 
             init() {
                 document.getElementById('login-form').addEventListener('submit', (e) => this.login(e));
-            }
-
-            /* ─── AUTH ─── */
-            login(e) {
-                e.preventDefault();
-                const u = document.getElementById('username').value;
-                const p = document.getElementById('password').value;
-                this.apiCall({ action: 'login', username: u, password: p }, (res) => {
-                    if(res.success) {
-                        this.user = res.user;
-                        this.showApp();
-                    } else { alert(res.message || 'Login failed'); }
+                // Close custom dropdowns if clicked outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.search-select')) {
+                        document.querySelectorAll('.search-select-dropdown').forEach(dd => dd.classList.remove('show'));
+                    }
                 });
             }
 
-            logout() { location.reload(); }
+            /* ─── Toast System ─── */
+            showToast(msg, type = 'success') {
+                const c = document.getElementById('toast-container');
+                const t = document.createElement('div');
+                t.className = `toast toast-${type}`;
+                t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;
+                c.appendChild(t);
+                setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(20px)'; setTimeout(() => t.remove(), 200); }, 3000);
+            }
 
+            /* ─── Auth & Nav ─── */
+            login(e) {
+                e.preventDefault();
+                this.apiCall({ action: 'login', username: document.getElementById('username').value, password: document.getElementById('password').value }, (res) => {
+                    if(res.success) { this.user = res.user; this.showApp(); } 
+                    else { this.showToast(res.message || 'Login failed', 'error'); }
+                });
+            }
+            logout() { location.reload(); }
             showApp() {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('app-view').style.display = 'flex';
                 document.getElementById('user-name').textContent = this.user.username;
                 document.getElementById('user-role-text').textContent = this.user.role;
-                document.getElementById('user-avatar').textContent = this.user.username.charAt(0).toUpperCase();
-                
-                // Role-based visibility
+                document.getElementById('user-avatar').textContent = this.user.username.charAt(0);
                 if(this.user.role === 'Admin' || this.user.role === 'SuperAdmin') {
                     document.getElementById('nav-analytics').classList.remove('hidden');
                     document.getElementById('nav-users').classList.remove('hidden');
                 }
-                
-                this.loadData();
-                this.loadAntibiotics();
-                this.navigate('dashboard');
+                this.loadData(); this.loadAntibiotics(); this.navigate('dashboard');
             }
-
-            /* ─── NAVIGATION ─── */
             navigate(view) {
                 ['dashboard', 'records', 'analytics', 'users'].forEach(v => {
                     document.getElementById('view-' + v).classList.add('hidden');
@@ -346,74 +355,76 @@
                 });
                 document.getElementById('view-' + view).classList.remove('hidden');
                 document.getElementById('nav-' + view).classList.add('active');
-
-                const headers = { 'dashboard': ['Dashboard', 'Overview of metrics'], 'records': ['Patient Records', 'Manage study data'], 'analytics': ['Data Analytics', 'Statistical breakdowns'], 'users': ['User Management', 'Control system access'] };
-                document.getElementById('page-heading').textContent = headers[view][0];
-                document.getElementById('page-subheading').textContent = headers[view][1];
-                
+                const h = { 'dashboard': ['Dashboard', 'Clinical Overview'], 'records': ['Patient Records', 'Manage Data'], 'analytics': ['Data Analytics', 'Visual Statistics'], 'users': ['User Management', 'Access Control'] };
+                document.getElementById('page-heading').textContent = h[view][0];
+                document.getElementById('page-subheading').textContent = h[view][1];
                 if(view === 'analytics') this.renderCharts();
                 document.getElementById('sidebar').classList.remove('active');
             }
 
-            /* ─── DATA CALLS ─── */
-            apiCall(payload, callback) {
-                fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(r => r.json())
-                .then(callback)
-                .catch(e => console.error("API Error:", e));
+            /* ─── Data Calls ─── */
+            apiCall(p, cb) {
+                fetch(GAS_URL, { method: 'POST', body: JSON.stringify(p) }).then(r => r.json()).then(cb).catch(e => this.showToast('Network Error', 'error'));
             }
-
             loadData() {
-                this.apiCall({ action: 'read' }, (res) => {
-                    this.rawData = res || [];
-                    this.filteredData = [...this.rawData];
-                    this.renderRecords();
-                    this.updateStats();
-                    this.renderRecent();
-                });
+                this.apiCall({ action: 'read' }, (res) => { this.rawData = res || []; this.filteredData = [...this.rawData]; this.renderRecords(); this.updateStats(); this.renderRecent(); });
             }
-
             loadAntibiotics() {
                 this.apiCall({ action: 'getAntibiotics' }, (res) => { this.antibioticsList = res || []; });
             }
-
             loadUsers() {
                 this.apiCall({ action: 'getUsers' }, (res) => { this.users = res || []; this.renderUsers(); });
             }
 
-            /* ─── FORM LOGIC ─── */
-            toggleOther(selectEl, otherId) {
-                const group = document.getElementById(otherId + '_Group');
-                if(selectEl.value === 'Other') { group.style.display = 'block'; } 
-                else { group.style.display = 'none'; document.getElementById(otherId).value = ''; }
+            /* ─── Custom Searchable Abx Logic ─── */
+            openAbxSearch(inputEl, dropdownEl) {
+                document.querySelectorAll('.search-select-dropdown').forEach(dd => dd.classList.remove('show')); // close others
+                dropdownEl.classList.add('show');
+                this.filterAbxList(inputEl.value, dropdownEl);
+            }
+            filterAbxList(term, dropdownEl) {
+                const filtered = this.antibioticsList.filter(a => a.name.toLowerCase().includes(term.toLowerCase()) || a.class.toLowerCase().includes(term.toLowerCase()));
+                let html = '';
+                if(filtered.length === 0) { html = '<div style="padding:8px 14px; font-size:13px; color:var(--text-dim);">No match found</div>'; }
+                else {
+                    filtered.forEach(a => {
+                        html += `<div class="search-select-item" onclick="app.selectAbx(this, '${a.name}', '${a.class}', '${a.category}')">
+                            ${a.name}
+                            <div class="meta"><span>${a.class}</span><span>${a.category}</span></div>
+                        </div>`;
+                    });
+                }
+                dropdownEl.innerHTML = html;
+            }
+            selectAbx(el, name, cls, cat) {
+                const slot = el.closest('.slot-card');
+                slot.querySelector('.abx-name-input').value = name;
+                slot.querySelector('.abx-class-input').value = cls;
+                slot.querySelector('.abx-cat-input').value = cat;
+                el.closest('.search-select-dropdown').classList.remove('show');
             }
 
+            /* ─── Dynamic Form Slots ─── */
             addAbxSlot(data = null) {
                 const current = document.querySelectorAll('.abx-slot').length;
                 if(current >= 5) { document.getElementById('abx-limit').classList.remove('hidden'); return; }
                 const i = current + 1;
-                const html = `<div class="dynamic-card abx-slot" id="abx_slot_${i}">
-                    <button type="button" class="remove-slot" onclick="app.removeSlot(this, 'abx')"><i class="fas fa-times"></i></button>
-                    <div style="font-weight:600; color:var(--primary); margin-bottom:12px;">Episode #${i}</div>
-                    <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                        <div class="form-group" style="margin:0;"><label>Name</label><input type="text" id="Abx_${i}_Name" class="form-control abx-input" list="abx-datalist" value="${data ? data.name : ''}"></div>
-                        <div class="form-group" style="margin:0;"><label>Class</label><input type="text" id="Abx_${i}_Class" class="form-control abx-class" readonly value="${data ? data.cls : ''}"></div>
-                        <div class="form-group" style="margin:0;"><label>AWaRe</label><input type="text" id="Abx_${i}_Category" class="form-control abx-cat" readonly value="${data ? data.cat : ''}"></div>
-                        <div class="form-group" style="margin:0;"><label>Indication</label><select id="Abx_${i}_Indication" class="form-control"><option ${data && data.ind==='Empirical'?'selected':''}>Empirical</option><option ${data && data.ind==='Targeted'?'selected':''}>Targeted</option><option ${data && data.ind==='Prophylaxis'?'selected':''}>Prophylaxis</option></select></div>
+                const html = `<div class="slot-card abx-slot" id="abx_slot_${i}">
+                    <button type="button" class="slot-remove" onclick="app.removeSlot(this, 'abx')"><i class="fas fa-times"></i></button>
+                    <div class="slot-title"><i class="fas fa-pills"></i> Episode #${i}</div>
+                    <div class="grid-3" style="gap:8px;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Name</label>
+                            <div class="search-select">
+                                <input type="text" class="abx-name-input" value="${data ? data.name : ''}" placeholder="Search WHO list..." onfocus="app.openAbxSearch(this, this.nextElementSibling)" oninput="app.filterAbxList(this.value, this.nextElementSibling)">
+                                <div class="search-select-dropdown"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin:0;"><label>Class</label><input type="text" class="form-control abx-class-input" readonly value="${data ? data.cls : ''}"></div>
+                        <div class="form-group" style="margin:0;"><label>AWaRe</label><input type="text" class="form-control abx-cat-input" readonly value="${data ? data.cat : ''}"></div>
                     </div>
                 </div>`;
                 document.getElementById('abx-container').insertAdjacentHTML('beforeend', html);
-                
-                // Re-attach autocomplete listener
-                const newInput = document.getElementById(`Abx_${i}_Name`);
-                newInput.addEventListener('change', (e) => {
-                    const found = this.antibioticsList.find(a => a.name.toLowerCase() === e.target.value.toLowerCase());
-                    if(found) {
-                        e.target.closest('.abx-slot').querySelector('.abx-class').value = found.class;
-                        e.target.closest('.abx-slot').querySelector('.abx-cat').value = found.category;
-                    }
-                });
-
                 if(current + 1 >= 5) document.getElementById('abx-limit').classList.remove('hidden');
             }
 
@@ -421,14 +432,13 @@
                 const current = document.querySelectorAll('.cult-slot').length;
                 if(current >= 3) { document.getElementById('cult-limit').classList.remove('hidden'); return; }
                 const i = current + 1;
-                const html = `<div class="dynamic-card cult-slot" id="cult_slot_${i}">
-                    <button type="button" class="remove-slot" onclick="app.removeSlot(this, 'cult')"><i class="fas fa-times"></i></button>
-                    <div style="font-weight:600; color:var(--warning); margin-bottom:12px;">Culture #${i}</div>
-                    <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                        <div class="form-group" style="margin:0;"><label>Type</label><select id="Cult_${i}_Type" class="form-control"><option ${data && data.type==='Blood'?'selected':''}>Blood</option><option ${data && data.type==='Urine'?'selected':''}>Urine</option><option ${data && data.type==='Sputum'?'selected':''}>Sputum</option><option ${data && data.type==='Wound'?'selected':''}>Wound</option></select></div>
-                        <div class="form-group" style="margin:0;"><label>Result</label><select id="Cult_${i}_Result" class="form-control"><option ${data && data.res==='Positive'?'selected':''}>Positive</option><option ${data && data.res==='Negative'?'selected':''}>Negative</option><option ${data && data.res==='No Growth'?'selected':''}>No Growth</option></select></div>
-                        <div class="form-group" style="margin:0;"><label>Organism</label><input type="text" id="Cult_${i}_Organism" class="form-control" value="${data ? data.org : ''}"></div>
-                        <div class="form-group" style="margin:0;"><label>XDR?</label><select id="Cult_${i}_XDR" class="form-control"><option ${data && data.xdr==='No'?'selected':''}>No</option><option ${data && data.xdr==='Yes'?'selected':''}>Yes</option></select></div>
+                const html = `<div class="slot-card cult-slot" id="cult_slot_${i}">
+                    <button type="button" class="slot-remove" onclick="app.removeSlot(this, 'cult')"><i class="fas fa-times"></i></button>
+                    <div class="slot-title"><i class="fas fa-vial"></i> Culture #${i}</div>
+                    <div class="grid-3" style="gap:8px;">
+                        <div class="form-group" style="margin:0;"><label>Type</label><select class="form-control cult-type-input"><option ${data && data.type==='Blood'?'selected':''}>Blood</option><option ${data && data.type==='Urine'?'selected':''}>Urine</option><option ${data && data.type==='Sputum'?'selected':''}>Sputum</option></select></div>
+                        <div class="form-group" style="margin:0;"><label>Organism</label><input type="text" class="form-control cult-org-input" value="${data ? data.org : ''}"></div>
+                        <div class="form-group" style="margin:0;"><label>XDR?</label><select class="form-control cult-xdr-input"><option ${data && data.xdr==='No'?'selected':''}>No</option><option ${data && data.xdr==='Yes'?'selected':''}>Yes</option></select></div>
                     </div>
                 </div>`;
                 document.getElementById('cult-container').insertAdjacentHTML('beforeend', html);
@@ -436,10 +446,9 @@
             }
 
             removeSlot(btn, type) {
-                btn.closest('.dynamic-card').remove();
+                btn.closest('.slot-card').remove();
                 this.reindexSlots(type);
-                if(type === 'abx') document.getElementById('abx-limit').classList.add('hidden');
-                if(type === 'cult') document.getElementById('cult-limit').classList.add('hidden');
+                document.getElementById(`${type}-limit`).classList.add('hidden');
             }
 
             reindexSlots(type) {
@@ -447,16 +456,7 @@
                 slots.forEach((slot, index) => {
                     const i = index + 1;
                     slot.id = `${type}_slot_${i}`;
-                    // Update inner HTML IDs and names (simplistic approach for dynamic forms)
-                    slot.querySelector('div[style*="font-weight:600"]').innerText = `Episode #${i}`;
-                    const inputs = slot.querySelectorAll('input, select');
-                    inputs.forEach(inp => {
-                        const oldId = inp.id;
-                        const prefix = type === 'abx' ? 'Abx' : 'Cult';
-                        const suffix = oldId.split('_').slice(2).join('_');
-                        const newId = `${prefix}_${i}_${suffix}`;
-                        inp.id = newId;
-                    });
+                    slot.querySelector('.slot-title').innerHTML = `<i class="fas fa-${type==='abx'?'pills':'vial'}"></i> ${type==='abx'?'Episode':'Culture'} #${i}`;
                 });
             }
 
@@ -467,99 +467,59 @@
                 document.getElementById('cult-container').innerHTML = '';
                 document.getElementById('abx-limit').classList.add('hidden');
                 document.getElementById('cult-limit').classList.add('hidden');
-                
-                // Reset "Other" fields visibility
-                document.querySelectorAll('.other-field').forEach(el => el.style.display = 'none');
 
                 const isEditable = mode !== 'view';
-                document.querySelectorAll('#record-form input, #record-form select').forEach(el => {
-                    if(el.id !== 'Study_ID') el.removeAttribute('disabled');
-                });
+                document.querySelectorAll('#record-form input, #record-form select').forEach(el => { if(el.id !== 'Study_ID') el.disabled = !isEditable; });
+                document.getElementById('btn-submit-record').classList.toggle('hidden', !isEditable);
 
                 if(mode === 'new') {
                     document.getElementById('Study_ID').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
                     document.getElementById('modal-record-title').textContent = 'New Patient Record';
-                    document.getElementById('btn-submit-record').classList.remove('hidden');
                     document.getElementById('btn-submit-record').textContent = 'Save Record';
                 } else {
-                    // Populate for Edit/View
                     document.getElementById('Study_ID').value = rec.Study_ID;
                     document.getElementById('Age').value = rec.Age;
                     document.getElementById('Sex').value = rec.Sex;
                     document.getElementById('Admission_Date').value = rec.Admission_Date;
                     document.getElementById('Discharge_Date').value = rec.Discharge_Date;
                     document.getElementById('LOS').value = rec.LOS;
-                    
-                    // Handle Selects with potential "Other" values
-                    this.setSelectAndOther('Ward', rec.Ward, 'Ward_Other', rec.Ward_Other);
                     document.getElementById('Diagnosis').value = rec.Diagnosis || '';
                     document.getElementById('Cancer_Type').value = rec.Cancer_Type || '';
-                    this.setSelectAndOther('Cancer_Name', rec.Cancer_Name, 'Cancer_Name_Other', rec.Cancer_Name_Other);
-                    document.getElementById('Stage').value = rec.Stage || '';
-                    document.getElementById('Treatment').value = rec.Treatment || '';
-                    document.getElementById('Immunosuppression').value = rec.Immunosuppression || '';
                     document.getElementById('Outcome').value = rec.Outcome || '';
 
-                    // Populate Dynamic Slots
-                    for(let i=1; i<=5; i++) {
-                        if(rec[`Abx_${i}_Name`]) {
-                            this.addAbxSlot({ name: rec[`Abx_${i}_Name`], cls: rec[`Abx_${i}_Class`], cat: rec[`Abx_${i}_Category`], ind: rec[`Abx_${i}_Indication`] });
-                        }
-                    }
-                    for(let i=1; i<=3; i++) {
-                        if(rec[`Cult_${i}_Type`]) {
-                            this.addCultSlot({ type: rec[`Cult_${i}_Type`], res: rec[`Cult_${i}_Result`], org: rec[`Cult_${i}_Organism`], xdr: rec[`Cult_${i}_XDR`] });
-                        }
-                    }
+                    for(let i=1; i<=5; i++) { if(rec[`Abx_${i}_Name`]) this.addAbxSlot({name: rec[`Abx_${i}_Name`], cls: rec[`Abx_${i}_Class`], cat: rec[`Abx_${i}_Category`]}); }
+                    for(let i=1; i<=3; i++) { if(rec[`Cult_${i}_Type`]) this.addCultSlot({type: rec[`Cult_${i}_Type`], org: rec[`Cult_${i}_Organism`], xdr: rec[`Cult_${i}_XDR`]}); }
 
-                    if(mode === 'view') {
-                        document.getElementById('modal-record-title').textContent = 'View Patient Record';
-                        document.getElementById('btn-submit-record').classList.add('hidden');
-                        document.querySelectorAll('#record-form input, #record-form select').forEach(el => el.setAttribute('disabled', 'true'));
-                    } else {
-                        document.getElementById('modal-record-title').textContent = 'Edit Patient Record';
-                        document.getElementById('btn-submit-record').classList.remove('hidden');
-                        document.getElementById('btn-submit-record').textContent = 'Update Record';
-                    }
+                    document.getElementById('modal-record-title').textContent = mode === 'edit' ? 'Edit Record' : 'View Record';
+                    document.getElementById('btn-submit-record').textContent = 'Update Record';
                 }
                 document.getElementById('modal-record').style.display = 'flex';
-            }
-
-            setSelectAndOther(selectId, dbValue, otherId, otherDbValue) {
-                const sel = document.getElementById(selectId);
-                const opt = Array.from(sel.options).find(o => o.value === dbValue);
-                if(opt) { sel.value = dbValue; } 
-                else { sel.value = 'Other'; document.getElementById(otherId + '_Group').style.display = 'block'; document.getElementById(otherId).value = otherDbValue || dbValue; }
             }
 
             saveRecord(e) {
                 e.preventDefault();
                 const payload = { action: 'save', user: this.user.username, data: {} };
-                const fields = ['Study_ID', 'Age', 'Sex', 'Admission_Date', 'Discharge_Date', 'LOS', 'Ward', 'Ward_Other', 'Diagnosis', 'Cancer_Type', 'Cancer_Name', 'Cancer_Name_Other', 'Stage', 'Treatment', 'Immunosuppression', 'Outcome'];
-                fields.forEach(f => payload.data[f] = document.getElementById(f).value);
+                ['Study_ID', 'Age', 'Sex', 'Admission_Date', 'Discharge_Date', 'LOS', 'Diagnosis', 'Cancer_Type', 'Outcome'].forEach(f => payload.data[f] = document.getElementById(f).value);
                 
-                const abxSlots = document.querySelectorAll('.abx-slot').length;
-                for(let i=1; i<=abxSlots; i++) {
-                    payload.data[`Abx_${i}_Name`] = document.getElementById(`Abx_${i}_Name`)?.value || '';
-                    payload.data[`Abx_${i}_Class`] = document.getElementById(`Abx_${i}_Class`)?.value || '';
-                    payload.data[`Abx_${i}_Category`] = document.getElementById(`Abx_${i}_Category`)?.value || '';
-                    payload.data[`Abx_${i}_Indication`] = document.getElementById(`Abx_${i}_Indication`)?.value || '';
+                const abxSlots = document.querySelectorAll('.abx-slot');
+                for(let i=0; i<5; i++) {
+                    const slot = abxSlots[i];
+                    payload.data[`Abx_${i+1}_Name`] = slot ? slot.querySelector('.abx-name-input').value : '';
+                    payload.data[`Abx_${i+1}_Class`] = slot ? slot.querySelector('.abx-class-input').value : '';
+                    payload.data[`Abx_${i+1}_Category`] = slot ? slot.querySelector('.abx-cat-input').value : '';
                 }
-                // Clear remaining ABX slots in case user deleted one
-                for(let i=abxSlots+1; i<=5; i++) { payload.data[`Abx_${i}_Name`] = ''; payload.data[`Abx_${i}_Class`] = ''; payload.data[`Abx_${i}_Category`] = ''; payload.data[`Abx_${i}_Indication`] = ''; }
 
-                const cultSlots = document.querySelectorAll('.cult-slot').length;
-                for(let i=1; i<=cultSlots; i++) {
-                    payload.data[`Cult_${i}_Type`] = document.getElementById(`Cult_${i}_Type`)?.value || '';
-                    payload.data[`Cult_${i}_Result`] = document.getElementById(`Cult_${i}_Result`)?.value || '';
-                    payload.data[`Cult_${i}_Organism`] = document.getElementById(`Cult_${i}_Organism`)?.value || '';
-                    payload.data[`Cult_${i}_XDR`] = document.getElementById(`Cult_${i}_XDR`)?.value || '';
+                const cultSlots = document.querySelectorAll('.cult-slot');
+                for(let i=0; i<3; i++) {
+                    const slot = cultSlots[i];
+                    payload.data[`Cult_${i+1}_Type`] = slot ? slot.querySelector('.cult-type-input').value : '';
+                    payload.data[`Cult_${i+1}_Organism`] = slot ? slot.querySelector('.cult-org-input').value : '';
+                    payload.data[`Cult_${i+1}_XDR`] = slot ? slot.querySelector('.cult-xdr-input').value : '';
                 }
-                for(let i=cultSlots+1; i<=3; i++) { payload.data[`Cult_${i}_Type`] = ''; payload.data[`Cult_${i}_Result`] = ''; payload.data[`Cult_${i}_Organism`] = ''; payload.data[`Cult_${i}_XDR`] = ''; }
 
                 this.apiCall(payload, (res) => {
-                    if(res.success) { this.closeModals(); this.loadData(); alert(res.message); }
-                    else { alert(res.message || 'Error saving'); }
+                    if(res.success) { this.closeModals(); this.loadData(); this.showToast(res.message); }
+                    else { this.showToast(res.message || 'Error', 'error'); }
                 });
             }
 
@@ -569,129 +529,90 @@
                 if(s && e) document.getElementById('LOS').value = Math.round((new Date(e) - new Date(s)) / 86400000);
             }
 
-            /* ─── RENDERING ─── */
+            /* ─── Rendering ─── */
             renderRecords() {
                 const tbody = document.getElementById('records-body');
                 tbody.innerHTML = '';
                 const isAdmin = this.user.role === 'Admin' || this.user.role === 'SuperAdmin';
-                
                 this.filteredData.forEach(r => {
                     const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
-                    let actions = `<button class="btn btn-icon" onclick="app.showRecordModal('view', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-eye"></i></button>`;
-                    if(isAdmin) {
-                        actions += `<button class="btn btn-icon" onclick="app.showRecordModal('edit', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-pencil-alt"></i></button>`;
-                    }
+                    let actions = `<button class="btn-icon" onclick="app.showRecordModal('view', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-eye"></i></button>`;
+                    if(isAdmin) actions += `<button class="btn-icon" onclick="app.showRecordModal('edit', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-pencil-alt"></i></button>`;
                     tbody.innerHTML += `<tr>
-                        <td style="font-weight:600; color:var(--primary);">${r.Study_ID || '-'}</td>
+                        <td style="font-weight:600; color:var(--accent);">${r.Study_ID || '-'}</td>
                         <td>${r.Age} / ${r.Sex}</td>
                         <td>${r.Diagnosis || '-'}</td>
-                        <td>${r.Cancer_Name_Other || r.Cancer_Name || '-'}</td>
-                        <td>${r.Admission_Date || '-'}</td>
-                        <td><span class="badge ${bc}">${r.Outcome || 'N/A'}</span></td>
-                        <td style="text-align:right; display:flex; gap:5px; justify-content:flex-end;">${actions}</td>
+                        <td>${r.Cancer_Name || '-'}</td>
+                        <td><span class="badge ${bc}">${r.Outcome}</span></td>
+                        <td style="text-align:right;">${actions}</td>
                     </tr>`;
                 });
             }
-
             renderRecent() {
                 const tbody = document.getElementById('dash-recent-body');
                 tbody.innerHTML = '';
                 [...this.rawData].reverse().slice(0, 5).forEach(r => {
                     const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
-                    tbody.innerHTML += `<tr><td>${r.Study_ID}</td><td>${r.Diagnosis || '-'}</td><td>${r.Admission_Date || '-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td></tr>`;
+                    tbody.innerHTML += `<tr><td style="color:var(--accent); font-weight:600;">${r.Study_ID}</td><td>${r.Diagnosis || '-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td></tr>`;
                 });
             }
-
             updateStats() {
                 const total = this.rawData.length;
                 document.getElementById('stat-total').textContent = total;
-                let abxCount = 0, cultCount = 0;
-                this.rawData.forEach(r => {
-                    for(let i=1; i<=5; i++) { if(r[`Abx_${i}_Name`]) abxCount++; }
-                    for(let i=1; i<=3; i++) { if(r[`Cult_${i}_Type`]) cultCount++; }
-                });
+                let abxCount=0, cultCount=0;
+                this.rawData.forEach(r => { for(let i=1;i<=5;i++) if(r[`Abx_${i}_Name`]) abxCount++; for(let i=1;i<=3;i++) if(r[`Cult_${i}_Type`]) cultCount++; });
                 document.getElementById('stat-abx').textContent = abxCount;
                 document.getElementById('stat-cult').textContent = cultCount;
-                const deaths = this.rawData.filter(r => r.Outcome === 'Died').length;
-                document.getElementById('stat-mort').textContent = total ? Math.round((deaths/total)*100) + '%' : '0%';
+                document.getElementById('stat-mort').textContent = total ? Math.round((this.rawData.filter(r=>r.Outcome==='Died').length/total)*100)+'%' : '0%';
             }
 
-            /* ─── CHARTS ─── */
+            /* ─── Charts ─── */
             renderCharts() {
                 if(!this.rawData.length) return;
-                Object.values(this.charts).forEach(c => c.destroy());
-                this.charts = {};
-                const muted = '#94A3B8';
-                const grid = 'rgba(255,255,255,0.1)';
-
-                const sexData = this.rawData.reduce((acc, r) => { const s = r.Sex || 'Unknown'; acc[s] = (acc[s]||0) + 1; return acc; }, {});
-                this.charts.sex = new Chart(document.getElementById('chart-sex'), { type: 'doughnut', data: { labels: Object.keys(sexData), datasets: [{ data: Object.values(sexData), backgroundColor: ['#6366F1', '#10B981', '#F59E0B'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
-
-                const ageBins = { '0-18':0, '19-35':0, '36-50':0, '51-65':0, '65+':0 };
-                this.rawData.forEach(r => { const a=parseInt(r.Age); if(!a) return; if(a<=18) ageBins['0-18']++; else if(a<=35) ageBins['19-35']++; else if(a<=50) ageBins['36-50']++; else if(a<=65) ageBins['51-65']++; else ageBins['65+']++; });
-                this.charts.age = new Chart(document.getElementById('chart-age'), { type: 'bar', data: { labels: Object.keys(ageBins), datasets: [{ label: 'Patients', data: Object.values(ageBins), backgroundColor: '#6366F1', borderRadius: 4 }] }, options: { scales: { x: { ticks: { color: muted }, grid: { display: false } }, y: { ticks: { color: muted }, grid: { color: grid } } }, plugins: { legend: { display: false } } } });
-
-                const cancerData = this.rawData.reduce((acc, r) => { const t = r.Cancer_Type || 'Unknown'; acc[t] = (acc[t]||0) + 1; return acc; }, {});
-                this.charts.cancer = new Chart(document.getElementById('chart-cancer'), { type: 'doughnut', data: { labels: Object.keys(cancerData), datasets: [{ data: Object.values(cancerData), backgroundColor: ['#10B981', '#EF4444', '#3B82F6'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
-
-                const outData = this.rawData.reduce((acc, r) => { const o = r.Outcome || 'Unknown'; acc[o] = (acc[o]||0) + 1; return acc; }, {});
-                this.charts.outcome = new Chart(document.getElementById('chart-outcome'), { type: 'doughnut', data: { labels: Object.keys(outData), datasets: [{ data: Object.values(outData), backgroundColor: ['#10B981', '#EF4444', '#F59E0B', '#3B82F6'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
-
-                let awareData = { 'Access': 0, 'Watch': 0, 'Reserve': 0 };
-                this.rawData.forEach(r => { for(let i=1; i<=5; i++) { const cat = r[`Abx_${i}_Category`]; if(cat && awareData[cat] !== undefined) awareData[cat]++; } });
-                this.charts.aware = new Chart(document.getElementById('chart-aware'), { type: 'doughnut', data: { labels: Object.keys(awareData), datasets: [{ data: Object.values(awareData), backgroundColor: ['#10B981', '#F59E0B', '#EF4444'] }] }, options: { plugins: { legend: { labels: { color: muted } } } } });
-
-                let resistData = { 'XDR_Positive': 0 };
-                this.rawData.forEach(r => { for(let i=1; i<=3; i++) { if(r[`Cult_${i}_XDR`] === 'Yes') resistData['XDR_Positive']++; } });
-                this.charts.resist = new Chart(document.getElementById('chart-resist'), { type: 'bar', data: { labels: ['XDR Positive Cultures'], datasets: [{ label: 'Count', data: Object.values(resistData), backgroundColor: '#EF4444', borderRadius: 4 }] }, options: { scales: { x: { ticks: { color: muted }, grid: { display: false } }, y: { ticks: { color: muted }, grid: { color: grid } } }, plugins: { legend: { display: false } } } });
+                Object.values(this.charts).forEach(c => c.destroy()); this.charts = {};
+                const m = '#64748b', g = 'rgba(255,255,255,0.05)';
+                const sexData = this.rawData.reduce((a,r)=>{const s=r.Sex||'Unknown';a[s]=(a[s]||0)+1;return a;},{});
+                this.charts.sex = new Chart(document.getElementById('chart-sex'), {type:'doughnut',data:{labels:Object.keys(sexData),datasets:[{data:Object.values(sexData),backgroundColor:['#0ea5e9','#f59e0b','#10b981']}]},options:{plugins:{legend:{labels:{color:m}}}}});
+                const ageBins={'0-18':0,'19-35':0,'36-50':0,'51-65':0,'65+':0};
+                this.rawData.forEach(r=>{const a=parseInt(r.Age);if(!a)return;if(a<=18)ageBins['0-18']++;else if(a<=35)ageBins['19-35']++;else if(a<=50)ageBins['36-50']++;else if(a<=65)ageBins['51-65']++;else ageBins['65+']++;});
+                this.charts.age = new Chart(document.getElementById('chart-age'), {type:'bar',data:{labels:Object.keys(ageBins),datasets:[{data:Object.values(ageBins),backgroundColor:'#0ea5e9',borderRadius:4}]},options:{scales:{x:{ticks:{color:m},grid:{display:false}},y:{ticks:{color:m},grid:{color:g}}},plugins:{legend:{display:false}}}});
+                const cancerData = this.rawData.reduce((a,r)=>{const t=r.Cancer_Type||'Unknown';a[t]=(a[t]||0)+1;return a;},{});
+                this.charts.cancer = new Chart(document.getElementById('chart-cancer'), {type:'doughnut',data:{labels:Object.keys(cancerData),datasets:[{data:Object.values(cancerData),backgroundColor:['#10b981','#ef4444','#0ea5e9']}]},options:{plugins:{legend:{labels:{color:m}}}}});
+                let awareData={'Access':0,'Watch':0,'Reserve':0};
+                this.rawData.forEach(r=>{for(let i=1;i<=5;i++){const c=r[`Abx_${i}_Category`];if(c&&awareData[c]!==undefined)awareData[c]++;}});
+                this.charts.aware = new Chart(document.getElementById('chart-aware'), {type:'doughnut',data:{labels:Object.keys(awareData),datasets:[{data:Object.values(awareData),backgroundColor:['#10b981','#f59e0b','#ef4444']}]},options:{plugins:{legend:{labels:{color:m}}}}});
             }
 
-            /* ─── UTILS ─── */
+            /* ─── Utils ─── */
             filterRecords() {
                 const term = document.getElementById('global-search').value.toLowerCase();
                 const outcome = document.getElementById('filter-outcome').value;
                 this.filteredData = this.rawData.filter(r => {
-                    const matchText = !term || (r.Study_ID && r.Study_ID.toLowerCase().includes(term)) || (r.Diagnosis && r.Diagnosis.toLowerCase().includes(term)) || (r.Cancer_Name && r.Cancer_Name.toLowerCase().includes(term));
+                    const matchText = !term || (r.Study_ID&&r.Study_ID.toLowerCase().includes(term)) || (r.Diagnosis&&r.Diagnosis.toLowerCase().includes(term));
                     const matchOutcome = !outcome || r.Outcome === outcome;
                     return matchText && matchOutcome;
                 });
                 this.renderRecords();
             }
-
             exportCSV() {
-                if(!this.rawData.length) return alert("No data to export");
-                const headers = Object.keys(this.rawData[0]);
-                let csv = headers.join(",") + "\n";
-                this.rawData.forEach(row => {
-                    csv += headers.map(h => `"${(row[h]||'').toString().replace(/"/g, '""')}"`).join(",") + "\n";
-                });
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = 'ResearchData.csv'; a.click();
+                if(!this.rawData.length) return this.showToast("No data", 'error');
+                const h = Object.keys(this.rawData[0]); let csv = h.join(",") + "\n";
+                this.rawData.forEach(r => csv += h.map(k => `"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(",") + "\n");
+                const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'Data.csv'; a.click();
             }
-
             showUserModal() { document.getElementById('user-form').reset(); document.getElementById('modal-user').style.display = 'flex'; }
-            
             saveUser(e) {
                 e.preventDefault();
-                const payload = { action: 'addUser', username: document.getElementById('u-name').value, password: document.getElementById('u-pass').value, role: document.getElementById('u-role').value };
-                this.apiCall(payload, (res) => {
-                    if(res.success) { this.closeModals(); this.loadUsers(); alert('User added'); }
-                    else { alert(res.message); }
+                this.apiCall({action:'addUser', username:document.getElementById('u-name').value, password:document.getElementById('u-pass').value, role:document.getElementById('u-role').value}, res => {
+                    if(res.success) { this.closeModals(); this.loadUsers(); this.showToast('User created'); } else this.showToast(res.message, 'error');
                 });
             }
-
             renderUsers() {
-                const tbody = document.getElementById('users-body');
-                tbody.innerHTML = '';
-                this.users.forEach(u => {
-                    tbody.innerHTML += `<tr><td style="font-weight:600;">${u.username}</td><td><span class="badge badge-info">${u.role}</span></td><td><span class="badge badge-success">Active</span></td></tr>`;
-                });
+                const tbody = document.getElementById('users-body'); tbody.innerHTML = '';
+                this.users.forEach(u => tbody.innerHTML += `<tr><td style="font-weight:600;">${u.username}</td><td style="color:var(--accent)">${u.role}</td><td><span class="badge badge-success">Active</span></td></tr>`);
             }
-
             closeModals() { document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none'); }
         }
-
         const app = new ResearchApp();
     </script>
 </body>
