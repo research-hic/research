@@ -11,7 +11,7 @@
     <style>
         :root {
             --bg-dark: #0F172A; --bg-card: rgba(30, 41, 59, 0.7); --bg-sidebar: #0B1120;
-            --primary: #6366F1; --primary-hover: #4F46E5; --accent: #10B981; --accent-glow: rgba(16, 185, 129, 0.3);
+            --primary: #6366F1; --primary-hover: #4F46E5; --accent: #10B981;
             --danger: #EF4444; --warning: #F59E0B; --info: #3B82F6;
             --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255, 255, 255, 0.1);
             --glass: rgba(255, 255, 255, 0.05); --radius: 16px;
@@ -20,13 +20,24 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-body); background: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; display: flex; }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        /* Background Orbs Animation */
+        .bg-orbs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 20s infinite alternate ease-in-out; }
+        .orb-1 { width: 400px; height: 400px; background: var(--primary); top: -10%; left: -5%; }
+        .orb-2 { width: 500px; height: 500px; background: var(--accent); bottom: -15%; right: -10%; animation-delay: -5s; }
+        .orb-3 { width: 300px; height: 300px; background: var(--warning); top: 40%; left: 40%; animation-delay: -10s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, -50px) scale(1.1); } }
 
-        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle at top right, #1e1b4b, transparent); }
-        .login-card { width: 100%; max-width: 440px; padding: 40px; background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; }
-        .login-logo { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin: 0 auto 24px; }
+        /* UI Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-fade { animation: fadeIn 0.5s ease-out; }
+        .animate-slide-up { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 100%; max-width: 440px; padding: 40px; background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; z-index: 1000; animation: scaleIn 0.5s ease-out; }
+        .login-logo { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin: 0 auto 24px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); }
 
         .sidebar { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 50; transition: transform 0.3s; }
         .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
@@ -34,51 +45,57 @@
         .nav-links { flex: 1; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; }
         .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text-main); border-color: var(--border); }
-        .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); border-color: rgba(99, 102, 241, 0.2); }
+        .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); border-color: rgba(99, 102, 241, 0.2); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); }
         .user-profile { padding: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
 
-        .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 1600px; min-height: 100vh; }
+        .main-content { flex: 1; margin-left: 260px; padding: 32px; max-width: 1600px; min-height: 100vh; position: relative; z-index: 1; }
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;}
         .page-title h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; }
         .page-title p { color: var(--text-muted); margin-top: 4px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .stat-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: transform 0.3s, box-shadow 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-color: var(--primary); }
         .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
         .stat-value { font-size: 32px; font-weight: 700; font-family: var(--font-head); margin-bottom: 4px; }
         .stat-label { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
         .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; animation: slideInUp 0.5s ease-out; }
         .chart-card h3 { font-family: var(--font-head); font-size: 16px; margin-bottom: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
         .toolbar { display: flex; gap: 16px; background: var(--bg-card); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
         .search-box { flex: 1; position: relative; min-width: 200px; }
         .search-box input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px 12px 40px; border-radius: 8px; color: white; }
-        .search-box input:focus { border-color: var(--primary); outline: none; }
+        .search-box input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
         .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         
         .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.2s; font-family: var(--font-body); }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
-        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .btn-danger:hover { background: var(--danger); color: white; }
         .btn-ghost { background: var(--glass); color: var(--text-muted); border: 1px solid var(--border); }
-        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--glass); color: var(--text-muted); border: 1px solid transparent; }
+        .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
 
         .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th { background: rgba(0,0,0,0.2); padding: 16px 24px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
         td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; white-space: nowrap; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+        tr:hover td { background: rgba(99, 102, 241, 0.05); }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; font-size: 14px; }
-        .form-control:focus { border-color: var(--primary); outline: none; }
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; color: white; font-size: 14px; transition: border 0.3s, box-shadow 0.3s; }
+        .form-control:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .form-control:read-only { opacity: 0.7; cursor: not-allowed; }
         select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 16px) center; padding-right: 40px; }
+        
+        .other-field { margin-top: 10px; display: none; animation: slideInUp 0.3s ease-out; }
 
         .section-header { font-size: 18px; font-weight: 700; margin: 40px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; color: var(--text-main); }
         .section-header i { color: var(--primary); }
@@ -86,13 +103,17 @@
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
         .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
         .badge-info { background: rgba(59, 130, 246, 0.2); color: var(--info); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
-        .modal { background: #1E293B; border: 1px solid var(--border); width: 100%; max-width: 900px; border-radius: 20px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: slideInUp 0.3s; }
+        .modal { background: #1E293B; border: 1px solid var(--border); width: 100%; max-width: 900px; border-radius: 20px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: scaleIn 0.3s ease-out; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
-        .close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+        .close-modal { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: color 0.2s; }
+        .close-modal:hover { color: var(--danger); }
+
+        .dynamic-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 16px; position: relative; animation: slideInUp 0.4s ease-out; }
+        .remove-slot { position: absolute; top: 10px; right: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; }
+        .remove-slot:hover { color: var(--danger); }
 
         .hidden { display: none !important; }
 
@@ -107,6 +128,8 @@
     </style>
 </head>
 <body>
+
+    <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
     <div id="login-view">
         <div class="login-card animate-fade">
@@ -130,7 +153,7 @@
             <div class="nav-links">
                 <a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
                 <a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Patient Records</a>
-                <a onclick="app.navigate('analytics')" class="nav-item" id="nav-analytics"><i class="fas fa-chart-pie"></i> Data Analytics</a>
+                <a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Data Analytics</a>
                 <a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> User Management</a>
             </div>
             <div class="user-profile">
@@ -200,7 +223,7 @@
     <!-- MODAL: RECORD FORM -->
     <div id="modal-record" class="modal-overlay">
         <div class="modal">
-            <div class="modal-header"><h2>New Patient Record</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
+            <div class="modal-header"><h2 id="modal-record-title">New Patient Record</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div>
             <form id="record-form" onsubmit="app.saveRecord(event)">
                 <div class="section-header" style="margin-top:0;"><i class="fas fa-user"></i> Demographics & Admission</div>
                 <div class="form-grid">
@@ -210,29 +233,39 @@
                     <div class="form-group"><label>Admission Date</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div>
                     <div class="form-group"><label>Discharge Date</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div>
                     <div class="form-group"><label>LOS (Days)</label><input type="number" id="LOS" readonly class="form-control"></div>
-                    <div class="form-group"><label>Ward</label><select id="Ward" class="form-control"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select></div>
+                    <div class="form-group">
+                        <label>Ward</label>
+                        <select id="Ward" class="form-control" onchange="app.toggleOther(this, 'Ward_Other')"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select>
+                        <div class="other-field" id="Ward_Other_Group"><input type="text" id="Ward_Other" class="form-control" placeholder="Specify Ward"></div>
+                    </div>
                 </div>
 
                 <div class="section-header"><i class="fas fa-dna"></i> Oncology Details</div>
                 <div class="form-grid">
                     <div class="form-group"><label>Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div>
                     <div class="form-group"><label>Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div>
-                    <div class="form-group"><label>Specific Name</label><input type="text" id="Cancer_Name" class="form-control"></div>
+                    <div class="form-group">
+                        <label>Specific Name</label>
+                        <select id="Cancer_Name" class="form-control" onchange="app.toggleOther(this, 'Cancer_Name_Other')"><option>AML</option><option>Breast</option><option>Lung</option><option>Prostate</option><option>Other</option></select>
+                        <div class="other-field" id="Cancer_Name_Other_Group"><input type="text" id="Cancer_Name_Other" class="form-control" placeholder="Specify Cancer Name"></div>
+                    </div>
                     <div class="form-group"><label>Stage</label><select id="Stage" class="form-control"><option>Stage I</option><option>Stage II</option><option>Stage III</option><option>Stage IV</option><option>Not documented</option></select></div>
                     <div class="form-group"><label>Treatment</label><select id="Treatment" class="form-control"><option>Chemotherapy</option><option>Radiotherapy</option><option>Both</option><option>Surgery</option><option>Supported care only</option></select></div>
                     <div class="form-group"><label>Immunosuppression</label><select id="Immunosuppression" class="form-control"><option>Yes</option><option>No</option><option>Not documented</option></select></div>
                     <div class="form-group"><label>Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div>
                 </div>
 
-                <div class="section-header"><i class="fas fa-pills"></i> Antibiotics (Max 5)</div>
-                <div id="abx-slots"></div>
+                <div class="section-header"><i class="fas fa-pills"></i> Antibiotics <button type="button" class="btn btn-ghost btn-sm" onclick="app.addAbxSlot()" style="margin-left:auto;"><i class="fas fa-plus"></i> Add</button></div>
+                <div id="abx-container"></div>
+                <p id="abx-limit" class="hidden" style="color:var(--warning); font-size:12px; margin-top:5px;">Maximum 5 antibiotics reached.</p>
 
-                <div class="section-header"><i class="fas fa-vial"></i> Cultures (Max 3)</div>
-                <div id="cult-slots"></div>
+                <div class="section-header"><i class="fas fa-vial"></i> Cultures <button type="button" class="btn btn-ghost btn-sm" onclick="app.addCultSlot()" style="margin-left:auto;"><i class="fas fa-plus"></i> Add</button></div>
+                <div id="cult-container"></div>
+                <p id="cult-limit" class="hidden" style="color:var(--warning); font-size:12px; margin-top:5px;">Maximum 3 cultures reached.</p>
 
                 <div style="text-align: right; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
                     <button type="button" class="btn btn-ghost" onclick="app.closeModals()" style="margin-right: 12px;">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Record</button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-record">Save Record</button>
                 </div>
             </form>
         </div>
@@ -255,7 +288,7 @@
         // =========================================================================
         // CONFIG - PASTE YOUR DEPLOYED WEB APP URL HERE
         // =========================================================================
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyZxwuim_qRrjqwc6ZxiGeD65oA_jL7X6P0JLt1xEdpXgCCZVSox6w4qS_r--0NUgWJDA/exec'; 
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwu-wJBBdrgJLE1vdjNQlrj9tgAXOd_1QafreJDCWjIiGUFKHdGNrPjzfbYTnBdYHih0w/exec'; 
 
         class ResearchApp {
             constructor() {
@@ -264,12 +297,12 @@
                 this.filteredData = [];
                 this.antibioticsList = [];
                 this.charts = {};
+                this.formMode = 'new'; // 'new', 'edit', 'view'
                 this.init();
             }
 
             init() {
                 document.getElementById('login-form').addEventListener('submit', (e) => this.login(e));
-                this.generateFormSlots();
             }
 
             /* ─── AUTH ─── */
@@ -281,15 +314,7 @@
                     if(res.success) {
                         this.user = res.user;
                         this.showApp();
-                        this.loadData();
-                        this.loadAntibiotics();
-                        if(this.user.role === 'Admin') {
-                            document.getElementById('nav-users').classList.remove('hidden');
-                            this.loadUsers();
-                        }
-                    } else {
-                        alert(res.message || 'Login failed');
-                    }
+                    } else { alert(res.message || 'Login failed'); }
                 });
             }
 
@@ -301,6 +326,15 @@
                 document.getElementById('user-name').textContent = this.user.username;
                 document.getElementById('user-role-text').textContent = this.user.role;
                 document.getElementById('user-avatar').textContent = this.user.username.charAt(0).toUpperCase();
+                
+                // Role-based visibility
+                if(this.user.role === 'Admin' || this.user.role === 'SuperAdmin') {
+                    document.getElementById('nav-analytics').classList.remove('hidden');
+                    document.getElementById('nav-users').classList.remove('hidden');
+                }
+                
+                this.loadData();
+                this.loadAntibiotics();
                 this.navigate('dashboard');
             }
 
@@ -340,90 +374,191 @@
             }
 
             loadAntibiotics() {
-                this.apiCall({ action: 'getAntibiotics' }, (res) => {
-                    this.antibioticsList = res || [];
-                    this.generateFormSlots(); 
-                });
+                this.apiCall({ action: 'getAntibiotics' }, (res) => { this.antibioticsList = res || []; });
             }
 
             loadUsers() {
-                this.apiCall({ action: 'getUsers' }, (res) => {
-                    this.users = res || [];
-                    this.renderUsers();
-                });
+                this.apiCall({ action: 'getUsers' }, (res) => { this.users = res || []; this.renderUsers(); });
             }
 
             /* ─── FORM LOGIC ─── */
-            generateFormSlots() {
-                let abxHtml = '';
-                for(let i=1; i<=5; i++) {
-                    abxHtml += `<div style="background:rgba(0,0,0,0.2); border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                            <span style="font-weight:600; color:var(--primary);">Episode #${i}</span>
-                        </div>
-                        <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                            <div class="form-group" style="margin:0;"><label>Name</label><input type="text" id="Abx_${i}_Name" class="form-control abx-input" list="abx-datalist"></div>
-                            <div class="form-group" style="margin:0;"><label>Class</label><input type="text" id="Abx_${i}_Class" class="form-control abx-class" readonly></div>
-                            <div class="form-group" style="margin:0;"><label>AWaRe</label><input type="text" id="Abx_${i}_Category" class="form-control abx-cat" readonly></div>
-                            <div class="form-group" style="margin:0;"><label>Indication</label><select id="Abx_${i}_Indication" class="form-control"><option>Empirical</option><option>Targeted</option><option>Prophylaxis</option></select></div>
-                        </div>
-                    </div>`;
-                }
-                document.getElementById('abx-slots').innerHTML = abxHtml + `<datalist id="abx-datalist">${this.antibioticsList.map(a => `<option value="${a.name}">`).join('')}</datalist>`;
+            toggleOther(selectEl, otherId) {
+                const group = document.getElementById(otherId + '_Group');
+                if(selectEl.value === 'Other') { group.style.display = 'block'; } 
+                else { group.style.display = 'none'; document.getElementById(otherId).value = ''; }
+            }
 
-                let cultHtml = '';
-                for(let i=1; i<=3; i++) {
-                    cultHtml += `<div style="background:rgba(0,0,0,0.2); border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:12px;">
-                        <div style="margin-bottom:12px;"><span style="font-weight:600; color:var(--warning);">Culture #${i}</span></div>
-                        <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                            <div class="form-group" style="margin:0;"><label>Type</label><select id="Cult_${i}_Type" class="form-control"><option>Blood</option><option>Urine</option><option>Sputum</option><option>Wound</option></select></div>
-                            <div class="form-group" style="margin:0;"><label>Result</label><select id="Cult_${i}_Result" class="form-control"><option>Positive</option><option>Negative</option><option>No Growth</option></select></div>
-                            <div class="form-group" style="margin:0;"><label>Organism</label><input type="text" id="Cult_${i}_Organism" class="form-control"></div>
-                            <div class="form-group" style="margin:0;"><label>XDR?</label><select id="Cult_${i}_XDR" class="form-control"><option>No</option><option>Yes</option></select></div>
-                        </div>
-                    </div>`;
-                }
-                document.getElementById('cult-slots').innerHTML = cultHtml;
+            addAbxSlot(data = null) {
+                const current = document.querySelectorAll('.abx-slot').length;
+                if(current >= 5) { document.getElementById('abx-limit').classList.remove('hidden'); return; }
+                const i = current + 1;
+                const html = `<div class="dynamic-card abx-slot" id="abx_slot_${i}">
+                    <button type="button" class="remove-slot" onclick="app.removeSlot(this, 'abx')"><i class="fas fa-times"></i></button>
+                    <div style="font-weight:600; color:var(--primary); margin-bottom:12px;">Episode #${i}</div>
+                    <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div class="form-group" style="margin:0;"><label>Name</label><input type="text" id="Abx_${i}_Name" class="form-control abx-input" list="abx-datalist" value="${data ? data.name : ''}"></div>
+                        <div class="form-group" style="margin:0;"><label>Class</label><input type="text" id="Abx_${i}_Class" class="form-control abx-class" readonly value="${data ? data.cls : ''}"></div>
+                        <div class="form-group" style="margin:0;"><label>AWaRe</label><input type="text" id="Abx_${i}_Category" class="form-control abx-cat" readonly value="${data ? data.cat : ''}"></div>
+                        <div class="form-group" style="margin:0;"><label>Indication</label><select id="Abx_${i}_Indication" class="form-control"><option ${data && data.ind==='Empirical'?'selected':''}>Empirical</option><option ${data && data.ind==='Targeted'?'selected':''}>Targeted</option><option ${data && data.ind==='Prophylaxis'?'selected':''}>Prophylaxis</option></select></div>
+                    </div>
+                </div>`;
+                document.getElementById('abx-container').insertAdjacentHTML('beforeend', html);
+                
+                // Re-attach autocomplete listener
+                const newInput = document.getElementById(`Abx_${i}_Name`);
+                newInput.addEventListener('change', (e) => {
+                    const found = this.antibioticsList.find(a => a.name.toLowerCase() === e.target.value.toLowerCase());
+                    if(found) {
+                        e.target.closest('.abx-slot').querySelector('.abx-class').value = found.class;
+                        e.target.closest('.abx-slot').querySelector('.abx-cat').value = found.category;
+                    }
+                });
 
-                // Autocomplete listener
-                document.querySelectorAll('.abx-input').forEach(input => {
-                    input.addEventListener('change', (e) => {
-                        const found = this.antibioticsList.find(a => a.name.toLowerCase() === e.target.value.toLowerCase());
-                        if(found) {
-                            e.target.closest('div').parentElement.querySelector('.abx-class').value = found.class;
-                            e.target.closest('div').parentElement.querySelector('.abx-cat').value = found.category;
-                        }
+                if(current + 1 >= 5) document.getElementById('abx-limit').classList.remove('hidden');
+            }
+
+            addCultSlot(data = null) {
+                const current = document.querySelectorAll('.cult-slot').length;
+                if(current >= 3) { document.getElementById('cult-limit').classList.remove('hidden'); return; }
+                const i = current + 1;
+                const html = `<div class="dynamic-card cult-slot" id="cult_slot_${i}">
+                    <button type="button" class="remove-slot" onclick="app.removeSlot(this, 'cult')"><i class="fas fa-times"></i></button>
+                    <div style="font-weight:600; color:var(--warning); margin-bottom:12px;">Culture #${i}</div>
+                    <div class="form-grid" style="gap:12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div class="form-group" style="margin:0;"><label>Type</label><select id="Cult_${i}_Type" class="form-control"><option ${data && data.type==='Blood'?'selected':''}>Blood</option><option ${data && data.type==='Urine'?'selected':''}>Urine</option><option ${data && data.type==='Sputum'?'selected':''}>Sputum</option><option ${data && data.type==='Wound'?'selected':''}>Wound</option></select></div>
+                        <div class="form-group" style="margin:0;"><label>Result</label><select id="Cult_${i}_Result" class="form-control"><option ${data && data.res==='Positive'?'selected':''}>Positive</option><option ${data && data.res==='Negative'?'selected':''}>Negative</option><option ${data && data.res==='No Growth'?'selected':''}>No Growth</option></select></div>
+                        <div class="form-group" style="margin:0;"><label>Organism</label><input type="text" id="Cult_${i}_Organism" class="form-control" value="${data ? data.org : ''}"></div>
+                        <div class="form-group" style="margin:0;"><label>XDR?</label><select id="Cult_${i}_XDR" class="form-control"><option ${data && data.xdr==='No'?'selected':''}>No</option><option ${data && data.xdr==='Yes'?'selected':''}>Yes</option></select></div>
+                    </div>
+                </div>`;
+                document.getElementById('cult-container').insertAdjacentHTML('beforeend', html);
+                if(current + 1 >= 3) document.getElementById('cult-limit').classList.remove('hidden');
+            }
+
+            removeSlot(btn, type) {
+                btn.closest('.dynamic-card').remove();
+                this.reindexSlots(type);
+                if(type === 'abx') document.getElementById('abx-limit').classList.add('hidden');
+                if(type === 'cult') document.getElementById('cult-limit').classList.add('hidden');
+            }
+
+            reindexSlots(type) {
+                const slots = document.querySelectorAll(`.${type}-slot`);
+                slots.forEach((slot, index) => {
+                    const i = index + 1;
+                    slot.id = `${type}_slot_${i}`;
+                    // Update inner HTML IDs and names (simplistic approach for dynamic forms)
+                    slot.querySelector('div[style*="font-weight:600"]').innerText = `Episode #${i}`;
+                    const inputs = slot.querySelectorAll('input, select');
+                    inputs.forEach(inp => {
+                        const oldId = inp.id;
+                        const prefix = type === 'abx' ? 'Abx' : 'Cult';
+                        const suffix = oldId.split('_').slice(2).join('_');
+                        const newId = `${prefix}_${i}_${suffix}`;
+                        inp.id = newId;
                     });
                 });
             }
 
-            showRecordModal() {
+            showRecordModal(mode = 'new', rec = null) {
+                this.formMode = mode;
                 document.getElementById('record-form').reset();
-                document.getElementById('Study_ID').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('abx-container').innerHTML = '';
+                document.getElementById('cult-container').innerHTML = '';
+                document.getElementById('abx-limit').classList.add('hidden');
+                document.getElementById('cult-limit').classList.add('hidden');
+                
+                // Reset "Other" fields visibility
+                document.querySelectorAll('.other-field').forEach(el => el.style.display = 'none');
+
+                const isEditable = mode !== 'view';
+                document.querySelectorAll('#record-form input, #record-form select').forEach(el => {
+                    if(el.id !== 'Study_ID') el.removeAttribute('disabled');
+                });
+
+                if(mode === 'new') {
+                    document.getElementById('Study_ID').value = 'PID-' + Math.floor(100000 + Math.random() * 900000);
+                    document.getElementById('modal-record-title').textContent = 'New Patient Record';
+                    document.getElementById('btn-submit-record').classList.remove('hidden');
+                    document.getElementById('btn-submit-record').textContent = 'Save Record';
+                } else {
+                    // Populate for Edit/View
+                    document.getElementById('Study_ID').value = rec.Study_ID;
+                    document.getElementById('Age').value = rec.Age;
+                    document.getElementById('Sex').value = rec.Sex;
+                    document.getElementById('Admission_Date').value = rec.Admission_Date;
+                    document.getElementById('Discharge_Date').value = rec.Discharge_Date;
+                    document.getElementById('LOS').value = rec.LOS;
+                    
+                    // Handle Selects with potential "Other" values
+                    this.setSelectAndOther('Ward', rec.Ward, 'Ward_Other', rec.Ward_Other);
+                    document.getElementById('Diagnosis').value = rec.Diagnosis || '';
+                    document.getElementById('Cancer_Type').value = rec.Cancer_Type || '';
+                    this.setSelectAndOther('Cancer_Name', rec.Cancer_Name, 'Cancer_Name_Other', rec.Cancer_Name_Other);
+                    document.getElementById('Stage').value = rec.Stage || '';
+                    document.getElementById('Treatment').value = rec.Treatment || '';
+                    document.getElementById('Immunosuppression').value = rec.Immunosuppression || '';
+                    document.getElementById('Outcome').value = rec.Outcome || '';
+
+                    // Populate Dynamic Slots
+                    for(let i=1; i<=5; i++) {
+                        if(rec[`Abx_${i}_Name`]) {
+                            this.addAbxSlot({ name: rec[`Abx_${i}_Name`], cls: rec[`Abx_${i}_Class`], cat: rec[`Abx_${i}_Category`], ind: rec[`Abx_${i}_Indication`] });
+                        }
+                    }
+                    for(let i=1; i<=3; i++) {
+                        if(rec[`Cult_${i}_Type`]) {
+                            this.addCultSlot({ type: rec[`Cult_${i}_Type`], res: rec[`Cult_${i}_Result`], org: rec[`Cult_${i}_Organism`], xdr: rec[`Cult_${i}_XDR`] });
+                        }
+                    }
+
+                    if(mode === 'view') {
+                        document.getElementById('modal-record-title').textContent = 'View Patient Record';
+                        document.getElementById('btn-submit-record').classList.add('hidden');
+                        document.querySelectorAll('#record-form input, #record-form select').forEach(el => el.setAttribute('disabled', 'true'));
+                    } else {
+                        document.getElementById('modal-record-title').textContent = 'Edit Patient Record';
+                        document.getElementById('btn-submit-record').classList.remove('hidden');
+                        document.getElementById('btn-submit-record').textContent = 'Update Record';
+                    }
+                }
                 document.getElementById('modal-record').style.display = 'flex';
+            }
+
+            setSelectAndOther(selectId, dbValue, otherId, otherDbValue) {
+                const sel = document.getElementById(selectId);
+                const opt = Array.from(sel.options).find(o => o.value === dbValue);
+                if(opt) { sel.value = dbValue; } 
+                else { sel.value = 'Other'; document.getElementById(otherId + '_Group').style.display = 'block'; document.getElementById(otherId).value = otherDbValue || dbValue; }
             }
 
             saveRecord(e) {
                 e.preventDefault();
                 const payload = { action: 'save', user: this.user.username, data: {} };
-                const fields = ['Study_ID', 'Age', 'Sex', 'Admission_Date', 'Discharge_Date', 'LOS', 'Ward', 'Diagnosis', 'Cancer_Type', 'Cancer_Name', 'Stage', 'Treatment', 'Immunosuppression', 'Outcome'];
+                const fields = ['Study_ID', 'Age', 'Sex', 'Admission_Date', 'Discharge_Date', 'LOS', 'Ward', 'Ward_Other', 'Diagnosis', 'Cancer_Type', 'Cancer_Name', 'Cancer_Name_Other', 'Stage', 'Treatment', 'Immunosuppression', 'Outcome'];
                 fields.forEach(f => payload.data[f] = document.getElementById(f).value);
                 
-                for(let i=1; i<=5; i++) {
-                    payload.data[`Abx_${i}_Name`] = document.getElementById(`Abx_${i}_Name`).value;
-                    payload.data[`Abx_${i}_Class`] = document.getElementById(`Abx_${i}_Class`).value;
-                    payload.data[`Abx_${i}_Category`] = document.getElementById(`Abx_${i}_Category`).value;
-                    payload.data[`Abx_${i}_Indication`] = document.getElementById(`Abx_${i}_Indication`).value;
+                const abxSlots = document.querySelectorAll('.abx-slot').length;
+                for(let i=1; i<=abxSlots; i++) {
+                    payload.data[`Abx_${i}_Name`] = document.getElementById(`Abx_${i}_Name`)?.value || '';
+                    payload.data[`Abx_${i}_Class`] = document.getElementById(`Abx_${i}_Class`)?.value || '';
+                    payload.data[`Abx_${i}_Category`] = document.getElementById(`Abx_${i}_Category`)?.value || '';
+                    payload.data[`Abx_${i}_Indication`] = document.getElementById(`Abx_${i}_Indication`)?.value || '';
                 }
-                for(let i=1; i<=3; i++) {
-                    payload.data[`Cult_${i}_Type`] = document.getElementById(`Cult_${i}_Type`).value;
-                    payload.data[`Cult_${i}_Result`] = document.getElementById(`Cult_${i}_Result`).value;
-                    payload.data[`Cult_${i}_Organism`] = document.getElementById(`Cult_${i}_Organism`).value;
-                    payload.data[`Cult_${i}_XDR`] = document.getElementById(`Cult_${i}_XDR`).value;
+                // Clear remaining ABX slots in case user deleted one
+                for(let i=abxSlots+1; i<=5; i++) { payload.data[`Abx_${i}_Name`] = ''; payload.data[`Abx_${i}_Class`] = ''; payload.data[`Abx_${i}_Category`] = ''; payload.data[`Abx_${i}_Indication`] = ''; }
+
+                const cultSlots = document.querySelectorAll('.cult-slot').length;
+                for(let i=1; i<=cultSlots; i++) {
+                    payload.data[`Cult_${i}_Type`] = document.getElementById(`Cult_${i}_Type`)?.value || '';
+                    payload.data[`Cult_${i}_Result`] = document.getElementById(`Cult_${i}_Result`)?.value || '';
+                    payload.data[`Cult_${i}_Organism`] = document.getElementById(`Cult_${i}_Organism`)?.value || '';
+                    payload.data[`Cult_${i}_XDR`] = document.getElementById(`Cult_${i}_XDR`)?.value || '';
                 }
+                for(let i=cultSlots+1; i<=3; i++) { payload.data[`Cult_${i}_Type`] = ''; payload.data[`Cult_${i}_Result`] = ''; payload.data[`Cult_${i}_Organism`] = ''; payload.data[`Cult_${i}_XDR`] = ''; }
 
                 this.apiCall(payload, (res) => {
-                    if(res.success) { this.closeModals(); this.loadData(); alert('Saved successfully'); }
+                    if(res.success) { this.closeModals(); this.loadData(); alert(res.message); }
                     else { alert(res.message || 'Error saving'); }
                 });
             }
@@ -438,16 +573,22 @@
             renderRecords() {
                 const tbody = document.getElementById('records-body');
                 tbody.innerHTML = '';
+                const isAdmin = this.user.role === 'Admin' || this.user.role === 'SuperAdmin';
+                
                 this.filteredData.forEach(r => {
                     const bc = r.Outcome === 'Died' ? 'badge-danger' : 'badge-success';
+                    let actions = `<button class="btn btn-icon" onclick="app.showRecordModal('view', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-eye"></i></button>`;
+                    if(isAdmin) {
+                        actions += `<button class="btn btn-icon" onclick="app.showRecordModal('edit', app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-pencil-alt"></i></button>`;
+                    }
                     tbody.innerHTML += `<tr>
                         <td style="font-weight:600; color:var(--primary);">${r.Study_ID || '-'}</td>
-                        <td>${r.Age || '-'} / ${r.Sex || '-'}</td>
+                        <td>${r.Age} / ${r.Sex}</td>
                         <td>${r.Diagnosis || '-'}</td>
-                        <td>${r.Cancer_Name || '-'}</td>
+                        <td>${r.Cancer_Name_Other || r.Cancer_Name || '-'}</td>
                         <td>${r.Admission_Date || '-'}</td>
                         <td><span class="badge ${bc}">${r.Outcome || 'N/A'}</span></td>
-                        <td style="text-align:right;"><button class="btn btn-icon btn-ghost" onclick="alert('Detailed view coming soon')"><i class="fas fa-eye"></i></button></td>
+                        <td style="text-align:right; display:flex; gap:5px; justify-content:flex-end;">${actions}</td>
                     </tr>`;
                 });
             }
@@ -464,7 +605,6 @@
             updateStats() {
                 const total = this.rawData.length;
                 document.getElementById('stat-total').textContent = total;
-                
                 let abxCount = 0, cultCount = 0;
                 this.rawData.forEach(r => {
                     for(let i=1; i<=5; i++) { if(r[`Abx_${i}_Name`]) abxCount++; }
@@ -472,7 +612,6 @@
                 });
                 document.getElementById('stat-abx').textContent = abxCount;
                 document.getElementById('stat-cult').textContent = cultCount;
-
                 const deaths = this.rawData.filter(r => r.Outcome === 'Died').length;
                 document.getElementById('stat-mort').textContent = total ? Math.round((deaths/total)*100) + '%' : '0%';
             }
