@@ -118,7 +118,7 @@
     <div id="modal-user" class="modal-overlay"><div class="modal" style="max-width:360px;"><div class="modal-header"><h2 style="font-size:14px;">Add User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div><div class="modal-body"><form id="user-form" onsubmit="app.saveUser(event)"><div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div><div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div><div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div></form></div><div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('user-form').requestSubmit()">Create</button></div></div></div>
 
     <script>
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzQBuxERt1bJCUJAiYqNmcrcEbG0MDDPC7yLRJkJWluXcT5oMeo15G08Jo6jHjbCCYF/exec'; 
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwWmLCiqNo4VmLuCOhTspQZRJeCqkLDggi4WucEZkNXpNjQWM5-LJ-dZXRmsshgf_CDeg/exec'; 
 
         class ResearchApp {
             constructor() { this.user=null;this.rawData=[];this.filteredData=[];this.antibioticsList=[];this.charts={};this.formMode='new';this.init(); }
