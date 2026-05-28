@@ -1,233 +1,1521 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OncoCollect | Research DB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        :root { --bg-body:#050a13;--bg-surface:#0c1322;--bg-card:#111827;--bg-hover:#1e293b;--accent:#0ea5e9;--accent-hover:#38bdf8;--accent-glow:rgba(14,165,233,0.15);--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--text-main:#f8fafc;--text-muted:#94a3b8;--text-dim:#64748b;--border:rgba(255,255,255,0.06);--radius:12px;--transition:all 0.2s cubic-bezier(0.4,0,0.2,1); }
-        * { box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif; }
-        body { background:var(--bg-body);color:var(--text-main);min-height:100vh;display:flex;overflow-x:hidden; }
-        @keyframes fadeIn { from{opacity:0}to{opacity:1} } @keyframes slideUp { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)} } @keyframes scaleIn { from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)} } @keyframes slideInRight { from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1} }
-        
-        .sidebar { width:240px;background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100%;z-index:50; }
-        .main-content { flex:1;margin-left:240px;padding:24px;min-height:100vh;background:radial-gradient(circle at top right,rgba(14,165,233,0.03),transparent 40%); }
-        
-        .sidebar-header { padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px; }
-        .brand-icon { width:32px;height:32px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:12px; }
-        .brand-text { font-size:16px;font-weight:700;letter-spacing:-0.5px; }
-        .nav-links { flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:2px; }
-        .nav-item { display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition); }
-        .nav-item:hover { background:var(--bg-hover);color:var(--text-main); } .nav-item.active { background:var(--accent-glow);color:var(--accent); }
-        .nav-item i { width:18px;text-align:center;font-size:13px; }
-        .user-profile { padding:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px; }
-        .avatar { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px; }
-        
-        h1 { font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:2px; } .text-muted { color:var(--text-muted);font-size:12px; }
-        .card { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:var(--transition); }
-        
-        .stats-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px; }
-        .stat-card { padding:16px;display:flex;flex-direction:column;gap:6px; } .stat-card:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2); }
-        .stat-icon { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px; }
-        .stat-value { font-size:24px;font-weight:700;letter-spacing:-1px; }
-        
-        .table-wrap { overflow-x:auto; } table { width:100%;border-collapse:collapse; }
-        th { padding:10px 12px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);border-bottom:1px solid var(--border); }
-        td { padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);color:var(--text-muted); } tr:hover td { color:var(--text-main);background:rgba(255,255,255,0.01); }
-        .badge { padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600; } .badge-success { background:rgba(16,185,129,0.1);color:var(--success); } .badge-danger { background:rgba(239,68,68,0.1);color:var(--danger); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OncoCollect v3 — Clinical Research Database</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+/* ────────────── RESET & VARIABLES ────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-body:#050a13;--bg-sidebar:#0c1322;--bg-card:#111827;
+  --bg-input:#050a13;--accent:#0ea5e9;--accent-dim:rgba(14,165,233,.15);
+  --text-primary:#f8fafc;--text-secondary:#94a3b8;--text-muted:#64748b;
+  --border:rgba(255,255,255,.06);--border-input:rgba(255,255,255,.08);
+  --danger:#ef4444;--success:#22c55e;--warning:#f59e0b;--info:#3b82f6;
+  --radius:8px;--radius-lg:12px;--transition:150ms ease;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg-body);color:var(--text-primary);overflow:hidden}
 
-        .form-group { margin-bottom:12px; } .form-group label { display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px; }
-        .form-control { width:100%;background:var(--bg-body);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text-main);font-size:13px;transition:var(--transition); }
-        .form-control:focus { outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow); } .form-control:read-only { opacity:0.5;cursor:not-allowed; }
-        
-        .search-select { position:relative; } .search-select input { width:100%;background:var(--bg-body);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text-main);font-size:13px;transition:var(--transition); }
-        .search-select input:focus { outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);border-bottom-left-radius:0;border-bottom-right-radius:0;z-index:10;position:relative; }
-        .search-select-dropdown { position:absolute;top:100%;left:0;right:0;background:var(--bg-surface);border:1px solid var(--accent);border-top:none;max-height:160px;overflow-y:auto;z-index:50;border-bottom-left-radius:6px;border-bottom-right-radius:6px;display:none;box-shadow:0 10px 25px rgba(0,0,0,0.5); }
-        .search-select-dropdown.show { display:block; } .search-select-item { padding:6px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-bottom:1px solid var(--border); }
-        .search-select-item:last-child { border-bottom:none; } .search-select-item:hover { background:var(--bg-hover);color:var(--text-main); }
-        .search-select-item .meta { font-size:10px;display:flex;gap:4px; } .search-select-item .meta span { background:rgba(255,255,255,0.05);padding:1px 4px;border-radius:3px; }
+/* ────────────── UTILITY ────────────── */
+.flex{display:flex}.flex-col{flex-direction:column}.flex-1{flex:1}.items-center{align-items:center}.justify-center{justify-content:center}
+.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}
+.w-full{width:100%}.min-w-0{min-width:0}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.text-xs{font-size:.75rem}.text-sm{font-size:.875rem}.text-base{font-size:1rem}.text-lg{font-size:1.125rem}.text-xl{font-size:1.25rem}.text-2xl{font-size:1.5rem}
+.font-medium{font-weight:500}.font-semibold{font-weight:600}.font-bold{font-weight:700}
+.text-center{text-align:center}.text-right{text-align:right}
+.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}
+.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}
+.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}
+.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}
+.mt-2{margin-top:.5rem}.mt-4{margin-top:1rem}.mt-auto{margin-top:auto}
+.ml-2{margin-left:.5rem}.mr-1{margin-right:.25rem}.mr-2{margin-right:.5rem}
+.rounded{border-radius:var(--radius)}.rounded-lg{border-radius:var(--radius-lg)}.rounded-full{border-radius:9999px}
+.overflow-auto{overflow:auto}.overflow-y-auto{overflow-y:auto}.overflow-hidden{overflow:hidden}
+.grid{display:grid}.grid-cols-2{grid-template-columns:repeat(2,1fr)}.grid-cols-3{grid-template-columns:repeat(3,1fr)}.grid-cols-4{grid-template-columns:repeat(4,1fr)}
+.relative{position:relative}.absolute{position:absolute}.fixed{position:fixed}.sticky{position:sticky}
+.inset-0{top:0;right:0;bottom:0;left:0}.top-0{top:0}.left-0{left:0}.z-40{z-index:40}.z-50{z-index:50}
+.h-8{height:2rem}.h-10{height:2.5rem}.h-12{height:3rem}.h-14{height:3.5rem}.h-16{height:4rem}
+.w-8{width:2rem}.w-10{width:2.5rem}.w-12{width:3rem}.w-60{width:15rem}
+.max-w-md{max-width:28rem}.max-w-4xl{max-width:56rem}.max-h-90vh{max-height:90vh}
+.border-b{border-bottom:1px solid var(--border)}.border-t{border-top:1px solid var(--border)}.border-r{border-right:1px solid var(--border)}
+.hidden{display:none!important}.block{display:block}.inline-block{display:inline-block}.cursor-pointer{cursor:pointer}
+.opacity-60{opacity:.6}.transition{transition:all var(--transition)}.select-none{user-select:none}.shrink-0{flex-shrink:0}
+.required::after{content:' *';color:var(--danger)}
+.error-border{border-color:var(--danger)!important}
 
-        .btn { padding:6px 12px;border-radius:6px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;font-size:12px;transition:var(--transition); }
-        .btn-primary { background:var(--accent);color:white; } .btn-primary:hover { background:var(--accent-hover); } .btn-ghost { background:transparent;color:var(--text-muted);border:1px solid var(--border); }
-        .btn-icon { width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:4px;background:transparent;color:var(--text-dim);border:1px solid transparent; } .btn-icon:hover { color:var(--accent);background:var(--accent-glow);border-color:rgba(14,165,233,0.2); }
-        
-        /* Spinning animation for sync */
-        .spin-animation i { animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* ────────────── APP LAYOUT ────────────── */
+#app{display:flex;flex-direction:column;height:100vh}
+#app-main{display:flex;flex:1;overflow:hidden}
+#sidebar{width:240px;min-width:240px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .2s ease;z-index:50}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40}
+#content{flex:1;min-width:0;overflow-y:auto;padding:1.5rem}
+#topbar{display:none;height:3.5rem;align-items:center;gap:.75rem;padding:0 1rem;background:var(--bg-sidebar);border-bottom:1px solid var(--border)}
+footer{background:var(--bg-sidebar);border-top:1px solid var(--border);padding:.75rem 1.5rem;text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:auto}
 
-        .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto; }
-        .modal { background:var(--bg-surface);border:1px solid var(--border);width:100%;max-width:800px;border-radius:12px;box-shadow:0 25px 50px rgba(0,0,0,0.5);animation:scaleIn 0.2s ease-out;display:flex;flex-direction:column;margin:40px 0; }
-        .modal-header { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg-surface);z-index:10;border-radius:12px 12px 0 0; }
-        .modal-body { padding:20px;overflow-y:auto; } .modal-footer { padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--bg-surface);border-radius:0 0 12px 12px; }
-        .close-modal { background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer; } .close-modal:hover { color:var(--danger); }
+/* Mobile */
+@media(max-width:1023px){
+  #sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #sidebar-overlay.open{display:block}
+  #topbar{display:flex}
+  #content{padding:1rem}
+  .grid-cols-3{grid-template-columns:1fr}
+  .grid-cols-4{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:640px) and (max-width:1023px){
+  .grid-cols-3{grid-template-columns:repeat(2,1fr)}
+}
 
-        .slot-card { background:var(--bg-body);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:8px;position:relative;animation:slideUp 0.3s ease-out; }
-        .slot-remove { position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:10px; } .slot-remove:hover { color:var(--danger); }
-        .slot-title { font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px; }
-        .grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:8px; } .grid-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; } .grid-4 { display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px; }
-        
-        .section-divider { display:flex;align-items:center;gap:8px;margin:16px 0 12px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600; }
-        .section-divider::after { content:'';flex:1;height:1px;background:var(--border); } .section-divider i { color:var(--accent);font-size:12px; }
+/* ────────────── CARDS ────────────── */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.card-stat{display:flex;flex-direction:column;gap:.25rem}
+.card-stat .stat-icon{width:2.5rem;height:2.5rem;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.125rem}
+.card-stat .stat-value{font-size:1.5rem;font-weight:700;color:var(--text-primary)}
+.card-stat .stat-label{font-size:.75rem;color:var(--text-secondary)}
 
-        #toast-container { position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:4px; }
-        .toast { padding:10px 16px;border-radius:6px;font-size:12px;font-weight:500;color:white;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:slideInRight 0.3s ease-out;display:flex;align-items:center;gap:8px; }
-        .toast-success { background:var(--success); } .toast-error { background:var(--danger); }
+/* ────────────── FORM ELEMENTS ────────────── */
+input,select,textarea{
+  width:100%;height:2.5rem;padding:0 .75rem;background:var(--bg-input);
+  border:1px solid var(--border-input);border-radius:var(--radius);
+  color:var(--text-primary);font-size:.875rem;outline:none;transition:border-color var(--transition);
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input:read-only{opacity:.6;cursor:default}
+input:disabled,select:disabled,textarea:disabled{opacity:.5;cursor:not-allowed}
+textarea{height:auto;padding:.5rem .75rem;resize:vertical}
+select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center}
+label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary);margin-bottom:.375rem}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:639px){.form-grid{grid-template-columns:1fr}}
 
-        .hidden { display:none !important; }
-        @media (max-width:768px) { .sidebar{transform:translateX(-100%);position:fixed;z-index:100;} .sidebar.active{transform:translateX(0);} .main-content{margin-left:0;} .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
-        .menu-toggle { display:none;background:none;border:none;color:var(--text-main);font-size:16px;cursor:pointer; } @media (max-width:768px) { .menu-toggle{display:block;} }
-    </style>
+/* ────────────── BUTTONS ────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.375rem;
+  padding:.5rem 1rem;border-radius:var(--radius);font-size:.875rem;font-weight:500;
+  cursor:pointer;border:none;transition:all var(--transition);height:2.5rem;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:#0284c7}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.05);color:var(--text-primary)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover:not(:disabled){background:#dc2626}
+.btn-success{background:var(--success);color:#fff}
+.btn-sm{height:2rem;padding:.25rem .625rem;font-size:.75rem}
+.btn-icon{width:2rem;height:2rem;padding:0;border-radius:var(--radius)}
+
+/* ────────────── TABLE ────────────── */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg)}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th{background:var(--bg-sidebar);color:var(--text-secondary);font-weight:500;text-align:left;padding:.625rem .75rem;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:.625rem .75rem;border-bottom:1px solid var(--border);color:var(--text-primary)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ────────────── BADGE ────────────── */
+.badge{display:inline-flex;align-items:center;padding:.125rem .5rem;border-radius:9999px;font-size:.75rem;font-weight:500}
+.badge-access{background:rgba(34,197,94,.15);color:#22c55e}
+.badge-watch{background:rgba(245,158,11,.15);color:#f59e0b}
+.badge-reserve{background:rgba(239,68,68,.15);color:#ef4444}
+
+/* ────────────── MODAL ────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:56rem;margin:1rem auto;position:relative}
+.modal-header{position:sticky;top:0;background:var(--bg-card);padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);z-index:1;display:flex;align-items:center;justify-content:space-between}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.75rem;position:sticky;bottom:0;background:var(--bg-card)}
+.section-title{font-size:.875rem;font-weight:600;color:var(--accent);padding-bottom:.5rem;margin:1.25rem 0 .75rem;border-bottom:1px solid var(--border)}
+
+/* ────────────── SLOT CARD ────────────── */
+.slot-card{background:rgba(14,165,233,.04);border:1px solid rgba(14,165,233,.12);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;position:relative}
+.slot-card .slot-remove{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;border-radius:50%;border:none;background:rgba(239,68,68,.15);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;line-height:1}
+.slot-card .slot-remove:hover{background:rgba(239,68,68,.3)}
+.slot-title{font-size:.75rem;font-weight:600;color:var(--accent);margin-bottom:.75rem}
+
+/* ────────────── PROGRESS BAR ────────────── */
+.progress{height:.5rem;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden}
+.progress-bar{height:100%;border-radius:9999px;transition:width .4s ease}
+
+/* ────────────── TOAST ────────────── */
+#toast-container{position:fixed;top:1rem;right:1rem;z-index:100;display:flex;flex-direction:column;gap:.5rem}
+.toast{padding:.75rem 1rem;border-radius:var(--radius);font-size:.875rem;color:#fff;animation:slideIn .2s ease;min-width:250px;max-width:400px;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.toast-success{background:#16a34a}.toast-error{background:#dc2626}.toast-info{background:#2563eb}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ────────────── LOGIN ────────────── */
+#login-view{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;background:var(--bg-body)}
+#login-card{width:100%;max-width:28rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem}
+
+/* ────────────── SCROLLBAR ────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+
+/* ────────────── ANALYTICS ────────────── */
+.chart-container{position:relative;width:100%;height:280px;margin-top:1rem}
+.obj-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem}
+.obj-card h3{font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.25rem}
+.obj-card p{font-size:.8125rem;color:var(--text-secondary);margin-bottom:1rem}
+
+/* ────────────── ABX SEARCH DROPDOWN ────────────── */
+.abx-search-wrap{position:relative}
+.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:#1e293b;border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10}
+.abx-dropdown div{padding:.5rem .75rem;cursor:pointer;font-size:.8125rem;color:var(--text-primary)}
+.abx-dropdown div:hover{background:var(--accent-dim)}
+.abx-dropdown .abx-cat{font-size:.6875rem;margin-left:.5rem}
+
+/* ────────────── DATE FILTER BAR ────────────── */
+.filter-bar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.filter-bar input,.filter-bar select{width:auto;min-width:140px}
+</style>
 </head>
 <body>
-    <div id="toast-container"></div>
-    <div id="login-view" style="position:fixed;inset:0;background:var(--bg-body);z-index:9999;display:flex;align-items:center;justify-content:center;">
-        <div class="card" style="width:100%;max-width:340px;animation:scaleIn 0.3s;">
-            <div style="text-align:center;margin-bottom:20px;"><div class="brand-icon" style="margin:0 auto 8px;width:40px;height:40px;font-size:16px;"><i class="fas fa-dna"></i></div><h2>OncoCollect</h2><p class="text-muted">Secure Research Portal</p></div>
-            <form id="login-form"><div class="form-group"><label>Username</label><input type="text" id="username" class="form-control" required></div><div class="form-group"><label>Password</label><input type="password" id="password" class="form-control" required></div><button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;">Sign In</button></form>
-        </div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- LOGIN VIEW -->
+<div id="login-view">
+  <div id="login-card">
+    <div class="flex flex-col items-center gap-2 mb-8">
+      <div style="width:3rem;height:3rem;border-radius:var(--radius);background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:#fff">O</div>
+      <h1 class="text-2xl font-bold">OncoCollect v3</h1>
+      <p class="text-sm" style="color:var(--text-secondary)">Secure Research Portal</p>
     </div>
+    <form id="login-form" class="flex flex-col gap-4">
+      <div>
+        <label class="required">Username</label>
+        <input type="text" id="login-user" placeholder="Enter username" required>
+      </div>
+      <div>
+        <label class="required">Password</label>
+        <input type="password" id="login-pass" placeholder="Enter password" required>
+      </div>
+      <div>
+        <label class="required">Hospital of Collection</label>
+        <select id="login-hospital" required>
+          <option value="">Select Hospital</option>
+          <option value="BPKIHS">BPKIHS</option>
+          <option value="KATHMANDU MEDICAL COLLEGE">Kathmandu Medical College</option>
+          <option value="PATAN HOSPITAL">Patan Hospital</option>
+          <option value="TEACHING HOSPITAL">Teaching Hospital</option>
+          <option value="BIR HOSPITAL">Bir Hospital</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </div>
+      <div id="hospital-other-wrap" style="display:none">
+        <label>Specify Hospital</label>
+        <input type="text" id="login-hospital-other" placeholder="Enter hospital name">
+      </div>
+      <div>
+        <label class="required">Date of Collection</label>
+        <input type="date" id="login-date" required>
+      </div>
+      <div>
+        <label class="required">Collector Name</label>
+        <input type="text" id="login-name" placeholder="Full name of data collector" required>
+      </div>
+      <p id="login-error" class="text-sm hidden" style="color:var(--danger)"></p>
+      <button type="submit" class="btn btn-primary w-full" id="login-btn">Sign In</button>
+    </form>
+    <p class="text-xs text-center mt-4" style="color:var(--text-muted)">Default: admin / Admin@123</p>
+  </div>
+</div>
 
-    <div id="app-view" style="display:none;width:100%;">
-        <nav class="sidebar" id="sidebar"><div class="sidebar-header"><div class="brand-icon">O</div><span class="brand-text">OncoCollect</span></div><div class="nav-links"><a onclick="app.navigate('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-line"></i> Dashboard</a><a onclick="app.navigate('records')" class="nav-item" id="nav-records"><i class="fas fa-database"></i> Records</a><a onclick="app.navigate('analytics')" class="nav-item hidden" id="nav-analytics"><i class="fas fa-chart-pie"></i> Analytics</a><a onclick="app.navigate('users')" class="nav-item hidden" id="nav-users"><i class="fas fa-users-cog"></i> Users</a></div>
-            <div class="user-profile">
-                <div class="avatar" id="user-avatar">A</div>
-                <div style="flex:1;"><div style="font-weight:600;font-size:12px;" id="user-name">Admin</div><div style="font-size:10px;color:var(--text-dim);" id="user-role-text">Role</div></div>
-                <!-- Sync & Logout Buttons in Sidebar -->
-                <button class="btn-icon" id="btn-sync" onclick="app.syncData()" title="Sync Data from Sheet"><i class="fas fa-sync-alt"></i></button>
-                <button class="btn-icon" onclick="app.logout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </nav>
-        <div class="main-content">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><div style="display:flex;align-items:center;gap:10px;"><button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button><div><h1 id="page-heading">Dashboard</h1><p class="text-muted" id="page-subheading">Overview</p></div></div></div>
-            <section id="view-dashboard" class="animate-fade"><div class="stats-grid"><div class="card stat-card"><div class="stat-icon" style="background:rgba(14,165,233,0.1);color:var(--accent);"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-total">0</div><div class="text-muted">Patients</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1);color:var(--success);"><i class="fas fa-pills"></i></div><div class="stat-value" id="stat-abx">0</div><div class="text-muted">Antibiotics</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);"><i class="fas fa-vial"></i></div><div class="stat-value" id="stat-cult">0</div><div class="text-muted">Cultures</div></div><div class="card stat-card"><div class="stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);"><i class="fas fa-heartbeat"></i></div><div class="stat-value" id="stat-mort">0%</div><div class="text-muted">Mortality</div></div></div><div class="card" style="padding:0;"><div style="padding:12px 16px;border-bottom:1px solid var(--border);"><h2>Recent</h2></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Diagnosis</th><th>Outcome</th></tr></thead><tbody id="dash-recent-body"></tbody></table></div></div></section>
-            <section id="view-records" class="hidden animate-fade"><div class="card" style="padding:12px;margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><input type="text" id="global-search" class="form-control" style="flex:1;min-width:150px;" placeholder="Search ID, Diagnosis..." onkeyup="app.filterRecords()"><select id="filter-outcome" class="form-control" style="width:auto;" onchange="app.filterRecords()"><option value="">All Outcomes</option><option value="Discharged well">Discharged</option><option value="Died">Deceased</option></select><button class="btn btn-ghost" onclick="app.exportCSV()"><i class="fas fa-download"></i> CSV</button><button class="btn btn-primary" onclick="app.showRecordModal()"><i class="fas fa-plus"></i> New Entry</button></div><div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Age/Sex</th><th>Diagnosis</th><th>Cancer</th><th>Outcome</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="records-body"></tbody></table></div></div></section>
-            <section id="view-analytics" class="hidden animate-fade"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;"><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">SEX</h3><canvas id="chart-sex"></canvas></div><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">AGE</h3><canvas id="chart-age"></canvas></div><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">CANCER</h3><canvas id="chart-cancer"></canvas></div><div class="card"><h3 style="font-size:12px;margin-bottom:12px;color:var(--text-dim);">AWaRe</h3><canvas id="chart-aware"></canvas></div></div></section>
-            <section id="view-users" class="hidden animate-fade"><div class="card" style="padding:12px;margin-bottom:12px;display:flex;justify-content:flex-end;"><button class="btn btn-primary" onclick="app.showUserModal()"><i class="fas fa-user-plus"></i> Add User</button></div><div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead><tbody id="users-body"></tbody></table></div></div></section>
+<!-- APP SHELL -->
+<div id="app" class="hidden">
+  <div id="app-main">
+    <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+    <aside id="sidebar">
+      <div class="flex items-center gap-3 px-5 h-16 shrink-0 border-b" style="border-color:var(--border)">
+        <div style="width:2rem;height:2rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
+        <span class="font-bold text-lg">OncoCollect</span>
+      </div>
+      <nav id="sidebar-nav" class="flex-1 py-4 px-3 flex flex-col gap-1"></nav>
+      <div class="px-3 py-4 flex flex-col gap-2 border-t" style="border-color:var(--border)">
+        <div class="flex items-center gap-3 px-3 py-2">
+          <div id="user-avatar" class="rounded-full flex items-center justify-center font-bold text-xs" style="width:2rem;height:2rem;background:var(--accent);color:#fff"></div>
+          <div class="flex-1 min-w-0">
+            <p id="user-name" class="text-sm font-medium truncate"></p>
+            <p id="user-role" class="text-xs" style="color:var(--text-muted)"></p>
+          </div>
         </div>
+        <div class="text-xs px-3" style="color:var(--text-muted)">
+          <span id="sidebar-hospital"></span><br>
+          <span id="sidebar-date"></span>
+        </div>
+        <div class="flex gap-2 px-1">
+          <button class="btn btn-ghost btn-sm flex-1" onclick="refreshData()">&#x21bb; Sync</button>
+          <button class="btn btn-ghost btn-sm flex-1" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </aside>
+    <main class="flex flex-col flex-1 min-w-0">
+      <header id="topbar">
+        <button class="btn btn-ghost btn-icon" onclick="toggleSidebar(true)">&#9776;</button>
+        <span class="font-bold">OncoCollect</span>
+      </header>
+      <div id="content" class="flex-1"></div>
+    </main>
+  </div>
+  <footer>OncoCollect v3 — Clinical Research Database</footer>
+</div>
+
+<!-- RECORD MODAL -->
+<div id="record-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="modal-title" class="text-lg font-bold"></h2>
+        <p id="modal-subtitle" class="text-sm" style="color:var(--text-secondary)"></p>
+      </div>
+      <button class="btn btn-ghost btn-icon" onclick="closeRecordModal()" style="font-size:1.25rem">&times;</button>
     </div>
-    <div id="modal-record" class="modal-overlay"><div class="modal"><div class="modal-header"><h2 id="modal-record-title" style="font-size:16px;">New Patient Record</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div><div class="modal-body"><form id="record-form" onsubmit="app.saveRecord(event)">
-        <div class="section-divider"><i class="fas fa-user"></i> A. Demographics</div><div class="grid-3"><div class="form-group"><label>A1. Study ID</label><input type="text" id="Study_ID" readonly class="form-control"></div><div class="form-group"><label>A2. Age</label><input type="number" id="Age" required class="form-control"></div><div class="form-group"><label>A3. Sex</label><select id="Sex" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div></div>
-        <div class="section-divider"><i class="fas fa-hospital"></i> B. Admission</div><div class="grid-3"><div class="form-group"><label>B1. Admission Date</label><input type="date" id="Admission_Date" class="form-control" onchange="app.calcLOS()"></div><div class="form-group"><label>B2. Discharge Date</label><input type="date" id="Discharge_Date" class="form-control" onchange="app.calcLOS()"></div><div class="form-group"><label>B3. LOS</label><input type="number" id="LOS" readonly class="form-control"></div></div><div class="grid-3"><div class="form-group"><label>B4. Type</label><select id="Admission_Type" class="form-control"><option>Emergency</option><option>Elective</option></select></div><div class="form-group"><label>B5. Ward</label><select id="Ward" class="form-control" onchange="app.toggleOther(this,'Ward_Other')"><option>Oncology</option><option>ICU</option><option>HDU</option><option>Other</option></select><input type="text" id="Ward_Other" class="form-control hidden" style="margin-top:4px;" placeholder="Specify Ward"></div><div class="form-group"><label>B6. Outcome</label><select id="Outcome" class="form-control"><option>Discharged well</option><option>Died</option><option>Referred</option><option>Discharged on request</option></select></div></div><div class="grid-2"><div class="form-group"><label>B7. Readmission 30d</label><select id="Readmission_30d" class="form-control"><option>No</option><option>Yes</option><option>Not documented</option></select></div><div class="form-group"><label>E3. De-escalation</label><select id="De_escalation" class="form-control"><option>Yes</option><option>No</option><option>Not applicable</option><option>Not documented</option></select></div></div>
-        <div class="section-divider"><i class="fas fa-dna"></i> A. Oncology</div><div class="grid-3"><div class="form-group"><label>A4. Diagnosis</label><input type="text" id="Diagnosis" class="form-control"></div><div class="form-group"><label>A5. Cancer Type</label><select id="Cancer_Type" class="form-control"><option>Solid tumor</option><option>Hematological malignancy</option></select></div><div class="form-group"><label>A6. Name</label><select id="Cancer_Name" class="form-control" onchange="app.toggleOther(this,'Cancer_Name_Other')"><option>AML</option><option>Breast</option><option>Lung</option><option>Prostate</option><option>Other</option></select><input type="text" id="Cancer_Name_Other" class="form-control hidden" style="margin-top:4px;" placeholder="Specify"></div></div><div class="grid-3"><div class="form-group"><label>A7. Stage</label><select id="Stage" class="form-control"><option>Stage I</option><option>Stage II</option><option>Stage III</option><option>Stage IV</option><option>Not documented</option></select></div><div class="form-group"><label>A8. Treatment</label><select id="Treatment" class="form-control"><option>Chemotherapy</option><option>Radiotherapy</option><option>Both</option><option>Surgery</option><option>Supported care only</option></select></div><div class="form-group"><label>A9. Comorbidities</label><select id="Comorbidities" class="form-control" onchange="app.toggleOther(this,'Comorbidities_Other')"><option>None</option><option>DM</option><option>CKD</option><option>Liver disease</option><option>Other</option></select><input type="text" id="Comorbidities_Other" class="form-control hidden" style="margin-top:4px;" placeholder="Specify"></div></div><div class="grid-2"><div class="form-group"><label>A10. Immunosuppression</label><select id="Immunosuppression" class="form-control"><option>Yes</option><option>No</option><option>Not documented</option></select></div></div>
-        <div class="section-divider"><i class="fas fa-pills"></i> C & E. Antibiotics <button type="button" class="btn btn-ghost" onclick="app.addAbxSlot()" style="margin-left:auto;padding:2px 8px;font-size:10px;"><i class="fas fa-plus"></i> Add</button></div><div id="abx-container"></div><p id="abx-limit" class="hidden" style="color:var(--warning);font-size:10px;margin-top:2px;">Max 5.</p>
-        <div class="section-divider"><i class="fas fa-vial"></i> D. Cultures <button type="button" class="btn btn-ghost" onclick="app.addCultSlot()" style="margin-left:auto;padding:2px 8px;font-size:10px;"><i class="fas fa-plus"></i> Add</button></div><div id="cult-container"></div><p id="cult-limit" class="hidden" style="color:var(--warning);font-size:10px;margin-top:2px;">Max 3.</p>
-    </form></div><div class="modal-footer"><button class="btn btn-ghost" onclick="app.closeModals()">Cancel</button><button type="submit" class="btn btn-primary" id="btn-submit-record" onclick="document.getElementById('record-form').requestSubmit()">Save</button></div></div></div>
-    <div id="modal-user" class="modal-overlay"><div class="modal" style="max-width:360px;"><div class="modal-header"><h2 style="font-size:14px;">Add User</h2><button class="close-modal" onclick="app.closeModals()">&times;</button></div><div class="modal-body"><form id="user-form" onsubmit="app.saveUser(event)"><div class="form-group"><label>Username</label><input type="text" id="u-name" required class="form-control"></div><div class="form-group"><label>Password</label><input type="password" id="u-pass" required class="form-control"></div><div class="form-group"><label>Role</label><select id="u-role" class="form-control"><option>Agent</option><option>Admin</option></select></div></form></div><div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('user-form').requestSubmit()">Create</button></div></div></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
 
-    <script>
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzQBuxERt1bJCUJAiYqNmcrcEbG0MDDPC7yLRJkJWluXcT5oMeo15G08Jo6jHjbCCYF/exec'; 
+<!-- USER MODAL -->
+<div id="user-modal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:28rem">
+    <div class="modal-header">
+      <h2 class="text-lg font-bold">Add User</h2>
+      <button class="btn btn-ghost btn-icon" onclick="closeUserModal()" style="font-size:1.25rem">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="flex flex-col gap-4">
+        <div><label class="required">Username</label><input id="new-username" placeholder="Enter username"></div>
+        <div><label class="required">Password</label><input type="password" id="new-password" placeholder="Min 8 chars, uppercase, number, symbol"></div>
+        <div><label>Role</label>
+          <select id="new-role">
+            <option value="Agent">Agent</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUserModal()">Cancel</button>
+      <button class="btn btn-primary" id="create-user-btn" onclick="createUser()">Create User</button>
+    </div>
+  </div>
+</div>
 
-        class ResearchApp {
-            constructor() { this.user=null;this.rawData=[];this.filteredData=[];this.antibioticsList=[];this.charts={};this.formMode='new';this.init(); }
-            init() { document.getElementById('login-form').addEventListener('submit',(e)=>this.login(e)); document.addEventListener('click',(e)=>{if(!e.target.closest('.search-select'))document.querySelectorAll('.search-select-dropdown').forEach(dd=>dd.classList.remove('show'));}); }
-            showToast(msg,type='success'){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast toast-${type}`;t.innerHTML=`<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;c.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),200);},3000);}
-            
-            login(e){e.preventDefault();this.apiCall({action:'login',username:document.getElementById('username').value,password:document.getElementById('password').value},res=>{if(res.success){this.user=res.user;this.showApp();}else this.showToast(res.message||'Login failed','error');});}
-            logout(){location.reload();}
-            showApp(){document.getElementById('login-view').style.display='none';document.getElementById('app-view').style.display='flex';document.getElementById('user-name').textContent=this.user.username;document.getElementById('user-role-text').textContent=this.user.role;document.getElementById('user-avatar').textContent=this.user.username.charAt(0);if(this.user.role==='Admin'||this.user.role==='SuperAdmin'){document.getElementById('nav-analytics').classList.remove('hidden');document.getElementById('nav-users').classList.remove('hidden');}this.loadData();this.loadAntibiotics();this.navigate('dashboard');}
-            
-            navigate(view){['dashboard','records','analytics','users'].forEach(v=>{document.getElementById('view-'+v).classList.add('hidden');document.getElementById('nav-'+v).classList.remove('active');});document.getElementById('view-'+view).classList.remove('hidden');document.getElementById('nav-'+view).classList.add('active');const h={'dashboard':['Dashboard','Clinical Overview'],'records':['Patient Records','Manage Data'],'analytics':['Data Analytics','Visual Statistics'],'users':['User Management','Access Control']};document.getElementById('page-heading').textContent=h[view][0];document.getElementById('page-subheading').textContent=h[view][1];if(view==='analytics')this.renderCharts();document.getElementById('sidebar').classList.remove('active');}
+<script>
+/* ══════════════════════════════════════════════════════════════
+   OncoCollect v3.0 Frontend
+   ══════════════════════════════════════════════════════════════ */
 
-            apiCall(p,cb){fetch(GAS_URL,{method:'POST',body:JSON.stringify(p)}).then(r=>r.json()).then(cb).catch(e=>this.showToast('Network Error','error'));}
-            
-            // Updated loadData to accept a callback for sync button
-            loadData(callback=null) { 
-                this.apiCall({action:'read'},res=>{
-                    this.rawData=res||[];this.filteredData=[...this.rawData];this.renderRecords();this.updateStats();this.renderRecent();
-                    // Auto-refresh charts if on analytics view
-                    if(!document.getElementById('view-analytics').classList.contains('hidden')) this.renderCharts();
-                    if(callback) callback();
-                }); 
-            }
-            
-            // Sync Button Logic
-            syncData() {
-                const btn = document.getElementById('btn-sync');
-                btn.classList.add('spin-animation');
-                btn.disabled = true;
-                
-                this.loadData(() => {
-                    btn.classList.remove('spin-animation');
-                    btn.disabled = false;
-                    this.showToast('Data synced with sheet');
-                });
-            }
+// ─── GITHUB PAGES CONFIG ────────────────────────────────────
+const GAS_URL = '';
 
-            loadAntibiotics(){this.apiCall({action:'getAntibiotics'},res=>{this.antibioticsList=res||[];});}
-            loadUsers(){this.apiCall({action:'getUsers'},res=>{this.users=res||[];this.renderUsers();});}
-            toggleOther(sel,otherId){const el=document.getElementById(otherId);if(sel.value==='Other'){el.classList.remove('hidden');el.focus();}else{el.classList.add('hidden');el.value='';}}
-            openAbxSearch(inputEl,dropdownEl){document.querySelectorAll('.search-select-dropdown').forEach(dd=>dd.classList.remove('show'));dropdownEl.classList.add('show');this.filterAbxList(inputEl.value,dropdownEl);}
-            filterAbxList(term,dropdownEl){const filtered=this.antibioticsList.filter(a=>a.name.toLowerCase().includes(term.toLowerCase())||a.class.toLowerCase().includes(term.toLowerCase()));dropdownEl.innerHTML='';if(!filtered.length){dropdownEl.innerHTML='<div style="padding:6px 12px;font-size:11px;color:var(--text-dim);">No match</div>';return;}filtered.forEach(a=>{const item=document.createElement('div');item.className='search-select-item';item.innerHTML=`${a.name}<div class="meta"><span>${a.class}</span><span>${a.category}</span></div>`;item.addEventListener('click',()=>this.selectAbx(item,a.name,a.class,a.category));dropdownEl.appendChild(item);});}
-            selectAbx(el,name,cls,cat){const slot=el.closest('.slot-card');slot.querySelector('.abx-name-input').value=name;slot.querySelector('.abx-class-input').value=cls;slot.querySelector('.abx-cat-input').value=cat;el.closest('.search-select-dropdown').classList.remove('show');}
-            
-            addAbxSlot(data=null){
-                const current=document.querySelectorAll('.abx-slot').length;if(current>=5){document.getElementById('abx-limit').classList.remove('hidden');return;}const i=current+1;
-                const div=document.createElement('div');div.className='slot-card abx-slot';div.id=`abx_slot_${i}`;
-                div.innerHTML=`<button type="button" class="slot-remove" onclick="app.removeSlot(this,'abx')"><i class="fas fa-times"></i></button><div class="slot-title"><i class="fas fa-pills"></i> Episode #${i}</div>
-                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C1. Name</label><div class="search-select"><input type="text" class="abx-name-input" value="${data?data.name:''}" placeholder="Search WHO..." onfocus="app.openAbxSearch(this,this.nextElementSibling)" oninput="app.filterAbxList(this.value,this.nextElementSibling)"><div class="search-select-dropdown"></div></div></div><div class="form-group" style="margin:0;"><label>C2. Class</label><input type="text" class="form-control abx-class-input" readonly value="${data?data.cls:''}"></div><div class="form-group" style="margin:0;"><label>C9. AWaRe</label><input type="text" class="form-control abx-cat-input" readonly value="${data?data.cat:''}"></div></div>
-                    <div class="grid-4" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C3. Route</label><select class="form-control abx-route-input"><option ${data&&data.route==='IV'?'selected':''}>IV</option><option ${data&&data.route==='Oral'?'selected':''}>Oral</option><option ${data&&data.route==='IM'?'selected':''}>IM</option></select></div><div class="form-group" style="margin:0;"><label>C4. Dose</label><input type="text" class="form-control abx-dose-input" value="${data?data.dose:''}"></div><div class="form-group" style="margin:0;"><label>C5. Freq/day</label><input type="text" class="form-control abx-freq-input" value="${data?data.freq:''}"></div><div class="form-group" style="margin:0;"><label>C8. Duration</label><input type="number" class="form-control abx-dur-input" value="${data?data.dur:''}"></div></div>
-                    <div class="grid-4" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C6. Start</label><input type="date" class="form-control abx-start-input" value="${data?data.start:''}"></div><div class="form-group" style="margin:0;"><label>C7. Stop</label><input type="date" class="form-control abx-stop-input" value="${data?data.stop:''}"></div><div class="form-group" style="margin:0;"><label>C10. DDD</label><input type="number" step="0.01" class="form-control abx-ddd-input" value="${data?data.ddd:''}"></div><div class="form-group" style="margin:0;"><label>C11. Grams</label><input type="number" step="0.01" class="form-control abx-grams-input" value="${data?data.grams:''}"></div></div>
-                    <div class="grid-4" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>C12. DDD Calc</label><input type="number" step="0.01" class="form-control abx-dddcalc-input" value="${data?data.dddcalc:''}"></div><div class="form-group" style="margin:0;"><label>C13. DOT</label><input type="number" class="form-control abx-dot-input" value="${data?data.dot:''}"></div><div class="form-group" style="margin:0;"><label>E1. Indication</label><select class="form-control abx-ind-input"><option ${data&&data.ind==='Febrile neutropenia'?'selected':''}>Febrile neutropenia</option><option ${data&&data.ind==='Confirmed infection'?'selected':''}>Confirmed infection</option><option ${data&&data.ind==='Empirical'?'selected':''}>Empirical</option><option ${data&&data.ind==='Surgical prophylaxis'?'selected':''}>Surgical prophylaxis</option></select></div><div class="form-group" style="margin:0;"><label>E2. Therapy</label><select class="form-control abx-therapy-input"><option ${data&&data.therapy==='Empirical'?'selected':''}>Empirical</option><option ${data&&data.therapy==='Targeted'?'selected':''}>Targeted</option><option ${data&&data.therapy==='Both'?'selected':''}>Both</option></select></div></div>
-                    <div class="grid-2" style="gap:6px;"><div class="form-group" style="margin:0;"><label>E4. Febrile Neutro?</label><select class="form-control abx-feb-input"><option ${data&&data.feb==='No'?'selected':''}>No</option><option ${data&&data.feb==='Yes'?'selected':''}>Yes</option></select></div><div class="form-group" style="margin:0;"><label>E5. Episodes</label><input type="number" class="form-control abx-episodes-input" value="${data?data.episodes:''}"></div></div>`;
-                document.getElementById('abx-container').appendChild(div);
-                if(current+1>=5)document.getElementById('abx-limit').classList.remove('hidden');
-            }
-            addCultSlot(data=null){
-                const current=document.querySelectorAll('.cult-slot').length;if(current>=3){document.getElementById('cult-limit').classList.remove('hidden');return;}const i=current+1;
-                const div=document.createElement('div');div.className='slot-card cult-slot';div.id=`cult_slot_${i}`;
-                div.innerHTML=`<button type="button" class="slot-remove" onclick="app.removeSlot(this,'cult')"><i class="fas fa-times"></i></button><div class="slot-title"><i class="fas fa-vial"></i> Culture #${i}</div>
-                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>D1. Sent?</label><select class="form-control cult-sent-input"><option ${data&&data.sent==='No'?'selected':''}>No</option><option ${data&&data.sent==='Yes'?'selected':''}>Yes</option></select></div><div class="form-group" style="margin:0;"><label>D2. Date</label><input type="date" class="form-control cult-date-input" value="${data?data.date:''}"></div><div class="form-group" style="margin:0;"><label>D3. Type</label><select class="form-control cult-type-input"><option ${data&&data.type==='Blood'?'selected':''}>Blood</option><option ${data&&data.type==='Urine'?'selected':''}>Urine</option><option ${data&&data.type==='Sputum'?'selected':''}>Sputum</option><option ${data&&data.type==='Wound'?'selected':''}>Wound</option></select></div></div>
-                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>D4. Result</label><select class="form-control cult-res-input"><option ${data&&data.res==='Positive'?'selected':''}>Positive</option><option ${data&&data.res==='Negative'?'selected':''}>Negative</option><option ${data&&data.res==='No Growth'?'selected':''}>No Growth</option></select></div><div class="form-group" style="margin:0;"><label>D5. Organism</label><input type="text" class="form-control cult-org-input" value="${data?data.org:''}"></div><div class="form-group" style="margin:0;"><label>D6. Gram</label><select class="form-control cult-gram-input"><option ${data&&data.gram==='Gram positive'?'selected':''}>Gram positive</option><option ${data&&data.gram==='Gram negative'?'selected':''}>Gram negative</option><option ${data&&data.gram==='N/A'?'selected':''}>N/A</option></select></div></div>
-                    <div class="grid-3" style="gap:6px;margin-bottom:6px;"><div class="form-group" style="margin:0;"><label>D7. AST?</label><select class="form-control cult-ast-input"><option ${data&&data.ast==='Yes'?'selected':''}>Yes</option><option ${data&&data.ast==='No'?'selected':''}>No</option></select></div><div class="form-group" style="margin:0;"><label>D8. Resistance</label><input type="text" class="form-control cult-resist-input" value="${data?data.resist:''}"></div><div class="form-group" style="margin:0;"><label>D9. MDR?</label><select class="form-control cult-mdr-input"><option ${data&&data.mdr==='No'?'selected':''}>No</option><option ${data&&data.mdr==='Yes'?'selected':''}>Yes</option></select></div></div>
-                    <div class="grid-2" style="gap:6px;"><div class="form-group" style="margin:0;"><label>D10. XDR?</label><select class="form-control cult-xdr-input"><option ${data&&data.xdr==='No'?'selected':''}>No</option><option ${data&&data.xdr==='Yes'?'selected':''}>Yes</option></select></div><div class="form-group" style="margin:0;"><label>D11. ESKAPE?</label><select class="form-control cult-eskape-input"><option ${data&&data.eskape==='No'?'selected':''}>No</option><option ${data&&data.eskape==='Yes'?'selected':''}>Yes</option></select></div></div>`;
-                document.getElementById('cult-container').appendChild(div);
-                if(current+1>=3)document.getElementById('cult-limit').classList.remove('hidden');
-            }
-            removeSlot(btn,type){btn.closest('.slot-card').remove();this.reindexSlots(type);document.getElementById(`${type}-limit`).classList.add('hidden');}
-            reindexSlots(type){document.querySelectorAll(`.${type}-slot`).forEach((slot,i)=>{slot.id=`${type}_slot_${i+1}`;slot.querySelector('.slot-title').innerHTML=`<i class="fas fa-${type==='abx'?'pills':'vial'}"></i> ${type==='abx'?'Episode':'Culture'} #${i+1}`;});}
-            
-            showRecordModal(mode='new',rec=null){
-                this.formMode=mode;document.getElementById('record-form').reset();document.getElementById('abx-container').innerHTML='';document.getElementById('cult-container').innerHTML='';document.getElementById('abx-limit').classList.add('hidden');document.getElementById('cult-limit').classList.add('hidden');document.querySelectorAll('.other-field').forEach(el=>el.classList.add('hidden'));
-                const isEditable=mode!=='view';document.querySelectorAll('#record-form input,#record-form select').forEach(el=>{if(el.id!=='Study_ID')el.disabled=!isEditable;});document.getElementById('btn-submit-record').classList.toggle('hidden',!isEditable);
-                if(mode==='new'){document.getElementById('Study_ID').value='PID-'+Math.floor(100000+Math.random()*900000);document.getElementById('modal-record-title').textContent='New Patient Record';document.getElementById('btn-submit-record').textContent='Save Record';}
-                else{
-                    document.getElementById('Study_ID').value=rec.Study_ID;document.getElementById('Age').value=rec.Age;document.getElementById('Sex').value=rec.Sex;document.getElementById('Admission_Date').value=rec.Admission_Date;document.getElementById('Discharge_Date').value=rec.Discharge_Date;document.getElementById('LOS').value=rec.LOS;
-                    this.setVal('Admission_Type',rec.Admission_Type);this.setVal('Ward',rec.Ward);this.checkOther('Ward',rec.Ward,'Ward_Other',rec.Ward_Other);this.setVal('Outcome',rec.Outcome);this.setVal('Readmission_30d',rec.Readmission_30d);this.setVal('De_escalation',rec.De_escalation);
-                    document.getElementById('Diagnosis').value=rec.Diagnosis||'';this.setVal('Cancer_Type',rec.Cancer_Type);this.checkOther('Cancer_Name',rec.Cancer_Name,'Cancer_Name_Other',rec.Cancer_Name_Other);this.setVal('Stage',rec.Stage);this.setVal('Treatment',rec.Treatment);this.checkOther('Comorbidities',rec.Comorbidities,'Comorbidities_Other',rec.Comorbidities_Other);this.setVal('Immunosuppression',rec.Immunosuppression);
-                    for(let i=1;i<=5;i++)if(rec[`Abx_${i}_Name`])this.addAbxSlot({name:rec[`Abx_${i}_Name`],cls:rec[`Abx_${i}_Class`],cat:rec[`Abx_${i}_Category`],route:rec[`Abx_${i}_Route`],dose:rec[`Abx_${i}_Dose`],freq:rec[`Abx_${i}_Freq`],start:rec[`Abx_${i}_Start`],stop:rec[`Abx_${i}_Stop`],dur:rec[`Abx_${i}_Duration`],ddd:rec[`Abx_${i}_DDD`],grams:rec[`Abx_${i}_Grams`],dddcalc:rec[`Abx_${i}_DDD_Calc`],dot:rec[`Abx_${i}_DOT`],ind:rec[`Abx_${i}_Indication`],therapy:rec[`Abx_${i}_Therapy`],feb:rec[`Abx_${i}_Febrile_Neutro`],episodes:rec[`Abx_${i}_Febrile_Episodes`]});
-                    for(let i=1;i<=3;i++)if(rec[`Cult_${i}_Type`])this.addCultSlot({sent:rec[`Cult_${i}_Sent`],date:rec[`Cult_${i}_Date`],type:rec[`Cult_${i}_Type`],res:rec[`Cult_${i}_Result`],org:rec[`Cult_${i}_Organism`],gram:rec[`Cult_${i}_Gram`],ast:rec[`Cult_${i}_AST`],resist:rec[`Cult_${i}_Resist`],mdr:rec[`Cult_${i}_MDR`],xdr:rec[`Cult_${i}_XDR`],eskape:rec[`Cult_${i}_ESKAPE`]});
-                    document.getElementById('modal-record-title').textContent=mode==='edit'?'Edit Record':'View Record';document.getElementById('btn-submit-record').textContent='Update Record';
-                }
-                document.getElementById('modal-record').style.display='flex';
-            }
-            setVal(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
-            checkOther(selectId,dbVal,otherId,otherDbVal){const sel=document.getElementById(selectId);if(!sel)return;const opt=Array.from(sel.options).find(o=>o.value===dbVal);if(opt){sel.value=dbVal;}else if(dbVal){sel.value='Other';document.getElementById(otherId).classList.remove('hidden');document.getElementById(otherId).value=otherDbVal||dbVal;}}
+// ─── AUTO-DETECT ENVIRONMENT ────────────────────────────────
+const IS_GAS = (typeof google !== 'undefined' && google.script && google.script.run);
 
-            saveRecord(e){
-                e.preventDefault();const payload={action:'save',user:this.user.username,data:{}};
-                ['Study_ID','Age','Sex','Admission_Date','Discharge_Date','LOS','Admission_Type','Ward','Ward_Other','Diagnosis','Cancer_Type','Cancer_Name','Cancer_Name_Other','Stage','Treatment','Comorbidities','Comorbidities_Other','Immunosuppression','Outcome','Readmission_30d','De_escalation'].forEach(f=>payload.data[f]=document.getElementById(f).value);
-                const abxSlots=document.querySelectorAll('.abx-slot');
-                for(let i=0;i<5;i++){const s=abxSlots[i];payload.data[`Abx_${i+1}_Name`]=s?s.querySelector('.abx-name-input').value:'';payload.data[`Abx_${i+1}_Class`]=s?s.querySelector('.abx-class-input').value:'';payload.data[`Abx_${i+1}_Category`]=s?s.querySelector('.abx-cat-input').value:'';payload.data[`Abx_${i+1}_Route`]=s?s.querySelector('.abx-route-input').value:'';payload.data[`Abx_${i+1}_Dose`]=s?s.querySelector('.abx-dose-input').value:'';payload.data[`Abx_${i+1}_Freq`]=s?s.querySelector('.abx-freq-input').value:'';payload.data[`Abx_${i+1}_Start`]=s?s.querySelector('.abx-start-input').value:'';payload.data[`Abx_${i+1}_Stop`]=s?s.querySelector('.abx-stop-input').value:'';payload.data[`Abx_${i+1}_Duration`]=s?s.querySelector('.abx-dur-input').value:'';payload.data[`Abx_${i+1}_DDD`]=s?s.querySelector('.abx-ddd-input').value:'';payload.data[`Abx_${i+1}_Grams`]=s?s.querySelector('.abx-grams-input').value:'';payload.data[`Abx_${i+1}_DDD_Calc`]=s?s.querySelector('.abx-dddcalc-input').value:'';payload.data[`Abx_${i+1}_DOT`]=s?s.querySelector('.abx-dot-input').value:'';payload.data[`Abx_${i+1}_Indication`]=s?s.querySelector('.abx-ind-input').value:'';payload.data[`Abx_${i+1}_Therapy`]=s?s.querySelector('.abx-therapy-input').value:'';payload.data[`Abx_${i+1}_Febrile_Neutro`]=s?s.querySelector('.abx-feb-input').value:'';payload.data[`Abx_${i+1}_Febrile_Episodes`]=s?s.querySelector('.abx-episodes-input').value:'';}
-                const cultSlots=document.querySelectorAll('.cult-slot');
-                for(let i=0;i<3;i++){const s=cultSlots[i];payload.data[`Cult_${i+1}_Sent`]=s?s.querySelector('.cult-sent-input').value:'';payload.data[`Cult_${i+1}_Date`]=s?s.querySelector('.cult-date-input').value:'';payload.data[`Cult_${i+1}_Type`]=s?s.querySelector('.cult-type-input').value:'';payload.data[`Cult_${i+1}_Result`]=s?s.querySelector('.cult-res-input').value:'';payload.data[`Cult_${i+1}_Organism`]=s?s.querySelector('.cult-org-input').value:'';payload.data[`Cult_${i+1}_Gram`]=s?s.querySelector('.cult-gram-input').value:'';payload.data[`Cult_${i+1}_AST`]=s?s.querySelector('.cult-ast-input').value:'';payload.data[`Cult_${i+1}_Resist`]=s?s.querySelector('.cult-resist-input').value:'';payload.data[`Cult_${i+1}_MDR`]=s?s.querySelector('.cult-mdr-input').value:'';payload.data[`Cult_${i+1}_XDR`]=s?s.querySelector('.cult-xdr-input').value:'';payload.data[`Cult_${i+1}_ESKAPE`]=s?s.querySelector('.cult-eskape-input').value:'';}
-                this.apiCall(payload,res=>{if(res.success){this.closeModals();this.loadData();this.showToast(res.message);}else this.showToast(res.message||'Error','error');});
-            }
-            calcLOS(){const s=document.getElementById('Admission_Date').value,e=document.getElementById('Discharge_Date').value;if(s&&e)document.getElementById('LOS').value=Math.round((new Date(e)-new Date(s))/86400000);}
-            renderRecords(){const tbody=document.getElementById('records-body');tbody.innerHTML='';const isAdmin=this.user.role==='Admin'||this.user.role==='SuperAdmin';this.filteredData.forEach(r=>{const bc=r.Outcome==='Died'?'badge-danger':'badge-success';let actions=`<button class="btn-icon" onclick="app.showRecordModal('view',app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-eye"></i></button>`;if(isAdmin)actions+=`<button class="btn-icon" onclick="app.showRecordModal('edit',app.rawData.find(x=>x.Study_ID==='${r.Study_ID}'))"><i class="fas fa-pencil-alt"></i></button>`;tbody.innerHTML+=`<tr><td style="font-weight:600;color:var(--accent);">${r.Study_ID||'-'}</td><td>${r.Age}/${r.Sex}</td><td>${r.Diagnosis||'-'}</td><td>${r.Cancer_Name||'-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td><td style="text-align:right;">${actions}</td></tr>`;});}
-            renderRecent(){const tbody=document.getElementById('dash-recent-body');tbody.innerHTML='';[...this.rawData].reverse().slice(0,5).forEach(r=>{const bc=r.Outcome==='Died'?'badge-danger':'badge-success';tbody.innerHTML+=`<tr><td style="color:var(--accent);font-weight:600;">${r.Study_ID}</td><td>${r.Diagnosis||'-'}</td><td><span class="badge ${bc}">${r.Outcome}</span></td></tr>`;});}
-            updateStats(){const t=this.rawData.length;document.getElementById('stat-total').textContent=t;let a=0,c=0;this.rawData.forEach(r=>{for(let i=1;i<=5;i++)if(r[`Abx_${i}_Name`])a++;for(let i=1;i<=3;i++)if(r[`Cult_${i}_Type`])c++;});document.getElementById('stat-abx').textContent=a;document.getElementById('stat-cult').textContent=c;document.getElementById('stat-mort').textContent=t?Math.round((this.rawData.filter(r=>r.Outcome==='Died').length/t)*100)+'%':'0%';}
-            renderCharts(){if(!this.rawData.length)return;Object.values(this.charts).forEach(c=>c.destroy());this.charts={};const m='#64748b',g='rgba(255,255,255,0.05)';const sd=this.rawData.reduce((a,r)=>{const s=r.Sex||'Unknown';a[s]=(a[s]||0)+1;return a;},{});this.charts.sex=new Chart(document.getElementById('chart-sex'),{type:'doughnut',data:{labels:Object.keys(sd),datasets:[{data:Object.values(sd),backgroundColor:['#0ea5e9','#f59e0b','#10b981']}]},options:{plugins:{legend:{labels:{color:m}}}}});const ab={'0-18':0,'19-35':0,'36-50':0,'51-65':0,'65+':0};this.rawData.forEach(r=>{const a=parseInt(r.Age);if(!a)return;if(a<=18)ab['0-18']++;else if(a<=35)ab['19-35']++;else if(a<=50)ab['36-50']++;else if(a<=65)ab['51-65']++;else ab['65+']++;});this.charts.age=new Chart(document.getElementById('chart-age'),{type:'bar',data:{labels:Object.keys(ab),datasets:[{data:Object.values(ab),backgroundColor:'#0ea5e9',borderRadius:4}]},options:{scales:{x:{ticks:{color:m},grid:{display:false}},y:{ticks:{color:m},grid:{color:g}}},plugins:{legend:{display:false}}}});const cd=this.rawData.reduce((a,r)=>{const t=r.Cancer_Type||'Unknown';a[t]=(a[t]||0)+1;return a;},{});this.charts.cancer=new Chart(document.getElementById('chart-cancer'),{type:'doughnut',data:{labels:Object.keys(cd),datasets:[{data:Object.values(cd),backgroundColor:['#10b981','#ef4444','#0ea5e9']}]},options:{plugins:{legend:{labels:{color:m}}}}});let wd={'Access':0,'Watch':0,'Reserve':0};this.rawData.forEach(r=>{for(let i=1;i<=5;i++){const c=r[`Abx_${i}_Category`];if(c&&wd[c]!==undefined)wd[c]++;}});this.charts.aware=new Chart(document.getElementById('chart-aware'),{type:'doughnut',data:{labels:Object.keys(wd),datasets:[{data:Object.values(wd),backgroundColor:['#10b981','#f59e0b','#ef4444']}]},options:{plugins:{legend:{labels:{color:m}}}}});}
-            filterRecords(){const term=document.getElementById('global-search').value.toLowerCase();const outcome=document.getElementById('filter-outcome').value;this.filteredData=this.rawData.filter(r=>{const mt=!term||(r.Study_ID&&r.Study_ID.toLowerCase().includes(term))||(r.Diagnosis&&r.Diagnosis.toLowerCase().includes(term));const mo=!outcome||r.Outcome===outcome;return mt&&mo;});this.renderRecords();}
-            exportCSV(){if(!this.rawData.length)return this.showToast("No data",'error');const h=Object.keys(this.rawData[0]);let csv=h.join(",")+"\n";this.rawData.forEach(r=>csv+=h.map(k=>`"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(",")+"\n");const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Data.csv';a.click();}
-            showUserModal(){document.getElementById('user-form').reset();document.getElementById('modal-user').style.display='flex';}
-            saveUser(e){e.preventDefault();this.apiCall({action:'addUser',username:document.getElementById('u-name').value,password:document.getElementById('u-pass').value,role:document.getElementById('u-role').value},res=>{if(res.success){this.closeModals();this.loadUsers();this.showToast('User created');}else this.showToast(res.message,'error');});}
-            renderUsers(){const tbody=document.getElementById('users-body');tbody.innerHTML='';this.users.forEach(u=>tbody.innerHTML+=`<tr><td style="font-weight:600;">${u.username}</td><td style="color:var(--accent)">${u.role}</td><td><span class="badge badge-success">Active</span></td></tr>`);}
-            closeModals(){document.querySelectorAll('.modal-overlay').forEach(el=>el.style.display='none');}
-        }
-        const app = new ResearchApp();
-    </script>
+// ─── STATE ──────────────────────────────────────────────────
+let currentUser = null;
+let sessionInfo = { hospital: '', dateOfCollection: '', collectorName: '' };
+let rawData = [];
+let whoList = [];
+let usersList = [];
+let currentView = 'dashboard';
+let chartInstances = {};
+let dateFilterFrom = '';
+let dateFilterTo = '';
+
+// ─── HELPERS ────────────────────────────────────────────────
+function esc(str) {
+  if (str == null) return '';
+  var d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
+}
+
+function median(arr) {
+  if (!arr.length) return 0;
+  var s = arr.slice().sort(function(a,b){return a-b});
+  var m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : +((s[m-1]+s[m]) / 2).toFixed(1);
+}
+
+function spearman(x, y) {
+  var n = x.length;
+  if (n < 3) return null;
+  function ranks(a) {
+    // Average ranks for ties
+    var sorted = a.map(function(v,i){return {v:v,i:i}}).sort(function(a,b){return a.v-b.v});
+    var r = new Array(n);
+    var j = 0;
+    while (j < n) {
+      var k = j;
+      while (k < n - 1 && sorted[k].v === sorted[k+1].v) k++;
+      var avgRank = (j + k) / 2 + 1;
+      for (var t = j; t <= k; t++) r[sorted[t].i] = avgRank;
+      j = k + 1;
+    }
+    return r;
+  }
+  var rx = ranks(x), ry = ranks(y);
+  var d2 = rx.reduce(function(s,r,i){return s+Math.pow(r-ry[i],2)},0);
+  return 1 - (6*d2) / (n*(n*n-1));
+}
+
+// Spearman p-value approximation
+function spearmanPvalue(rho, n) {
+  if (n < 4) return null;
+  var t = rho * Math.sqrt((n - 2) / (1 - rho * rho));
+  // Approximate two-tailed p from t-distribution
+  var df = n - 2;
+  var x = df / (df + t * t);
+  var p = incompleteBeta(df / 2, 0.5, x);
+  return Math.min(1, p);
+}
+
+function incompleteBeta(a, b, x) {
+  // Simple approximation for p-value
+  if (x <= 0) return 1;
+  if (x >= 1) return 0;
+  var t = Math.exp(a * Math.log(x) + b * Math.log(1 - x) - logBeta(a, b)) / a;
+  var f = 1, c = 1, d = 0;
+  for (var i = 0; i < 100; i++) {
+    d = 1 + (i === 0 ? 0 : i * (b - a) / ((a + 2 * i) * (a + 2 * i - 1))) * d;
+    if (Math.abs(d) < 1e-30) d = 1e-30;
+    d = 1 / d;
+    c = 1 + (i === 0 ? 0 : i * (b - a) / ((a + 2 * i) * (a + 2 * i - 1))) / c;
+    if (Math.abs(c) < 1e-30) c = 1e-30;
+    t *= c * d;
+    if (Math.abs(c * d - 1) < 1e-10) break;
+  }
+  return t;
+}
+
+function logBeta(a, b) {
+  return logGamma(a) + logGamma(b) - logGamma(a + b);
+}
+
+function logGamma(z) {
+  var c = [76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  var x = z, y = z, tmp = x + 5.5;
+  tmp -= (x + 0.5) * Math.log(tmp);
+  var ser = 1.000000000190015;
+  for (var j = 0; j < 6; j++) ser += c[j] / ++y;
+  return -tmp + Math.log(2.5066282746310005 * ser / x);
+}
+
+// Wilson score interval for proportions
+function wilsonCI(p, n, z) {
+  z = z || 1.96; // 95% CI
+  if (n === 0) return { lower: 0, upper: 0 };
+  var denom = 1 + z * z / n;
+  var centre = (p + z * z / (2 * n)) / denom;
+  var spread = z * Math.sqrt((p * (1 - p) + z * z / (4 * n)) / n) / denom;
+  return { lower: Math.max(0, centre - spread), upper: Math.min(1, centre + spread) };
+}
+
+function calcLos(admit, discharge) {
+  if (!admit || !discharge) return null;
+  var diff = Math.ceil((new Date(discharge) - new Date(admit)) / 86400000);
+  return diff > 0 ? diff : null;
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  try { return new Date(d).toISOString().split('T')[0]; } catch(e) { return ''; }
+}
+
+function toast(msg, type) {
+  type = type || 'info';
+  var el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3500);
+}
+
+// ═══════════════════ API LAYER ═══════════════════════════════
+
+function apiCall(action, data) {
+  data = data || {};
+  if (IS_GAS) return apiCallGAS(action, data);
+  else return apiCallFetch(action, data);
+}
+
+// --- OPTION A: google.script.run ---
+function apiCallGAS(action, data) {
+  return new Promise(function(resolve, reject) {
+    var token = currentUser ? currentUser.token : '';
+    var csrf = currentUser ? currentUser.csrf : '';
+    var timeout = setTimeout(function(){ reject(new Error('Server timeout')); }, 60000);
+
+    var success = function(result) { clearTimeout(timeout); resolve(result); };
+    var failure = function(err) { clearTimeout(timeout); reject(err); };
+
+    switch(action) {
+      case 'login':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiLogin(data.username, data.password);
+        break;
+      case 'read':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiRead(token, data.filters || {});
+        break;
+      case 'save':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiSave(token, data.record);
+        break;
+      case 'delete':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiDelete(token, data.studyId);
+        break;
+      case 'getAntibiotics':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiGetAntibiotics(token);
+        break;
+      case 'generateId':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiGenerateId(token);
+        break;
+      case 'addUser':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiAddUser(token, data.username, data.password, data.role);
+        break;
+      case 'getUsers':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiGetUsers(token);
+        break;
+      case 'getAuditLog':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiGetAuditLog(token, data);
+        break;
+      case 'exportFlat':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiExportFlat(token, data.filters || {});
+        break;
+      case 'changePassword':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiChangePassword(token, data.currentPassword, data.newPassword);
+        break;
+      case 'toggleUser':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
+          .apiToggleUser(token, data.username, data.active);
+        break;
+      default:
+        clearTimeout(timeout); reject(new Error('Unknown action: ' + action));
+    }
+  });
+}
+
+// --- OPTION B: fetch POST (GitHub Pages) ---
+function apiCallFetch(action, data) {
+  data = data || {};
+  if (!GAS_URL) return Promise.reject(new Error('GAS_URL not set'));
+
+  // For login and GET-type actions, use GET
+  var getActions = ['read','getAntibiotics','generateId','getUsers','getAuditLog','exportFlat'];
+  if (action === 'login' || getActions.indexOf(action) >= 0) {
+    return apiCallFetchGet(action, data);
+  }
+
+  // For write actions, use POST (avoids URL length limits)
+  var body = {
+    action: action,
+    token: currentUser ? currentUser.token : '',
+    csrf: currentUser ? currentUser.csrf : '',
+    data: data
+  };
+
+  return fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(body)
+  }).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  });
+}
+
+function apiCallFetchGet(action, data) {
+  var params = { action: action };
+  if (currentUser) params.token = currentUser.token;
+
+  if (action === 'login') {
+    params.username = data.username || '';
+    params.password = data.password || '';
+  } else if (action === 'read') {
+    if (data.filters) {
+      if (data.filters.dateFrom) params.dateFrom = data.filters.dateFrom;
+      if (data.filters.dateTo) params.dateTo = data.filters.dateTo;
+      if (data.filters.site) params.site = data.filters.site;
+    }
+  } else if (action === 'getAuditLog') {
+    params.limit = data.limit || 100;
+  }
+
+  var qs = Object.keys(params).map(function(k) {
+    return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+  }).join('&');
+
+  return fetch(GAS_URL + '?' + qs).then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  });
+}
+
+// ─── SESSION PERSISTENCE ────────────────────────────────────
+function saveSession() {
+  if (currentUser) {
+    localStorage.setItem('oc_session', JSON.stringify(currentUser));
+    localStorage.setItem('oc_session_info', JSON.stringify(sessionInfo));
+  }
+}
+function loadSession() {
+  try {
+    var s = localStorage.getItem('oc_session');
+    var si = localStorage.getItem('oc_session_info');
+    if (s) {
+      currentUser = JSON.parse(s);
+      if (si) sessionInfo = JSON.parse(si);
+      // Check token expiry
+      try {
+        var decoded = atob(currentUser.token);
+        var ts = parseInt(decoded.split(':')[2]);
+        if (Date.now() - ts > 28800000) { clearSession(); return false; }
+      } catch(e) {}
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+function clearSession() {
+  localStorage.removeItem('oc_session');
+  localStorage.removeItem('oc_session_info');
+  currentUser = null;
+  sessionInfo = { hospital: '', dateOfCollection: '', collectorName: '' };
+}
+
+// ─── AUTH ───────────────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  var username = document.getElementById('login-user').value.trim();
+  var password = document.getElementById('login-pass').value;
+  var hospital = document.getElementById('login-hospital').value;
+  var hospitalOther = document.getElementById('login-hospital-other').value.trim();
+  var dateOfCollection = document.getElementById('login-date').value;
+  var collectorName = document.getElementById('login-name').value.trim();
+  var errEl = document.getElementById('login-error');
+  var btn = document.getElementById('login-btn');
+
+  if (!username || !password) { errEl.textContent = 'Please enter username and password'; errEl.classList.remove('hidden'); return; }
+  if (!hospital) { errEl.textContent = 'Please select hospital'; errEl.classList.remove('hidden'); return; }
+  if (hospital === 'OTHER' && !hospitalOther) { errEl.textContent = 'Please specify hospital name'; errEl.classList.remove('hidden'); return; }
+  if (!dateOfCollection) { errEl.textContent = 'Please enter date of collection'; errEl.classList.remove('hidden'); return; }
+  if (!collectorName) { errEl.textContent = 'Please enter collector name'; errEl.classList.remove('hidden'); return; }
+
+  btn.disabled = true; btn.textContent = 'Signing in...'; errEl.classList.add('hidden');
+
+  try {
+    var data = await apiCall('login', { username: username, password: password });
+    if (data.success && data.user) {
+      currentUser = data.user;
+      sessionInfo.hospital = hospital === 'OTHER' ? hospitalOther : hospital;
+      sessionInfo.dateOfCollection = dateOfCollection;
+      sessionInfo.collectorName = collectorName;
+      saveSession();
+      showApp();
+    } else {
+      errEl.textContent = data.message || 'Invalid credentials';
+      errEl.classList.remove('hidden');
+    }
+  } catch(err) {
+    errEl.textContent = IS_GAS ? 'Server error' : 'Connection error — check GAS_URL';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+function logout() {
+  clearSession();
+  rawData = []; whoList = []; usersList = [];
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-view').style.display = 'flex';
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────
+var NAV_ITEMS = [
+  { key: 'dashboard', label: 'Dashboard', icon: '&#9632;' },
+  { key: 'records', label: 'Records', icon: '&#9998;' },
+  { key: 'analytics', label: 'Analytics', icon: '&#9733;' },
+  { key: 'users', label: 'Users', icon: '&#9823;', admin: true },
+  { key: 'audit', label: 'Audit Log', icon: '&#9881;', admin: true },
+];
+
+function renderNav() {
+  var nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = '';
+  NAV_ITEMS.forEach(function(item) {
+    if (item.admin && (!currentUser || currentUser.role !== 'Admin')) return;
+    var active = currentView === item.key;
+    var btn = document.createElement('button');
+    btn.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition';
+    btn.style.cssText = active ? 'background:var(--accent-dim);color:var(--accent)' : 'background:transparent;color:var(--text-secondary)';
+    btn.innerHTML = '<span style="font-size:.875rem">' + item.icon + '</span> ' + esc(item.label);
+    btn.onclick = function() { currentView = item.key; renderNav(); renderView(); toggleSidebar(false); };
+    nav.appendChild(btn);
+  });
+}
+
+function toggleSidebar(open) {
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('sidebar-overlay').classList.toggle('open', open);
+}
+
+// ─── DATA LOADING ───────────────────────────────────────────
+async function loadData() {
+  try {
+    var filters = {};
+    if (dateFilterFrom) filters.dateFrom = dateFilterFrom;
+    if (dateFilterTo) filters.dateTo = dateFilterTo;
+    var data = await apiCall('read', { filters: filters });
+    rawData = Array.isArray(data.records) ? data.records : [];
+  } catch(e) { toast('Failed to load records', 'error'); rawData = []; }
+}
+
+async function loadAntibiotics() {
+  try {
+    var data = await apiCall('getAntibiotics');
+    whoList = Array.isArray(data.antibiotics) ? data.antibiotics : [];
+  } catch(e) { whoList = []; }
+}
+
+async function loadUsers() {
+  if (!currentUser || currentUser.role !== 'Admin') return;
+  try {
+    var data = await apiCall('getUsers');
+    usersList = Array.isArray(data.users) ? data.users : [];
+  } catch(e) { usersList = []; }
+}
+
+async function refreshData() {
+  await Promise.all([loadData(), loadAntibiotics(), loadUsers()]);
+  renderView();
+  toast('Data synced', 'success');
+}
+
+// ─── SHOW APP ───────────────────────────────────────────────
+async function showApp() {
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
+  document.getElementById('user-name').textContent = currentUser.username;
+  document.getElementById('user-role').textContent = currentUser.role;
+  document.getElementById('sidebar-hospital').textContent = sessionInfo.hospital;
+  document.getElementById('sidebar-date').textContent = sessionInfo.dateOfCollection;
+  renderNav();
+  await Promise.all([loadData(), loadAntibiotics(), loadUsers()]);
+  renderView();
+}
+
+// ─── RENDER ROUTER ──────────────────────────────────────────
+function renderView() {
+  var c = document.getElementById('content');
+  Object.values(chartInstances).forEach(function(ch){ try{ch.destroy()}catch(e){} });
+  chartInstances = {};
+  switch (currentView) {
+    case 'dashboard': renderDashboard(c); break;
+    case 'records': renderRecords(c); break;
+    case 'analytics': renderAnalytics(c); break;
+    case 'users': renderUsers(c); break;
+    case 'audit': renderAudit(c); break;
+    default: renderDashboard(c);
+  }
+  renderNav();
+}
+
+// ═══════════════════ DASHBOARD ═══════════════════════════════
+function renderDashboard(container) {
+  var total = rawData.length;
+  var abxCourses = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
+  var cultSent = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.sent==='Yes'}).length:0)},0);
+  var mort = total ? +(rawData.filter(function(r){return r.outcome==='Died'}).length/total*100).toFixed(1) : 0;
+  var losArr = rawData.map(function(r){return r.los}).filter(function(v){return v!=null});
+  var medLos = median(losArr);
+  var mdrCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.mdr==='Yes'}).length:0)},0);
+  var posCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.result==='Positive'}).length:0)},0);
+  var mdrRate = posCult ? +(mdrCult/posCult*100).toFixed(1) : 0;
+
+  // Wilson CI for mortality
+  var mortCI = wilsonCI(mort/100, total);
+
+  var stats = [
+    { label: 'Patients', value: total, icon: '&#9823;', color: '#0ea5e9' },
+    { label: 'Antibiotic Courses', value: abxCourses, icon: '&#176;', color: '#22c55e' },
+    { label: 'Cultures Sent', value: cultSent, icon: '&#9878;', color: '#f59e0b' },
+    { label: 'Mortality Rate', value: mort+'%', icon: '&#9760;', color: '#ef4444', ci: mortCI },
+    { label: 'Median LOS', value: medLos+'d', icon: '&#9201;', color: '#8b5cf6' },
+    { label: 'MDR Rate', value: mdrRate+'%', icon: '&#9888;', color: '#ec4899' },
+  ];
+
+  var html = '<div class="grid grid-cols-4 gap-4 mb-6">';
+  stats.forEach(function(s) {
+    html += '<div class="card card-stat"><div class="stat-icon" style="background:'+s.color+'20;color:'+s.color+'">'+s.icon+'</div><div class="stat-value">'+esc(s.value)+'</div><div class="stat-label">'+esc(s.label)+'</div>';
+    if (s.ci) html += '<div class="text-xs" style="color:var(--text-muted)">95% CI: '+(s.ci.lower*100).toFixed(1)+'%–'+(s.ci.upper*100).toFixed(1)+'%</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Date filter bar
+  html += '<div class="filter-bar">';
+  html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Filter:</label>';
+  html += '<input type="date" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)" placeholder="From">';
+  html += '<input type="date" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)" placeholder="To">';
+  if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(renderView)">Clear</button>';
+  html += '</div>';
+
+  var recent = rawData.slice(-6).reverse();
+  html += '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">Recent Records</h2><button class="btn btn-ghost btn-sm" onclick="currentView=\'records\';renderView()">View All &rarr;</button></div>';
+  html += buildRecordTable(recent, false);
+  container.innerHTML = html;
+}
+
+// ═══════════════════ RECORDS ═════════════════════════════════
+function renderRecords(container) {
+  var isAdmin = currentUser && currentUser.role === 'Admin';
+  var html = '<div class="flex items-center gap-3 mb-4 flex-wrap">';
+  html += '<input type="text" id="search-input" placeholder="Search by ID, diagnosis, cancer..." style="max-width:300px" oninput="filterRecords()">';
+  html += '<select id="outcome-filter" style="width:auto;min-width:140px" onchange="filterRecords()"><option value="all">All Outcomes</option><option value="Improved">Improved</option><option value="Died">Died</option><option value="Discharged">Discharged</option><option value="Transferred">Transferred</option><option value="AMA">AMA</option></select>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="exportFlatCsv()">&#11015; Export for Analysis</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="exportSimpleCsv()">&#11015; Quick CSV</button>';
+  if (isAdmin) html += '<button class="btn btn-primary btn-sm" onclick="openNewRecord()">+ New Entry</button>';
+  html += '</div><div id="records-table-wrap"></div>';
+  container.innerHTML = html;
+  filterRecords();
+}
+
+function filterRecords() {
+  var q = (document.getElementById('search-input') ? document.getElementById('search-input').value : '').toLowerCase();
+  var outcome = document.getElementById('outcome-filter') ? document.getElementById('outcome-filter').value : 'all';
+  var filtered = rawData;
+  if (q) filtered = filtered.filter(function(r) {
+    return (r.studyId||'').toLowerCase().includes(q) || (r.diagnosis||'').toLowerCase().includes(q) || (r.cancerName||'').toLowerCase().includes(q) || (r.hospital||'').toLowerCase().includes(q);
+  });
+  if (outcome !== 'all') filtered = filtered.filter(function(r){return r.outcome===outcome});
+  document.getElementById('records-table-wrap').innerHTML = buildRecordTable(filtered, true);
+}
+
+function buildRecordTable(records, showActions) {
+  var isAdmin = currentUser && currentUser.role === 'Admin';
+  var html = '<div class="table-wrap"><table><thead><tr><th>Study ID</th><th>Age</th><th>Sex</th><th>Hospital</th><th>Cancer</th><th>Ward</th><th>LOS</th><th>Outcome</th><th>ABX</th><th>Cult</th>';
+  if (showActions) html += '<th>Actions</th>';
+  html += '</tr></thead><tbody>';
+  if (!records.length) html += '<tr><td colspan="'+(showActions?11:10)+'" class="text-center py-4" style="color:var(--text-muted)">No records found</td></tr>';
+  records.forEach(function(r) {
+    var abxCount = r.antibiotics ? r.antibiotics.length : 0;
+    var cultCount = r.cultures ? r.cultures.length : 0;
+    html += '<tr><td class="font-medium">'+esc(r.studyId)+'</td><td>'+esc(r.age!=null?r.age:'-')+'</td><td>'+esc(r.sex||'-')+'</td><td>'+esc(r.hospital||'-')+'</td><td>'+esc(r.cancerName||'-')+'</td><td>'+esc(r.ward||'-')+'</td><td>'+(r.los!=null?r.los+'d':'-')+'</td><td>'+esc(r.outcome||'-')+'</td><td>'+abxCount+'</td><td>'+cultCount+'</td>';
+    if (showActions) {
+      html += '<td class="flex gap-1"><button class="btn btn-ghost btn-sm" onclick="viewRecord(\''+esc(r.studyId)+'\')">View</button>';
+      if (isAdmin) html += '<button class="btn btn-ghost btn-sm" onclick="editRecord(\''+esc(r.studyId)+'\')">Edit</button><button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteRecord(\''+esc(r.studyId)+'\')">Del</button>';
+      html += '</td>';
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+// ─── FLAT CSV EXPORT ────────────────────────────────────────
+async function exportFlatCsv() {
+  if (!rawData.length) return toast('No records to export', 'error');
+  try {
+    var data = await apiCall('exportFlat', { filters: {} });
+    if (data.success && data.csv) {
+      var blob = new Blob([data.csv], { type: 'text/csv' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = data.filename || 'OncoCollect_Flat.csv';
+      a.click(); URL.revokeObjectURL(url);
+      toast('Flat CSV exported (analysis-ready)', 'success');
+    } else {
+      toast(data.message || 'Export failed', 'error');
+    }
+  } catch(e) { toast('Export failed', 'error'); }
+}
+
+function exportSimpleCsv() {
+  if (!rawData.length) return toast('No records to export', 'error');
+  var headers = ['Study_ID','Age','Sex','Hospital','Diagnosis','Cancer_Type','Cancer_Name','Stage','Admission_Date','Discharge_Date','LOS','Ward','Outcome','Readmission_30d','De_escalation','ABX_Count','Cult_Count','Required_for_Analysis','Created_By','Created_Date'];
+  var csv = headers.join(',') + '\n';
+  rawData.forEach(function(r) {
+    csv += [r.studyId,r.age,r.sex,r.hospital,r.diagnosis,r.cancerType,r.cancerName,r.stage,fmtDate(r.admissionDate),fmtDate(r.dischargeDate),r.los,r.ward,r.outcome,r.readmission30d,r.deEscalation,r.antibiotics?r.antibiotics.length:0,r.cultures?r.cultures.length:0,r.requiredForAnalysis,r.createdBy,fmtDate(r.createdAt)].map(function(v){return v==null?'':String(v).indexOf(',')>=0?'"'+v+'"':v}).join(',') + '\n';
+  });
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'OncoCollect_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('Quick CSV exported', 'success');
+}
+
+// ═══════════════════ RECORD MODAL ════════════════════════════
+var modalMode = null;
+var modalStudyId = '';
+var formAbx = [];
+var formCult = [];
+var formVersion = 0;
+
+function emptyAbx() { return {name:'',abxClass:'',aware:'',route:'',dose:'',freq:'',start:'',stop:'',duration:'',ddd:'',grams:'',dddCalc:'',dot:'',indication:'',therapyType:'',febrileNeutro:'',febrileEpisodes:''}; }
+function emptyCult() { return {sent:'',date:'',type:'',result:'',organism:'',gram:'',ast:'',resist:'',mdr:'',xdr:'',eskape:''}; }
+
+function openNewRecord() {
+  modalMode = 'new'; modalStudyId = ''; formAbx = [emptyAbx()]; formCult = [emptyCult()]; formVersion = 0;
+  generateStudyId();
+}
+
+async function generateStudyId() {
+  try {
+    var data = await apiCall('generateId');
+    modalStudyId = (data.success && data.id) ? data.id : 'PID-ERROR';
+  } catch(e) {
+    modalStudyId = 'PID-ERROR';
+  }
+  renderRecordModal();
+}
+
+function viewRecord(studyId) {
+  var rec = rawData.find(function(r){return r.studyId===studyId});
+  if (!rec) return toast('Record not found','error');
+  modalMode = 'view'; modalStudyId = rec.studyId; formVersion = rec.version || 0;
+  populateFormFromRecord(rec);
+  renderRecordModal();
+}
+
+function editRecord(studyId) {
+  var rec = rawData.find(function(r){return r.studyId===studyId});
+  if (!rec) return toast('Record not found','error');
+  modalMode = 'edit'; modalStudyId = rec.studyId; formVersion = rec.version || 0;
+  populateFormFromRecord(rec);
+  renderRecordModal();
+}
+
+function populateFormFromRecord(rec) {
+  formAbx = rec.antibiotics && rec.antibiotics.length
+    ? rec.antibiotics.map(function(a){return{name:a.name||'',abxClass:a.abxClass||'',aware:a.aware||'',route:a.route||'',dose:a.dose||'',freq:a.freq||'',start:a.start||'',stop:a.stop||'',duration:a.duration!=null?String(a.duration):'',ddd:a.ddd!=null?String(a.ddd):'',grams:a.grams!=null?String(a.grams):'',dddCalc:a.dddCalc!=null?String(a.dddCalc):'',dot:a.dot!=null?String(a.dot):'',indication:a.indication||'',therapyType:a.therapyType||'',febrileNeutro:a.febrileNeutro||'',febrileEpisodes:a.febrileEpisodes!=null?String(a.febrileEpisodes):''}})
+    : [emptyAbx()];
+  formCult = rec.cultures && rec.cultures.length
+    ? rec.cultures.map(function(c){return{sent:c.sent||'',date:c.date||'',type:c.type||'',result:c.result||'',organism:c.organism||'',gram:c.gram||'',ast:c.ast||'',resist:c.resist||'',mdr:c.mdr||'',xdr:c.xdr||'',eskape:c.eskape||''}})
+    : [emptyCult()];
+  window._editRec = rec;
+}
+
+function renderRecordModal() {
+  var rec = window._editRec || {};
+  var isView = modalMode === 'view';
+  var dis = isView ? 'disabled' : '';
+
+  document.getElementById('modal-title').textContent = isView ? 'View Record' : modalMode==='edit' ? 'Edit Record' : 'New Record';
+  document.getElementById('modal-subtitle').textContent = isView ? 'Record '+modalStudyId : modalMode==='edit' ? 'Editing '+modalStudyId : 'Enter patient data below';
+
+  var html = '';
+
+  // ─── Collection Info ───
+  html += '<div class="section-title">Collection Information</div><div class="form-grid">';
+  html += '<div><label>Timestamp</label><input value="'+esc(rec.timestamp||fmtDate(new Date()))+'" readonly></div>';
+  html += '<div><label>Study ID</label><input value="'+esc(modalStudyId)+'" readonly></div>';
+  html += '<div><label>Created By</label><input value="'+esc(rec.createdBy||currentUser.username)+'" readonly></div>';
+  html += '<div><label>Hospital</label><input value="'+esc(rec.hospital||sessionInfo.hospital)+'" readonly></div>';
+  html += '<div><label>Date of Collection</label><input value="'+esc(rec.dateOfCollection||sessionInfo.dateOfCollection)+'" readonly></div>';
+  html += '<div><label>Collector Name</label><input value="'+esc(rec.collectorName||sessionInfo.collectorName)+'" readonly></div>';
+  html += '</div>';
+
+  // ─── A. Demographics ───
+  html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
+  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(rec.age!=null?rec.age:'')+'" '+dis+' placeholder="0-120"></div>';
+  html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+'><option value="">Select</option><option value="Male" '+(rec.sex==='Male'?'selected':'')+'>Male</option><option value="Female" '+(rec.sex==='Female'?'selected':'')+'>Female</option></select></div>';
+  html += '</div>';
+
+  // ─── B. Admission & Clinical ───
+  html += '<div class="section-title">B. Admission & Clinical Details</div><div class="form-grid">';
+  html += '<div><label class="required">Admission Date</label><input type="date" id="f-admit" value="'+esc(fmtDate(rec.admissionDate))+'" '+dis+'></div>';
+  html += '<div><label>Discharge Date</label><input type="date" id="f-discharge" value="'+esc(fmtDate(rec.dischargeDate))+'" '+dis+'></div>';
+  html += '<div><label>LOS</label><input id="f-los" value="'+(rec.los!=null?rec.los+' days':'')+'" readonly style="opacity:.6"></div>';
+  html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+'><option value="">Select</option><option value="Emergency" '+(rec.admissionType==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(rec.admissionType==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(rec.admissionType==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
+
+  var isWardOther = !['Oncology ward','ICU','HDU',''].includes(rec.ward||'');
+  html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(rec.ward==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(rec.ward==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(rec.ward==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
+  html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther?rec.ward||'':'')+'" '+dis+'></div>';
+
+  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(rec.diagnosis||'')+'" '+dis+' placeholder="Enter diagnosis"></div>';
+
+  html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="toggleField(\'cancertype\')"><option value="">Select</option>';
+  ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerType===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  var isCancerOther = !['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma',''].includes(rec.cancerName||'');
+  html += '<div><label>Cancer Name</label><select id="f-cancername" '+dis+' onchange="toggleField(\'cancername\')"><option value="">Select</option>';
+  ['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerName===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="cancername-other-wrap" style="display:'+(isCancerOther||rec.cancerName==='Other'?'block':'none')+'"><label>Cancer Name Other</label><input id="f-cancer-other" value="'+esc(isCancerOther?rec.cancerName||'':rec.cancerNameOther||'')+'" '+dis+'></div>';
+
+  html += '<div><label>Stage</label><select id="f-stage" '+dis+'><option value="">Select</option>';
+  ['I','II','III','IV','Not staged'].forEach(function(v){html+='<option value="'+v+'" '+(rec.stage===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  var isTreatOther = !['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care',''].includes(rec.treatment||'');
+  html += '<div><label>Treatment</label><select id="f-treatment" '+dis+' onchange="toggleField(\'treatment\')"><option value="">Select</option>';
+  ['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.treatment===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="treatment-other-wrap" style="display:'+(isTreatOther||rec.treatment==='Other'?'block':'none')+'"><label>Treatment Other</label><input id="f-treatment-other" value="'+esc(isTreatOther?rec.treatment||'':rec.treatmentOther||'')+'" '+dis+'></div>';
+
+  var isComorbOther = !['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None',''].includes(rec.comorbidities||'');
+  html += '<div><label>Comorbidities</label><select id="f-comorb" '+dis+' onchange="toggleField(\'comorb\')"><option value="">Select</option>';
+  ['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.comorbidities===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="comorb-other-wrap" style="display:'+(isComorbOther||rec.comorbidities==='Other'?'block':'none')+'"><label>Comorbidities Other</label><input id="f-comorb-other" value="'+esc(isComorbOther?rec.comorbidities||'':rec.comorbiditiesOther||'')+'" '+dis+'></div>';
+
+  html += '<div><label>Immunosuppression</label><select id="f-immuno" '+dis+'><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.immunosuppressed===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label class="required">Outcome</label><select id="f-outcome" '+dis+'><option value="">Select</option>';
+  ['Improved','Died','Discharged','Transferred','AMA'].forEach(function(v){html+='<option value="'+v+'" '+(rec.outcome===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label>Readmission 30d</label><select id="f-readmit" '+dis+'><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.readmission30d===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label>De-escalation</label><select id="f-deesc" '+dis+'><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.deEscalation===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '</div>';
+
+  // ─── C. Antibiotics ───
+  html += '<div class="section-title">C. Antibiotics (up to 30)</div><div id="abx-slots">' + renderAbxSlots(isView) + '</div>';
+  if (!isView && formAbx.length < 30) html += '<button class="btn btn-ghost btn-sm mt-2" onclick="addAbxSlot()">+ Add Antibiotic (' + formAbx.length + '/30)</button>';
+
+  // ─── D. Cultures ───
+  html += '<div class="section-title">D. Cultures (up to 30)</div><div id="cult-slots">' + renderCultSlots(isView) + '</div>';
+  if (!isView && formCult.length < 30) html += '<button class="btn btn-ghost btn-sm mt-2" onclick="addCultSlot()">+ Add Culture (' + formCult.length + '/30)</button>';
+
+  // ─── E. Required for Analysis ───
+  html += '<div class="section-title">E. Data Analysis</div><div class="form-grid">';
+  html += '<div><label>Is this data required during analysis?</label><select id="f-required" '+dis+'><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.requiredForAnalysis===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '</div>';
+
+  document.getElementById('modal-body').innerHTML = html;
+
+  // Footer
+  var footer = '';
+  if (isView) {
+    footer = '<button class="btn btn-ghost" onclick="closeRecordModal()">Close</button>';
+    if (currentUser && currentUser.role === 'Admin') footer += '<button class="btn btn-primary" onclick="editRecord(\''+esc(modalStudyId)+'\')">Edit</button>';
+  } else {
+    footer = '<button class="btn btn-ghost" onclick="closeRecordModal()">Cancel</button><button class="btn btn-primary" id="save-btn" onclick="saveRecord()">Save Record</button>';
+  }
+  document.getElementById('modal-footer').innerHTML = footer;
+
+  // Auto-calc LOS
+  var admitEl = document.getElementById('f-admit');
+  var discEl = document.getElementById('f-discharge');
+  if (admitEl && discEl) {
+    var updateLos = function() {
+      var los = calcLos(admitEl.value, discEl.value);
+      document.getElementById('f-los').value = los != null ? los + ' days' : '';
+    };
+    admitEl.addEventListener('change', updateLos);
+    discEl.addEventListener('change', updateLos);
+  }
+
+  // Toggle other fields on load
+  toggleField('ward'); toggleField('cancername'); toggleField('treatment'); toggleField('comorb');
+}
+
+function toggleField(field) {
+  var wrap, select;
+  switch(field) {
+    case 'ward':
+      select = document.getElementById('f-ward');
+      wrap = document.getElementById('ward-other-wrap');
+      if (select && wrap) wrap.style.display = select.value === 'Other' ? 'block' : 'none';
+      break;
+    case 'cancername':
+      select = document.getElementById('f-cancername');
+      wrap = document.getElementById('cancername-other-wrap');
+      if (select && wrap) wrap.style.display = select.value === 'Other' ? 'block' : 'none';
+      break;
+    case 'treatment':
+      select = document.getElementById('f-treatment');
+      wrap = document.getElementById('treatment-other-wrap');
+      if (select && wrap) wrap.style.display = select.value === 'Other' ? 'block' : 'none';
+      break;
+    case 'comorb':
+      select = document.getElementById('f-comorb');
+      wrap = document.getElementById('comorb-other-wrap');
+      if (select && wrap) wrap.style.display = select.value === 'Other' ? 'block' : 'none';
+      break;
+  }
+}
+
+function renderAbxSlots(isView) {
+  var dis = isView ? 'disabled' : '';
+  return formAbx.map(function(a, i) {
+    var html = '<div class="slot-card" data-abx-idx="'+i+'">';
+    if (!isView && formAbx.length > 1) html += '<button class="slot-remove" onclick="removeAbxSlot('+i+')">&times;</button>';
+    html += '<div class="slot-title">Antibiotic '+(i+1)+'</div>';
+    html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
+    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
+    html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
+    html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
+    html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+'><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
+    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="e.g. 1g"></div>';
+    html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+'><option value="">Select</option>';
+    ['OD','BD','TDS','QDS','6H','8H','12H','24H','Stat','Other'].forEach(function(f){html+='<option value="'+f+'" '+(a.freq===f?'selected':'')+'>'+f+'</option>';});
+    html += '</select></div>';
+    html += '<div><label>Start Date</label><input type="date" id="abx-start-'+i+'" value="'+esc(a.start)+'" '+dis+' onchange="autoCalcAbx('+i+')"></div>';
+    html += '<div><label>Stop Date</label><input type="date" id="abx-stop-'+i+'" value="'+esc(a.stop)+'" '+dis+' onchange="autoCalcAbx('+i+')"></div>';
+    html += '<div><label>Duration (days)</label><input type="number" id="abx-dur-'+i+'" value="'+esc(a.duration)+'" '+dis+' onchange="autoCalcDot('+i+')"></div>';
+    html += '<div><label>DDD (assigned)</label><input type="number" step="0.01" id="abx-ddd-'+i+'" value="'+esc(a.ddd)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
+    html += '<div><label>Grams/day</label><input type="number" step="0.01" id="abx-grams-'+i+'" value="'+esc(a.grams)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
+    html += '<div><label>DDD Calculated</label><input type="number" step="0.01" id="abx-dddcalc-'+i+'" value="'+esc(a.dddCalc)+'" readonly style="opacity:.6"></div>';
+    html += '<div><label>DOT</label><input type="number" id="abx-dot-'+i+'" value="'+esc(a.dot)+'" readonly style="opacity:.6"></div>';
+    html += '<div><label>Indication</label><select id="abx-ind-'+i+'" '+dis+'><option value="">Select</option><option value="Empiric" '+(a.indication==='Empiric'?'selected':'')+'>Empiric</option><option value="Targeted" '+(a.indication==='Targeted'?'selected':'')+'>Targeted</option><option value="Prophylactic" '+(a.indication==='Prophylactic'?'selected':'')+'>Prophylactic</option></select></div>';
+    html += '<div><label>Therapy Type</label><select id="abx-type-'+i+'" '+dis+'><option value="">Select</option><option value="Monotherapy" '+(a.therapyType==='Monotherapy'?'selected':'')+'>Monotherapy</option><option value="Combination" '+(a.therapyType==='Combination'?'selected':'')+'>Combination</option></select></div>';
+    html += '<div><label>Febrile Neutropenia</label><select id="abx-neutro-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(a.febrileNeutro==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(a.febrileNeutro==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Febrile Episodes</label><input type="number" id="abx-episodes-'+i+'" value="'+esc(a.febrileEpisodes)+'" '+dis+'></div>';
+    html += '</div></div>';
+    return html;
+  }).join('');
+}
+
+function renderCultSlots(isView) {
+  var dis = isView ? 'disabled' : '';
+  return formCult.map(function(c, i) {
+    var html = '<div class="slot-card" data-cult-idx="'+i+'">';
+    if (!isView && formCult.length > 1) html += '<button class="slot-remove" onclick="removeCultSlot('+i+')">&times;</button>';
+    html += '<div class="slot-title">Culture '+(i+1)+'</div>';
+    html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
+    html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Date</label><input type="date" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+'></div>';
+    html += '<div><label>Sample Type</label><select id="cult-type-'+i+'" '+dis+'><option value="">Select</option>';
+    ['Blood','Urine','Sputum','Wound','BAL','CSF','Other'].forEach(function(v){html+='<option value="'+v+'" '+(c.type===v?'selected':'')+'>'+v+'</option>';});
+    html += '</select></div>';
+    html += '<div><label>Result</label><select id="cult-result-'+i+'" '+dis+'><option value="">Select</option><option value="Positive" '+(c.result==='Positive'?'selected':'')+'>Positive</option><option value="Negative" '+(c.result==='Negative'?'selected':'')+'>Negative</option><option value="Contaminant" '+(c.result==='Contaminant'?'selected':'')+'>Contaminant</option></select></div>';
+    html += '<div><label>Organism</label><input id="cult-org-'+i+'" value="'+esc(c.organism)+'" '+dis+'></div>';
+    html += '<div><label>Gram Stain</label><select id="cult-gram-'+i+'" '+dis+'><option value="">Select</option><option value="Gram +ve" '+(c.gram==='Gram +ve'?'selected':'')+'>Gram +ve</option><option value="Gram -ve" '+(c.gram==='Gram -ve'?'selected':'')+'>Gram -ve</option><option value="Yeast" '+(c.gram==='Yeast'?'selected':'')+'>Yeast</option></select></div>';
+    html += '<div><label>AST Done</label><select id="cult-ast-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.ast==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.ast==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="e.g. ESBL, carbapenemase"></div>';
+    html += '<div><label>MDR</label><select id="cult-mdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.mdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.mdr==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>XDR</label><select id="cult-xdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.xdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.xdr==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>ESKAPE</label><select id="cult-eskape-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.eskape==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.eskape==='No'?'selected':'')+'>No</option></select></div>';
+    html += '</div></div>';
+    return html;
+  }).join('');
+}
+
+// ─── AUTO-CALC HELPERS ──────────────────────────────────────
+function autoCalcAbx(idx) {
+  var start = document.getElementById('abx-start-'+idx);
+  var stop = document.getElementById('abx-stop-'+idx);
+  var dur = document.getElementById('abx-dur-'+idx);
+  var dot = document.getElementById('abx-dot-'+idx);
+  if (start && stop && start.value && stop.value) {
+    var days = calcLos(start.value, stop.value);
+    if (days != null) {
+      if (dur && !dur.value) dur.value = days;
+      if (dot) dot.value = days; // DOT = duration in days
+    }
+  }
+}
+
+function autoCalcDddCalc(idx) {
+  var ddd = document.getElementById('abx-ddd-'+idx);
+  var grams = document.getElementById('abx-grams-'+idx);
+  var dddCalc = document.getElementById('abx-dddcalc-'+idx);
+  if (ddd && grams && ddd.value && grams.value && +ddd.value > 0) {
+    dddCalc.value = (+grams.value / +ddd.value).toFixed(2);
+  }
+}
+
+function autoCalcDot(idx) {
+  var dur = document.getElementById('abx-dur-'+idx);
+  var dot = document.getElementById('abx-dot-'+idx);
+  if (dur && dur.value && dot) dot.value = dur.value;
+}
+
+// ─── Conditional culture fields ───
+function toggleCultDetails(idx) {
+  var sent = document.getElementById('cult-sent-'+idx);
+  // If "No", could hide details — for now just visual cue
+}
+
+// ─── ABX SEARCH ─────────────────────────────────────────────
+function openAbxDropdown(idx) { renderAbxOptions(idx, ''); }
+function filterAbxDropdown(idx) {
+  var input = document.querySelector('.abx-search-input[data-idx="'+idx+'"]');
+  renderAbxOptions(idx, input ? input.value : '');
+}
+function closeAbxDropdown(idx) {
+  var dd = document.getElementById('abx-dd-'+idx);
+  if (dd) dd.classList.add('hidden');
+}
+function renderAbxOptions(idx, query) {
+  var dd = document.getElementById('abx-dd-'+idx);
+  if (!dd) return;
+  var q = query.toLowerCase();
+  var filtered = whoList.filter(function(a){return !q || a.name.toLowerCase().includes(q)}).slice(0, 20);
+  if (!filtered.length) { dd.classList.add('hidden'); return; }
+  dd.classList.remove('hidden');
+  dd.innerHTML = filtered.map(function(a) {
+    var catClass = a.category==='Access'?'badge-access':a.category==='Watch'?'badge-watch':'badge-reserve';
+    return '<div onmousedown="selectAbx('+idx+',\''+esc(a.name).replace(/'/g,"\\'")+'\',\''+esc(a.abxClass).replace(/'/g,"\\'")+'\',\''+esc(a.category).replace(/'/g,"\\'")+'\','+a.dd+')">'+esc(a.name)+' <span class="abx-cat badge '+catClass+'">'+esc(a.category)+'</span></div>';
+  }).join('');
+}
+function selectAbx(idx, name, abxClass, category, ddd) {
+  formAbx[idx].name = name; formAbx[idx].abxClass = abxClass; formAbx[idx].aware = category; formAbx[idx].ddd = ddd;
+  var input = document.querySelector('.abx-search-input[data-idx="'+idx+'"]');
+  if (input) input.value = name;
+  var classEl = document.getElementById('abx-class-'+idx); if (classEl) classEl.value = abxClass;
+  var awareEl = document.getElementById('abx-aware-'+idx); if (awareEl) awareEl.value = category;
+  var dddEl = document.getElementById('abx-ddd-'+idx); if (dddEl) dddEl.value = ddd;
+  autoCalcDddCalc(idx);
+  closeAbxDropdown(idx);
+}
+
+function addAbxSlot() { if (formAbx.length>=30) return; formAbx.push(emptyAbx()); renderRecordModal(); }
+function removeAbxSlot(idx) { if (formAbx.length<=1) return; formAbx.splice(idx,1); renderRecordModal(); }
+function addCultSlot() { if (formCult.length>=30) return; formCult.push(emptyCult()); renderRecordModal(); }
+function removeCultSlot(idx) { if (formCult.length<=1) return; formCult.splice(idx,1); renderRecordModal(); }
+
+// ─── SAVE RECORD ────────────────────────────────────────────
+async function saveRecord() {
+  var btn = document.getElementById('save-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+  try {
+    var ward = document.getElementById('f-ward') ? document.getElementById('f-ward').value : '';
+    var effectiveWard = ward==='Other' ? (document.getElementById('f-ward-other')?document.getElementById('f-ward-other').value:'') : ward;
+    var cancerName = document.getElementById('f-cancername') ? document.getElementById('f-cancername').value : '';
+    var effectiveCancer = cancerName==='Other' ? '' : cancerName;
+    var cancerNameOther = cancerName==='Other' ? (document.getElementById('f-cancer-other')?document.getElementById('f-cancer-other').value:'') : '';
+    var treatment = document.getElementById('f-treatment') ? document.getElementById('f-treatment').value : '';
+    var effectiveTreatment = treatment==='Other' ? '' : treatment;
+    var treatmentOther = treatment==='Other' ? (document.getElementById('f-treatment-other')?document.getElementById('f-treatment-other').value:'') : '';
+    var comorb = document.getElementById('f-comorb') ? document.getElementById('f-comorb').value : '';
+    var effectiveComorb = comorb==='Other' ? '' : comorb;
+    var comorbOther = comorb==='Other' ? (document.getElementById('f-comorb-other')?document.getElementById('f-comorb-other').value:'') : '';
+
+    var antibiotics = formAbx.map(function(a, idx) {
+      return {
+        name: (document.querySelector('.abx-search-input[data-idx="'+idx+'"]')?document.querySelector('.abx-search-input[data-idx="'+idx+'"]').value:'') || a.name,
+        abxClass: (document.getElementById('abx-class-'+idx)?document.getElementById('abx-class-'+idx).value:'') || a.abxClass,
+        aware: (document.getElementById('abx-aware-'+idx)?document.getElementById('abx-aware-'+idx).value:'') || a.aware,
+        route: document.getElementById('abx-route-'+idx)?document.getElementById('abx-route-'+idx).value:'',
+        dose: document.getElementById('abx-dose-'+idx)?document.getElementById('abx-dose-'+idx).value:'',
+        freq: document.getElementById('abx-freq-'+idx)?document.getElementById('abx-freq-'+idx).value:'',
+        start: document.getElementById('abx-start-'+idx)?document.getElementById('abx-start-'+idx).value:'',
+        stop: document.getElementById('abx-stop-'+idx)?document.getElementById('abx-stop-'+idx).value:'',
+        duration: document.getElementById('abx-dur-'+idx)?document.getElementById('abx-dur-'+idx).value:'',
+        ddd: document.getElementById('abx-ddd-'+idx)?document.getElementById('abx-ddd-'+idx).value:'',
+        grams: document.getElementById('abx-grams-'+idx)?document.getElementById('abx-grams-'+idx).value:'',
+        dddCalc: document.getElementById('abx-dddcalc-'+idx)?document.getElementById('abx-dddcalc-'+idx).value:'',
+        dot: document.getElementById('abx-dot-'+idx)?document.getElementById('abx-dot-'+idx).value:'',
+        indication: document.getElementById('abx-ind-'+idx)?document.getElementById('abx-ind-'+idx).value:'',
+        therapyType: document.getElementById('abx-type-'+idx)?document.getElementById('abx-type-'+idx).value:'',
+        febrileNeutro: document.getElementById('abx-neutro-'+idx)?document.getElementById('abx-neutro-'+idx).value:'',
+        febrileEpisodes: document.getElementById('abx-episodes-'+idx)?document.getElementById('abx-episodes-'+idx).value:'',
+      };
+    }).filter(function(a){return a.name});
+
+    var cultures = formCult.map(function(c, idx) {
+      return {
+        sent: document.getElementById('cult-sent-'+idx)?document.getElementById('cult-sent-'+idx).value:'',
+        date: document.getElementById('cult-date-'+idx)?document.getElementById('cult-date-'+idx).value:'',
+        type: document.getElementById('cult-type-'+idx)?document.getElementById('cult-type-'+idx).value:'',
+        result: document.getElementById('cult-result-'+idx)?document.getElementById('cult-result-'+idx).value:'',
+        organism: document.getElementById('cult-org-'+idx)?document.getElementById('cult-org-'+idx).value:'',
+        gram: document.getElementById('cult-gram-'+idx)?document.getElementById('cult-gram-'+idx).value:'',
+        ast: document.getElementById('cult-ast-'+idx)?document.getElementById('cult-ast-'+idx).value:'',
+        resist: document.getElementById('cult-resist-'+idx)?document.getElementById('cult-resist-'+idx).value:'',
+        mdr: document.getElementById('cult-mdr-'+idx)?document.getElementById('cult-mdr-'+idx).value:'',
+        xdr: document.getElementById('cult-xdr-'+idx)?document.getElementById('cult-xdr-'+idx).value:'',
+        eskape: document.getElementById('cult-eskape-'+idx)?document.getElementById('cult-eskape-'+idx).value:'',
+      };
+    }).filter(function(c){return c.sent||c.type});
+
+    var payload = {
+      record: {
+        studyId: modalStudyId,
+        version: formVersion,
+        hospital: sessionInfo.hospital,
+        dateOfCollection: sessionInfo.dateOfCollection,
+        collectorName: sessionInfo.collectorName,
+        age: document.getElementById('f-age')?document.getElementById('f-age').value:'',
+        sex: document.getElementById('f-sex')?document.getElementById('f-sex').value:'',
+        diagnosis: document.getElementById('f-diagnosis')?document.getElementById('f-diagnosis').value:'',
+        cancerType: document.getElementById('f-cancertype')?document.getElementById('f-cancertype').value:'',
+        cancerName: cancerName,
+        cancerNameOther: cancerNameOther,
+        stage: document.getElementById('f-stage')?document.getElementById('f-stage').value:'',
+        treatment: treatment,
+        treatmentOther: treatmentOther,
+        comorbidities: comorb,
+        comorbiditiesOther: comorbOther,
+        immunosuppressed: document.getElementById('f-immuno')?document.getElementById('f-immuno').value:'',
+        admissionDate: document.getElementById('f-admit')?document.getElementById('f-admit').value:'',
+        dischargeDate: document.getElementById('f-discharge')?document.getElementById('f-discharge').value:'',
+        los: calcLos(document.getElementById('f-admit')?document.getElementById('f-admit').value:'', document.getElementById('f-discharge')?document.getElementById('f-discharge').value:''),
+        admissionType: document.getElementById('f-admtype')?document.getElementById('f-admtype').value:'',
+        ward: ward,
+        wardOther: ward==='Other'?(document.getElementById('f-ward-other')?document.getElementById('f-ward-other').value:''):'',
+        outcome: document.getElementById('f-outcome')?document.getElementById('f-outcome').value:'',
+        readmission30d: document.getElementById('f-readmit')?document.getElementById('f-readmit').value:'',
+        deEscalation: document.getElementById('f-deesc')?document.getElementById('f-deesc').value:'',
+        antibiotics: antibiotics,
+        cultures: cultures,
+        requiredForAnalysis: document.getElementById('f-required')?document.getElementById('f-required').value:'',
+      }
+    };
+
+    var data = await apiCall('save', payload);
+    if (data.success) {
+      toast('Record saved successfully', 'success');
+      formVersion = data.version || formVersion + 1;
+      closeRecordModal();
+      await loadData();
+      renderView();
+    } else if (data.conflict) {
+      toast(data.message, 'error');
+      await loadData();
+    } else {
+      toast(data.message || 'Failed to save record', 'error');
+    }
+  } catch(e) {
+    toast('Failed to save record: ' + e.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save Record'; }
+  }
+}
+
+// ─── DELETE RECORD ──────────────────────────────────────────
+async function deleteRecord(studyId) {
+  if (!confirm('Delete this record? This is a soft delete (data preserved).')) return;
+  try {
+    var data = await apiCall('delete', { studyId: studyId });
+    if (data.success) { toast('Record deleted','success'); await loadData(); renderView(); }
+    else toast(data.message||'Delete failed','error');
+  } catch(e) { toast('Delete failed','error'); }
+}
+
+function closeRecordModal() {
+  document.getElementById('record-modal').classList.remove('hidden');
+  window._editRec = null; modalMode = null;
+}
+
+// ═══════════════════ ANALYTICS ═══════════════════════════════
+function renderAnalytics(container) {
+  if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
+
+  var totalPatients = rawData.length;
+  var totalAbxCourses = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
+  var losArr = rawData.map(function(r){return r.los}).filter(function(v){return v!=null});
+  var totalPatientDays = losArr.reduce(function(s,v){return s+v},0) || 1;
+
+  // Obj1: Prescribing patterns
+  var abxCounts = {};
+  rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){
+    if(!a.name)return; if(!abxCounts[a.name])abxCounts[a.name]={name:a.name,aware:a.aware||'N/A',n:0,days:[],routes:[]}; abxCounts[a.name].n++;
+    if(a.duration)abxCounts[a.name].days.push(+a.duration); if(a.route)abxCounts[a.name].routes.push(a.route);
+  })});
+  var obj1 = Object.values(abxCounts).sort(function(a,b){return b.n-a.n}).map(function(it){return{name:it.name,aware:it.aware,n:it.n,pct:totalAbxCourses?+(it.n/totalAbxCourses*100).toFixed(1):0,medianDays:median(it.days),route:[...new Set(it.routes)].join(', ')||'-'}});
+
+  // Obj2: DDD/DOT
+  var abxDdd = {};
+  rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){if(!a.name)return;if(!abxDdd[a.name])abxDdd[a.name]={name:a.name,totalDdd:0,totalDot:0};if(a.dddCalc)abxDdd[a.name].totalDdd+=+a.dddCalc;if(a.dot)abxDdd[a.name].totalDot+=+a.dot})});
+  var obj2 = Object.values(abxDdd).sort(function(a,b){return b.totalDdd-a.totalDdd}).map(function(it){return{name:it.name,totalDdd:+it.totalDdd.toFixed(1),dddPer1000:+(it.totalDdd/totalPatientDays*1000).toFixed(1),totalDot:it.totalDot,dotPer1000:+(it.totalDot/totalPatientDays*1000).toFixed(1)}});
+
+  // Obj3: AWaRe with Wilson CI
+  var awareGroups={Access:{courses:0,totalDdd:0},Watch:{courses:0,totalDdd:0},Reserve:{courses:0,totalDdd:0}};
+  rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){if(!a.name||!a.aware)return;var cat=a.aware;if(!awareGroups[cat])awareGroups[cat]={courses:0,totalDdd:0};awareGroups[cat].courses++;if(a.dddCalc)awareGroups[cat].totalDdd+=+a.dddCalc})});
+  var totalAwareCourses=Object.values(awareGroups).reduce(function(s,g){return s+g.courses},0)||1;
+  var totalAwareDdd=Object.values(awareGroups).reduce(function(s,g){return s+g.totalDdd},0)||1;
+  var obj3=Object.entries(awareGroups).map(function(e){var ci=wilsonCI(e[1].courses/totalAwareCourses,totalAwareCourses);return{aware:e[0],courses:e[1].courses,pct:+(e[1].courses/totalAwareCourses*100).toFixed(1),ciLower:+(ci.lower*100).toFixed(1),ciUpper:+(ci.upper*100).toFixed(1),totalDdd:+e[1].totalDdd.toFixed(1),dddPct:+(e[1].totalDdd/totalAwareDdd*100).toFixed(1)}});
+  var accessPct=awareGroups.Access?+(awareGroups.Access.courses/totalAwareCourses*100).toFixed(1):0;
+  var accessCI=wilsonCI(awareGroups.Access?awareGroups.Access.courses/totalAwareCourses:0,totalAwareCourses);
+
+  // Obj4: Resistance
+  var orgCounts={};
+  rawData.forEach(function(r){(r.cultures||[]).forEach(function(c){if(!c.organism)return;if(!orgCounts[c.organism])orgCounts[c.organism]={name:c.organism,n:0,mdr:0,xdr:0,eskape:0};orgCounts[c.organism].n++;if(c.mdr==='Yes')orgCounts[c.organism].mdr++;if(c.xdr==='Yes')orgCounts[c.organism].xdr++;if(c.eskape==='Yes')orgCounts[c.organism].eskape++})});
+  var totalOrgs=Object.values(orgCounts).reduce(function(s,o){return s+o.n},0)||1;
+  var obj4=Object.values(orgCounts).sort(function(a,b){return b.n-a.n}).map(function(it){return{name:it.name,n:it.n,pct:+(it.n/totalOrgs*100).toFixed(1),mdrPct:it.n?+(it.mdr/it.n*100).toFixed(1):0,xdrPct:it.n?+(it.xdr/it.n*100).toFixed(1):0,eskape:it.eskape>0?'Yes':'No'}});
+
+  // Obj5: Spearman with p-value
+  var abxResist={};
+  obj2.forEach(function(item){abxResist[item.name]={name:item.name,ddd1000:item.dddPer1000,resistCount:0,resistTotal:0}});
+  rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){if(a.name&&abxResist[a.name])abxResist[a.name].resistTotal++});(r.cultures||[]).forEach(function(c){if(c.result!=='Positive'||!c.organism)return;(r.antibiotics||[]).forEach(function(a){if(!a.name||!abxResist[a.name])return;if(c.mdr==='Yes'||c.eskape==='Yes')abxResist[a.name].resistCount++})})});
+  var obj5=Object.values(abxResist).filter(function(v){return v.resistTotal>0}).map(function(v){return{name:v.name,ddd1000:v.ddd1000,resistPct:v.resistTotal?+(v.resistCount/v.resistTotal*100).toFixed(1):0}});
+  var rho=spearman(obj5.map(function(v){return v.ddd1000}),obj5.map(function(v){return v.resistPct}));
+  var rhoPvalue = rho !== null && obj5.length >= 4 ? spearmanPvalue(rho, obj5.length) : null;
+  var rhoInterp='Insufficient data (need ≥3 data points)';
+  if(rho!==null){var abs=Math.abs(rho),dir=rho>0?'positive':'negative';rhoInterp=abs>=0.7?'Strong '+dir+' correlation':abs>=0.4?'Moderate '+dir+' correlation':'Weak '+dir+' correlation';if(rhoPvalue!==null)rhoInterp+=rhoPvalue<0.05?' (p='+rhoPvalue.toFixed(3)+' — significant)':' (p='+rhoPvalue.toFixed(3)+' — not significant)';}
+
+  var html = '';
+
+  // Date filter
+  html += '<div class="filter-bar mb-4">';
+  html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Analysis Period:</label>';
+  html += '<input type="date" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
+  html += '<input type="date" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
+  if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(function(){currentView=\'analytics\';renderView()})">Clear</button>';
+  html += '<span class="text-sm" style="color:var(--text-muted)">'+totalPatients+' patients, '+totalPatientDays+' patient-days</span>';
+  html += '</div>';
+
+  // Obj 1
+  html += '<div class="obj-card"><h3>Obj 1: Antibiotic Prescribing Patterns</h3><p>Frequency, percentage, median duration and route</p>';
+  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>AWaRe</th><th>N</th><th>%</th><th>Median Days</th><th>Routes</th></tr></thead><tbody>';
+  obj1.forEach(function(r){var badge=r.aware==='Access'?'badge-access':r.aware==='Watch'?'badge-watch':r.aware==='Reserve'?'badge-reserve':'';html+='<tr><td>'+esc(r.name)+'</td><td>'+(badge?'<span class="badge '+badge+'">'+esc(r.aware)+'</span>':esc(r.aware))+'</td><td>'+r.n+'</td><td>'+r.pct+'%</td><td>'+r.medianDays+'</td><td>'+esc(r.route)+'</td></tr>'});
+  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj1"></canvas></div></div>';
+
+  // Obj 2
+  html += '<div class="obj-card"><h3>Obj 2: DDD &amp; DOT per 1000 Patient-Days</h3><p>Total PD: '+totalPatientDays+'</p>';
+  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>Total DDD</th><th>DDD/1000PD</th><th>Total DOT</th><th>DOT/1000PD</th></tr></thead><tbody>';
+  obj2.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.totalDdd+'</td><td>'+r.dddPer1000+'</td><td>'+r.totalDot+'</td><td>'+r.dotPer1000+'</td></tr>'});
+  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj2"></canvas></div></div>';
+
+  // Obj 3 with CI
+  html += '<div class="obj-card"><h3>Obj 3: WHO AWaRe Classification</h3><p>AWaRe distribution with WHO 60% Access benchmark</p>';
+  html += '<div style="margin-bottom:1rem"><div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem"><span class="text-sm font-medium" style="color:var(--text-secondary)">Access: '+accessPct+'%</span><span class="text-sm" style="color:'+(accessPct>=60?'var(--success)':'var(--danger)')+'">'+(accessPct>=60?'\u2713 Meets WHO 60% target':'\u2717 Below WHO 60% target')+'</span><span class="text-xs" style="color:var(--text-muted)">95% CI: '+accessCI.lower.toFixed(1)+'%–'+accessCI.upper.toFixed(1)+'%</span></div>';
+  html += '<div class="progress" style="height:8px;margin-bottom:.25rem"><div class="progress-bar" style="width:'+Math.min(accessPct,100)+'%;background:#22c55e"></div></div><div style="position:relative;height:0"><div style="position:absolute;left:60%;top:-12px;width:2px;height:20px;background:var(--danger)"></div></div></div>';
+  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Category</th><th>Courses</th><th>%</th><th>95% CI</th><th>Total DDD</th><th>DDD %</th></tr></thead><tbody>';
+  obj3.forEach(function(r){var badge=r.aware==='Access'?'badge-access':r.aware==='Watch'?'badge-watch':'badge-reserve';html+='<tr><td><span class="badge '+badge+'">'+esc(r.aware)+'</span></td><td>'+r.courses+'</td><td>'+r.pct+'%</td><td>'+r.ciLower+'%–'+r.ciUpper+'%</td><td>'+r.totalDdd+'</td><td>'+r.dddPct+'%</td></tr>'});
+  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj3"></canvas></div></div>';
+
+  // Obj 4
+  html += '<div class="obj-card"><h3>Obj 4: Antimicrobial Resistance Patterns</h3><p>Organism frequency with MDR, XDR, ESKAPE rates</p>';
+  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Organism</th><th>N</th><th>%</th><th>MDR %</th><th>XDR %</th><th>ESKAPE</th></tr></thead><tbody>';
+  obj4.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.n+'</td><td>'+r.pct+'%</td><td>'+r.mdrPct+'%</td><td>'+r.xdrPct+'%</td><td>'+r.eskape+'</td></tr>'});
+  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj4"></canvas></div></div>';
+
+  // Obj 5 with p-value
+  html += '<div class="obj-card"><h3>Obj 5: Correlation — Utilization vs Resistance</h3><p>Spearman \u03C1 = '+(rho!==null?rho.toFixed(3):'N/A')+(rhoPvalue!==null?' (p='+rhoPvalue.toFixed(3)+')':'')+'</p><p class="text-sm font-medium" style="color:var(--accent)">'+rhoInterp+'</p>';
+  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>DDD/1000PD</th><th>Resistance %</th></tr></thead><tbody>';
+  obj5.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.ddd1000+'</td><td>'+r.resistPct+'%</td></tr>'});
+  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj5"></canvas></div></div>';
+
+  container.innerHTML = html;
+
+  // Charts
+  var chartColors = {Access:'#22c55e',Watch:'#f59e0b',Reserve:'#ef4444'};
+  var darkGrid='rgba(255,255,255,0.06)', darkText='#94a3b8';
+
+  if (obj1.length) {
+    chartInstances.obj1 = new Chart(document.getElementById('chart-obj1'),{type:'bar',data:{labels:obj1.map(function(r){return r.name}),datasets:[{label:'Courses',data:obj1.map(function(r){return r.n}),backgroundColor:obj1.map(function(r){return chartColors[r.aware]||'#0ea5e9'})}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText}}}}});
+  }
+  if (obj2.length) {
+    chartInstances.obj2 = new Chart(document.getElementById('chart-obj2'),{type:'bar',data:{labels:obj2.map(function(r){return r.name}),datasets:[{label:'DDD/1000PD',data:obj2.map(function(r){return r.dddPer1000}),backgroundColor:'#0ea5e9'},{label:'DOT/1000PD',data:obj2.map(function(r){return r.dotPer1000}),backgroundColor:'#8b5cf6'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:darkText}}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText}}}}});
+  }
+  if (obj3.length) {
+    chartInstances.obj3 = new Chart(document.getElementById('chart-obj3'),{type:'doughnut',data:{labels:obj3.map(function(r){return r.aware}),datasets:[{data:obj3.map(function(r){return r.courses}),backgroundColor:obj3.map(function(r){return chartColors[r.aware]||'#0ea5e9'}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:darkText,padding:16}}}}});
+  }
+  if (obj4.length) {
+    chartInstances.obj4 = new Chart(document.getElementById('chart-obj4'),{type:'bar',data:{labels:obj4.map(function(r){return r.name}),datasets:[{label:'MDR %',data:obj4.map(function(r){return r.mdrPct}),backgroundColor:'#f59e0b'},{label:'XDR %',data:obj4.map(function(r){return r.xdrPct}),backgroundColor:'#ef4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:darkText}}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText},max:100}}}});
+  }
+  if (obj5.length>=2) {
+    chartInstances.obj5 = new Chart(document.getElementById('chart-obj5'),{type:'scatter',data:{datasets:[{label:'ABX',data:obj5.map(function(r){return{x:r.ddd1000,y:r.resistPct}}),backgroundColor:'#0ea5e9',pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return obj5[ctx.dataIndex]?obj5[ctx.dataIndex].name+': '+ctx.parsed.x+', '+ctx.parsed.y+'%':''}}}},scales:{x:{title:{display:true,text:'DDD/1000PD',color:darkText},grid:{color:darkGrid},ticks:{color:darkText}},y:{title:{display:true,text:'Resistance %',color:darkText},grid:{color:darkGrid},ticks:{color:darkText}}}}});
+  }
+}
+
+// ═══════════════════ USERS ═══════════════════════════════════
+function renderUsers(container) {
+  if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
+  var html = '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">User Management</h2><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'user-modal\').classList.remove(\'hidden\')">+ Add User</button></div>';
+  html += '<div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Active</th><th>Created</th><th>Last Login</th><th>Actions</th></tr></thead><tbody>';
+  usersList.forEach(function(u){
+    html += '<tr><td>'+esc(u.username)+'</td><td>'+esc(u.role)+'</td><td>'+(u.active?'<span style="color:var(--success)">Active</span>':'<span style="color:var(--danger)">Disabled</span>')+'</td><td>'+esc(fmtDate(u.createdAt))+'</td><td>'+esc(fmtDate(u.lastLogin))+'</td><td>';
+    if (u.username !== currentUser.username) {
+      html += '<button class="btn btn-ghost btn-sm" onclick="toggleUserStatus(\''+esc(u.username)+'\','+(!u.active)+')">'+(u.active?'Disable':'Enable')+'</button>';
+    }
+    html += '</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+async function toggleUserStatus(username, active) {
+  try {
+    var data = await apiCall('toggleUser', { username: username, active: active });
+    if (data.success) { toast(data.message, 'success'); await loadUsers(); renderView(); }
+    else toast(data.message, 'error');
+  } catch(e) { toast('Failed to update user', 'error'); }
+}
+
+function closeUserModal() {
+  document.getElementById('user-modal').classList.add('hidden');
+  document.getElementById('new-username').value = '';
+  document.getElementById('new-password').value = '';
+  document.getElementById('new-role').value = 'Agent';
+}
+
+async function createUser() {
+  var btn = document.getElementById('create-user-btn');
+  var username = document.getElementById('new-username').value.trim();
+  var password = document.getElementById('new-password').value;
+  var role = document.getElementById('new-role').value;
+  if (!username || !password) { toast('Username and password required','error'); return; }
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    var data = await apiCall('addUser', { username: username, password: password, role: role });
+    if (data.success) { toast('User created','success'); closeUserModal(); await loadUsers(); renderView(); }
+    else toast(data.message||'Failed to create user','error');
+  } catch(e) { toast('Failed to create user','error'); }
+  finally { btn.disabled = false; btn.textContent = 'Create User'; }
+}
+
+// ═══════════════════ AUDIT LOG ═══════════════════════════════
+async function renderAudit(container) {
+  if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
+
+  container.innerHTML = '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">Audit Log</h2></div><div id="audit-content" class="text-sm" style="color:var(--text-muted)">Loading...</div>';
+
+  try {
+    var data = await apiCall('getAuditLog', { limit: 200 });
+    if (data.success && data.logs) {
+      var html = '<div class="table-wrap"><table><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>';
+      data.logs.forEach(function(log) {
+        html += '<tr><td>'+esc(log.timestamp)+'</td><td>'+esc(log.user)+'</td><td>'+esc(log.action)+'</td><td>'+esc(log.details)+'</td></tr>';
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('audit-content').innerHTML = html;
+    }
+  } catch(e) {
+    document.getElementById('audit-content').innerHTML = 'Failed to load audit log';
+  }
+}
+
+// ─── HOSPITAL OTHER TOGGLE ──────────────────────────────────
+document.getElementById('login-hospital').addEventListener('change', function() {
+  document.getElementById('hospital-other-wrap').style.display = this.value === 'OTHER' ? 'block' : 'none';
+});
+
+// ─── INIT ───────────────────────────────────────────────────
+document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+// Auto-fill date
+document.getElementById('login-date').value = new Date().toISOString().split('T')[0];
+
+if (loadSession()) {
+  showApp();
+} else {
+  document.getElementById('login-view').style.display = 'flex';
+}
+</script>
 </body>
 </html>
