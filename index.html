@@ -19,7 +19,7 @@
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg-body);color:var(--text-primary);overflow:hidden}
 
 /* ────────────── UTILITY ────────────── */
-.flex{display:flex}.flex-col{flex-direction:column}.flex-1{flex:1}.items-center{align-items:center}.justify-center{justify-content:center}
+.flex{display:flex}.flex-col{flex-direction:column}.flex-1{flex:1}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}
 .gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}
 .w-full{width:100%}.min-w-0{min-width:0}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .text-xs{font-size:.75rem}.text-sm{font-size:.875rem}.text-base{font-size:1rem}.text-lg{font-size:1.125rem}.text-xl{font-size:1.25rem}.text-2xl{font-size:1.5rem}
@@ -48,7 +48,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 /* ────────────── APP LAYOUT ────────────── */
 #app{display:flex;flex-direction:column;height:100vh}
 #app-main{display:flex;flex:1;overflow:hidden}
-#sidebar{width:240px;min-width:240px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .2s ease;z-index:50}
+#sidebar{width:260px;min-width:260px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .2s ease;z-index:50}
 #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40}
 #content{flex:1;min-width:0;overflow-y:auto;padding:1.5rem}
 #topbar{display:none;height:3.5rem;align-items:center;gap:.75rem;padding:0 1rem;background:var(--bg-sidebar);border-bottom:1px solid var(--border)}
@@ -56,7 +56,7 @@ footer{background:var(--bg-sidebar);border-top:1px solid var(--border);padding:.
 
 /* Mobile */
 @media(max-width:1023px){
-  #sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%)}
+  #sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%);width:260px}
   #sidebar.open{transform:translateX(0)}
   #sidebar-overlay.open{display:block}
   #topbar{display:flex}
@@ -74,6 +74,12 @@ footer{background:var(--bg-sidebar);border-top:1px solid var(--border);padding:.
 .card-stat .stat-icon{width:2.5rem;height:2.5rem;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.125rem}
 .card-stat .stat-value{font-size:1.5rem;font-weight:700;color:var(--text-primary)}
 .card-stat .stat-label{font-size:.75rem;color:var(--text-secondary)}
+.card-info{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.card-info h4{font-size:.875rem;font-weight:600;color:var(--accent);margin-bottom:.5rem}
+.card-info .info-row{display:flex;justify-content:space-between;padding:.25rem 0;font-size:.8125rem;border-bottom:1px solid var(--border)}
+.card-info .info-row:last-child{border-bottom:none}
+.card-info .info-label{color:var(--text-secondary)}
+.card-info .info-value{color:var(--text-primary);font-weight:500}
 
 /* ────────────── FORM ELEMENTS ────────────── */
 input,select,textarea{
@@ -104,6 +110,8 @@ label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary
 .btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover:not(:disabled){background:#dc2626}
 .btn-success{background:var(--success);color:#fff}
+.btn-success:hover:not(:disabled){background:#16a34a}
+.btn-warning{background:var(--warning);color:#000}
 .btn-sm{height:2rem;padding:.25rem .625rem;font-size:.75rem}
 .btn-icon{width:2rem;height:2rem;padding:0;border-radius:var(--radius)}
 
@@ -120,6 +128,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .badge-access{background:rgba(34,197,94,.15);color:#22c55e}
 .badge-watch{background:rgba(245,158,11,.15);color:#f59e0b}
 .badge-reserve{background:rgba(239,68,68,.15);color:#ef4444}
+.badge-admin{background:rgba(14,165,233,.15);color:#0ea5e9}
+.badge-agent{background:rgba(148,163,184,.15);color:#94a3b8}
+.badge-active{background:rgba(34,197,94,.15);color:#22c55e}
+.badge-inactive{background:rgba(239,68,68,.15);color:#ef4444}
 
 /* ────────────── MODAL ────────────── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
@@ -142,7 +154,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 /* ────────────── TOAST ────────────── */
 #toast-container{position:fixed;top:1rem;right:1rem;z-index:100;display:flex;flex-direction:column;gap:.5rem}
 .toast{padding:.75rem 1rem;border-radius:var(--radius);font-size:.875rem;color:#fff;animation:slideIn .2s ease;min-width:250px;max-width:400px;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.toast-success{background:#16a34a}.toast-error{background:#dc2626}.toast-info{background:#2563eb}
+.toast-success{background:#16a34a}.toast-error{background:#dc2626}.toast-info{background:#2563eb}.toast-warning{background:#d97706}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
 /* ────────────── LOGIN ────────────── */
@@ -171,6 +183,19 @@ tr:hover td{background:rgba(255,255,255,.02)}
 /* ────────────── DATE FILTER BAR ────────────── */
 .filter-bar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
 .filter-bar input,.filter-bar select{width:auto;min-width:140px}
+
+/* ────────────── ADMIN PANEL ────────────── */
+.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:639px){.admin-grid{grid-template-columns:1fr}}
+.admin-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
+.admin-section h3{font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.admin-section .admin-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
+
+/* ────────────── TABS ────────────── */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1rem}
+.tab-btn{padding:.5rem 1rem;font-size:.875rem;font-weight:500;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all var(--transition)}
+.tab-btn:hover{color:var(--text-primary)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -235,7 +260,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div style="width:2rem;height:2rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
         <span class="font-bold text-lg">OncoCollect</span>
       </div>
-      <nav id="sidebar-nav" class="flex-1 py-4 px-3 flex flex-col gap-1"></nav>
+      <nav id="sidebar-nav" class="flex-1 py-4 px-3 flex flex-col gap-1 overflow-y-auto"></nav>
       <div class="px-3 py-4 flex flex-col gap-2 border-t" style="border-color:var(--border)">
         <div class="flex items-center gap-3 px-3 py-2">
           <div id="user-avatar" class="rounded-full flex items-center justify-center font-bold text-xs" style="width:2rem;height:2rem;background:var(--accent);color:#fff"></div>
@@ -249,9 +274,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <span id="sidebar-date"></span>
         </div>
         <div class="flex gap-2 px-1">
+          <button class="btn btn-ghost btn-sm flex-1" onclick="showPasswordModal()">&#128274; Password</button>
           <button class="btn btn-ghost btn-sm flex-1" onclick="refreshData()">&#x21bb; Sync</button>
-          <button class="btn btn-ghost btn-sm flex-1" onclick="logout()">Logout</button>
         </div>
+        <button class="btn btn-ghost btn-sm w-full" onclick="logout()">Logout</button>
       </div>
     </aside>
     <main class="flex flex-col flex-1 min-w-0">
@@ -262,7 +288,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div id="content" class="flex-1"></div>
     </main>
   </div>
-  <footer>OncoCollect v3 — Clinical Research Database</footer>
+  <footer>OncoCollect v3.0 &mdash; Clinical Research Database | Antimicrobial Stewardship in Oncology</footer>
 </div>
 
 <!-- RECORD MODAL -->
@@ -306,9 +332,31 @@ tr:hover td{background:rgba(255,255,255,.02)}
   </div>
 </div>
 
+<!-- PASSWORD MODAL -->
+<div id="password-modal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:28rem">
+    <div class="modal-header">
+      <h2 class="text-lg font-bold">Change Password</h2>
+      <button class="btn btn-ghost btn-icon" onclick="closePasswordModal()" style="font-size:1.25rem">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="flex flex-col gap-4">
+        <div><label class="required">Current Password</label><input type="password" id="pw-current" placeholder="Enter current password"></div>
+        <div><label class="required">New Password</label><input type="password" id="pw-new" placeholder="Min 8 chars, uppercase, number, symbol"></div>
+        <div><label class="required">Confirm New Password</label><input type="password" id="pw-confirm" placeholder="Re-enter new password"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePasswordModal()">Cancel</button>
+      <button class="btn btn-primary" id="pw-btn" onclick="changePassword()">Update Password</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ══════════════════════════════════════════════════════════════
-   OncoCollect v3.0 Frontend
+   OncoCollect v3.0 Frontend — Enhanced with Admin Panel &
+   User-Accessible Data Editing
    ══════════════════════════════════════════════════════════════ */
 
 // ─── GITHUB PAGES CONFIG ────────────────────────────────────
@@ -347,7 +395,6 @@ function spearman(x, y) {
   var n = x.length;
   if (n < 3) return null;
   function ranks(a) {
-    // Average ranks for ties
     var sorted = a.map(function(v,i){return {v:v,i:i}}).sort(function(a,b){return a.v-b.v});
     var r = new Array(n);
     var j = 0;
@@ -365,11 +412,9 @@ function spearman(x, y) {
   return 1 - (6*d2) / (n*(n*n-1));
 }
 
-// Spearman p-value approximation
 function spearmanPvalue(rho, n) {
   if (n < 4) return null;
   var t = rho * Math.sqrt((n - 2) / (1 - rho * rho));
-  // Approximate two-tailed p from t-distribution
   var df = n - 2;
   var x = df / (df + t * t);
   var p = incompleteBeta(df / 2, 0.5, x);
@@ -377,7 +422,6 @@ function spearmanPvalue(rho, n) {
 }
 
 function incompleteBeta(a, b, x) {
-  // Simple approximation for p-value
   if (x <= 0) return 1;
   if (x >= 1) return 0;
   var t = Math.exp(a * Math.log(x) + b * Math.log(1 - x) - logBeta(a, b)) / a;
@@ -394,9 +438,7 @@ function incompleteBeta(a, b, x) {
   return t;
 }
 
-function logBeta(a, b) {
-  return logGamma(a) + logGamma(b) - logGamma(a + b);
-}
+function logBeta(a, b) { return logGamma(a) + logGamma(b) - logGamma(a + b); }
 
 function logGamma(z) {
   var c = [76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
@@ -407,9 +449,8 @@ function logGamma(z) {
   return -tmp + Math.log(2.5066282746310005 * ser / x);
 }
 
-// Wilson score interval for proportions
 function wilsonCI(p, n, z) {
-  z = z || 1.96; // 95% CI
+  z = z || 1.96;
   if (n === 0) return { lower: 0, upper: 0 };
   var denom = 1 + z * z / n;
   var centre = (p + z * z / (2 * n)) / denom;
@@ -449,60 +490,49 @@ function apiCall(action, data) {
 function apiCallGAS(action, data) {
   return new Promise(function(resolve, reject) {
     var token = currentUser ? currentUser.token : '';
-    var csrf = currentUser ? currentUser.csrf : '';
     var timeout = setTimeout(function(){ reject(new Error('Server timeout')); }, 60000);
-
     var success = function(result) { clearTimeout(timeout); resolve(result); };
     var failure = function(err) { clearTimeout(timeout); reject(err); };
 
     switch(action) {
       case 'login':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiLogin(data.username, data.password);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiLogin(data.username, data.password);
         break;
       case 'read':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiRead(token, data.filters || {});
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiRead(token, data.filters || {});
         break;
       case 'save':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiSave(token, data.record);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiSave(token, data.record);
         break;
       case 'delete':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiDelete(token, data.studyId);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiDelete(token, data.studyId);
         break;
       case 'getAntibiotics':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiGetAntibiotics(token);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiGetAntibiotics(token);
         break;
       case 'generateId':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiGenerateId(token);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiGenerateId(token);
         break;
       case 'addUser':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiAddUser(token, data.username, data.password, data.role);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiAddUser(token, data.username, data.password, data.role);
         break;
       case 'getUsers':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiGetUsers(token);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiGetUsers(token);
         break;
       case 'getAuditLog':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiGetAuditLog(token, data);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiGetAuditLog(token, data);
         break;
       case 'exportFlat':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiExportFlat(token, data.filters || {});
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiExportFlat(token, data.filters || {});
+        break;
+      case 'exportRelational':
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiExportRelational(token, data.filters || {});
         break;
       case 'changePassword':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiChangePassword(token, data.currentPassword, data.newPassword);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiChangePassword(token, data.currentPassword, data.newPassword);
         break;
       case 'toggleUser':
-        google.script.run.withSuccessHandler(success).withFailureHandler(failure)
-          .apiToggleUser(token, data.username, data.active);
+        google.script.run.withSuccessHandler(success).withFailureHandler(failure).apiToggleUser(token, data.username, data.active);
         break;
       default:
         clearTimeout(timeout); reject(new Error('Unknown action: ' + action));
@@ -510,18 +540,19 @@ function apiCallGAS(action, data) {
   });
 }
 
-// --- OPTION B: fetch POST (GitHub Pages) ---
+// --- OPTION B: fetch (GitHub Pages) ---
 function apiCallFetch(action, data) {
   data = data || {};
   if (!GAS_URL) return Promise.reject(new Error('GAS_URL not set'));
 
-  // For login and GET-type actions, use GET
-  var getActions = ['read','getAntibiotics','generateId','getUsers','getAuditLog','exportFlat'];
-  if (action === 'login' || getActions.indexOf(action) >= 0) {
-    return apiCallFetchGet(action, data);
-  }
+  // Login uses GET (simple)
+  if (action === 'login') return apiCallFetchGet(action, data);
 
-  // For write actions, use POST (avoids URL length limits)
+  // Read-only actions use GET
+  var getActions = ['read','getAntibiotics','generateId','getUsers','getAuditLog','exportFlat','exportRelational'];
+  if (getActions.indexOf(action) >= 0) return apiCallFetchGet(action, data);
+
+  // Write actions use POST (avoids URL length limits)
   var body = {
     action: action,
     token: currentUser ? currentUser.token : '',
@@ -551,6 +582,8 @@ function apiCallFetchGet(action, data) {
       if (data.filters.dateFrom) params.dateFrom = data.filters.dateFrom;
       if (data.filters.dateTo) params.dateTo = data.filters.dateTo;
       if (data.filters.site) params.site = data.filters.site;
+      if (data.filters.ward) params.ward = data.filters.ward;
+      if (data.filters.outcome) params.outcome = data.filters.outcome;
     }
   } else if (action === 'getAuditLog') {
     params.limit = data.limit || 100;
@@ -580,7 +613,6 @@ function loadSession() {
     if (s) {
       currentUser = JSON.parse(s);
       if (si) sessionInfo = JSON.parse(si);
-      // Check token expiry
       try {
         var decoded = atob(currentUser.token);
         var ts = parseInt(decoded.split(':')[2]);
@@ -632,7 +664,7 @@ async function handleLogin(e) {
       errEl.classList.remove('hidden');
     }
   } catch(err) {
-    errEl.textContent = IS_GAS ? 'Server error' : 'Connection error — check GAS_URL';
+    errEl.textContent = IS_GAS ? 'Server error' : 'Connection error \u2014 check GAS_URL';
     errEl.classList.remove('hidden');
   } finally {
     btn.disabled = false; btn.textContent = 'Sign In';
@@ -648,11 +680,10 @@ function logout() {
 
 // ─── NAVIGATION ─────────────────────────────────────────────
 var NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: '&#9632;' },
-  { key: 'records', label: 'Records', icon: '&#9998;' },
-  { key: 'analytics', label: 'Analytics', icon: '&#9733;' },
-  { key: 'users', label: 'Users', icon: '&#9823;', admin: true },
-  { key: 'audit', label: 'Audit Log', icon: '&#9881;', admin: true },
+  { key: 'dashboard', label: 'Dashboard', icon: '&#9632;', admin: false },
+  { key: 'records', label: 'Data Entry', icon: '&#9998;', admin: false },
+  { key: 'analytics', label: 'Analytics', icon: '&#9733;', admin: false },
+  { key: 'admin', label: 'Admin Panel', icon: '&#9881;', admin: true },
 ];
 
 function renderNav() {
@@ -730,8 +761,7 @@ function renderView() {
     case 'dashboard': renderDashboard(c); break;
     case 'records': renderRecords(c); break;
     case 'analytics': renderAnalytics(c); break;
-    case 'users': renderUsers(c); break;
-    case 'audit': renderAudit(c); break;
+    case 'admin': renderAdmin(c); break;
     default: renderDashboard(c);
   }
   renderNav();
@@ -749,11 +779,10 @@ function renderDashboard(container) {
   var posCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.result==='Positive'}).length:0)},0);
   var mdrRate = posCult ? +(mdrCult/posCult*100).toFixed(1) : 0;
 
-  // Wilson CI for mortality
   var mortCI = wilsonCI(mort/100, total);
 
   var stats = [
-    { label: 'Patients', value: total, icon: '&#9823;', color: '#0ea5e9' },
+    { label: 'Total Patients', value: total, icon: '&#9823;', color: '#0ea5e9' },
     { label: 'Antibiotic Courses', value: abxCourses, icon: '&#176;', color: '#22c55e' },
     { label: 'Cultures Sent', value: cultSent, icon: '&#9878;', color: '#f59e0b' },
     { label: 'Mortality Rate', value: mort+'%', icon: '&#9760;', color: '#ef4444', ci: mortCI },
@@ -764,35 +793,45 @@ function renderDashboard(container) {
   var html = '<div class="grid grid-cols-4 gap-4 mb-6">';
   stats.forEach(function(s) {
     html += '<div class="card card-stat"><div class="stat-icon" style="background:'+s.color+'20;color:'+s.color+'">'+s.icon+'</div><div class="stat-value">'+esc(s.value)+'</div><div class="stat-label">'+esc(s.label)+'</div>';
-    if (s.ci) html += '<div class="text-xs" style="color:var(--text-muted)">95% CI: '+(s.ci.lower*100).toFixed(1)+'%–'+(s.ci.upper*100).toFixed(1)+'%</div>';
+    if (s.ci) html += '<div class="text-xs" style="color:var(--text-muted)">95% CI: '+(s.ci.lower*100).toFixed(1)+'% \u2013 '+(s.ci.upper*100).toFixed(1)+'%</div>';
     html += '</div>';
   });
   html += '</div>';
 
   // Date filter bar
   html += '<div class="filter-bar">';
-  html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Filter:</label>';
+  html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Filter by date:</label>';
   html += '<input type="date" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)" placeholder="From">';
   html += '<input type="date" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)" placeholder="To">';
-  if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(renderView)">Clear</button>';
+  if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(renderView)">Clear Filters</button>';
   html += '</div>';
 
-  var recent = rawData.slice(-6).reverse();
-  html += '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">Recent Records</h2><button class="btn btn-ghost btn-sm" onclick="currentView=\'records\';renderView()">View All &rarr;</button></div>';
-  html += buildRecordTable(recent, false);
+  // Quick actions
+  html += '<div class="flex items-center justify-between mb-4 flex-wrap gap-3">';
+  html += '<h2 class="text-lg font-bold">Recent Records</h2>';
+  html += '<div class="flex gap-2">';
+  html += '<button class="btn btn-primary btn-sm" onclick="currentView=\'records\';renderView()">+ New Entry / View All</button>';
+  html += '</div></div>';
+
+  var recent = rawData.slice(-8).reverse();
+  html += buildRecordTable(recent, true);
   container.innerHTML = html;
 }
 
-// ═══════════════════ RECORDS ═════════════════════════════════
+// ═══════════════════ RECORDS (Data Entry) ════════════════════
 function renderRecords(container) {
-  var isAdmin = currentUser && currentUser.role === 'Admin';
-  var html = '<div class="flex items-center gap-3 mb-4 flex-wrap">';
+  var html = '<h2 class="text-xl font-bold mb-4">Data Entry & Management</h2>';
+
+  // Action bar
+  html += '<div class="flex items-center gap-3 mb-4 flex-wrap">';
+  html += '<button class="btn btn-primary" onclick="openNewRecord()">+ New Patient Entry</button>';
   html += '<input type="text" id="search-input" placeholder="Search by ID, diagnosis, cancer..." style="max-width:300px" oninput="filterRecords()">';
   html += '<select id="outcome-filter" style="width:auto;min-width:140px" onchange="filterRecords()"><option value="all">All Outcomes</option><option value="Improved">Improved</option><option value="Died">Died</option><option value="Discharged">Discharged</option><option value="Transferred">Transferred</option><option value="AMA">AMA</option></select>';
   html += '<button class="btn btn-ghost btn-sm" onclick="exportFlatCsv()">&#11015; Export for Analysis</button>';
   html += '<button class="btn btn-ghost btn-sm" onclick="exportSimpleCsv()">&#11015; Quick CSV</button>';
-  if (isAdmin) html += '<button class="btn btn-primary btn-sm" onclick="openNewRecord()">+ New Entry</button>';
-  html += '</div><div id="records-table-wrap"></div>';
+  html += '</div>';
+
+  html += '<div id="records-table-wrap"></div>';
   container.innerHTML = html;
   filterRecords();
 }
@@ -802,7 +841,7 @@ function filterRecords() {
   var outcome = document.getElementById('outcome-filter') ? document.getElementById('outcome-filter').value : 'all';
   var filtered = rawData;
   if (q) filtered = filtered.filter(function(r) {
-    return (r.studyId||'').toLowerCase().includes(q) || (r.diagnosis||'').toLowerCase().includes(q) || (r.cancerName||'').toLowerCase().includes(q) || (r.hospital||'').toLowerCase().includes(q);
+    return (r.studyId||'').toLowerCase().includes(q) || (r.diagnosis||'').toLowerCase().includes(q) || (r.cancerName||'').toLowerCase().includes(q) || (r.hospital||'').toLowerCase().includes(q) || (r.createdBy||'').toLowerCase().includes(q);
   });
   if (outcome !== 'all') filtered = filtered.filter(function(r){return r.outcome===outcome});
   document.getElementById('records-table-wrap').innerHTML = buildRecordTable(filtered, true);
@@ -810,18 +849,22 @@ function filterRecords() {
 
 function buildRecordTable(records, showActions) {
   var isAdmin = currentUser && currentUser.role === 'Admin';
-  var html = '<div class="table-wrap"><table><thead><tr><th>Study ID</th><th>Age</th><th>Sex</th><th>Hospital</th><th>Cancer</th><th>Ward</th><th>LOS</th><th>Outcome</th><th>ABX</th><th>Cult</th>';
+  var html = '<div class="table-wrap"><table><thead><tr><th>Study ID</th><th>Age</th><th>Sex</th><th>Hospital</th><th>Cancer</th><th>Ward</th><th>LOS</th><th>Outcome</th><th>ABX</th><th>Cult</th><th>Created By</th>';
   if (showActions) html += '<th>Actions</th>';
   html += '</tr></thead><tbody>';
-  if (!records.length) html += '<tr><td colspan="'+(showActions?11:10)+'" class="text-center py-4" style="color:var(--text-muted)">No records found</td></tr>';
+  if (!records.length) html += '<tr><td colspan="'+(showActions?12:11)+'" class="text-center py-4" style="color:var(--text-muted)">No records found</td></tr>';
   records.forEach(function(r) {
     var abxCount = r.antibiotics ? r.antibiotics.length : 0;
     var cultCount = r.cultures ? r.cultures.length : 0;
-    html += '<tr><td class="font-medium">'+esc(r.studyId)+'</td><td>'+esc(r.age!=null?r.age:'-')+'</td><td>'+esc(r.sex||'-')+'</td><td>'+esc(r.hospital||'-')+'</td><td>'+esc(r.cancerName||'-')+'</td><td>'+esc(r.ward||'-')+'</td><td>'+(r.los!=null?r.los+'d':'-')+'</td><td>'+esc(r.outcome||'-')+'</td><td>'+abxCount+'</td><td>'+cultCount+'</td>';
+    var isOwner = r.createdBy === currentUser.username;
+    var canEdit = isAdmin || isOwner;
+    html += '<tr><td class="font-medium">'+esc(r.studyId)+'</td><td>'+esc(r.age!=null?r.age:'-')+'</td><td>'+esc(r.sex||'-')+'</td><td>'+esc(r.hospital||'-')+'</td><td>'+esc(r.cancerName||'-')+'</td><td>'+esc(r.ward||'-')+'</td><td>'+(r.los!=null?r.los+'d':'-')+'</td><td>'+esc(r.outcome||'-')+'</td><td>'+abxCount+'</td><td>'+cultCount+'</td><td class="text-xs">'+esc(r.createdBy||'-')+'</td>';
     if (showActions) {
-      html += '<td class="flex gap-1"><button class="btn btn-ghost btn-sm" onclick="viewRecord(\''+esc(r.studyId)+'\')">View</button>';
-      if (isAdmin) html += '<button class="btn btn-ghost btn-sm" onclick="editRecord(\''+esc(r.studyId)+'\')">Edit</button><button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteRecord(\''+esc(r.studyId)+'\')">Del</button>';
-      html += '</td>';
+      html += '<td><div class="flex gap-1 flex-wrap">';
+      html += '<button class="btn btn-ghost btn-sm" onclick="viewRecord(\''+esc(r.studyId)+'\')">View</button>';
+      if (canEdit) html += '<button class="btn btn-ghost btn-sm" style="color:var(--accent)" onclick="editRecord(\''+esc(r.studyId)+'\')">Edit</button>';
+      if (isAdmin) html += '<button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteRecord(\''+esc(r.studyId)+'\')">Delete</button>';
+      html += '</div></td>';
     }
     html += '</tr>';
   });
@@ -840,19 +883,17 @@ async function exportFlatCsv() {
       var a = document.createElement('a');
       a.href = url; a.download = data.filename || 'OncoCollect_Flat.csv';
       a.click(); URL.revokeObjectURL(url);
-      toast('Flat CSV exported (analysis-ready)', 'success');
-    } else {
-      toast(data.message || 'Export failed', 'error');
-    }
+      toast('Flat CSV exported (SPSS/R/Stata ready)', 'success');
+    } else { toast(data.message || 'Export failed', 'error'); }
   } catch(e) { toast('Export failed', 'error'); }
 }
 
 function exportSimpleCsv() {
   if (!rawData.length) return toast('No records to export', 'error');
-  var headers = ['Study_ID','Age','Sex','Hospital','Diagnosis','Cancer_Type','Cancer_Name','Stage','Admission_Date','Discharge_Date','LOS','Ward','Outcome','Readmission_30d','De_escalation','ABX_Count','Cult_Count','Required_for_Analysis','Created_By','Created_Date'];
+  var headers = ['Study_ID','Age','Sex','Hospital','Date_of_Collection','Collector_Name','Diagnosis','Cancer_Type','Cancer_Name','Stage','Admission_Date','Discharge_Date','LOS','Ward','Outcome','Readmission_30d','De_escalation','ABX_Count','Cult_Count','Required_for_Analysis','Created_By','Created_Date'];
   var csv = headers.join(',') + '\n';
   rawData.forEach(function(r) {
-    csv += [r.studyId,r.age,r.sex,r.hospital,r.diagnosis,r.cancerType,r.cancerName,r.stage,fmtDate(r.admissionDate),fmtDate(r.dischargeDate),r.los,r.ward,r.outcome,r.readmission30d,r.deEscalation,r.antibiotics?r.antibiotics.length:0,r.cultures?r.cultures.length:0,r.requiredForAnalysis,r.createdBy,fmtDate(r.createdAt)].map(function(v){return v==null?'':String(v).indexOf(',')>=0?'"'+v+'"':v}).join(',') + '\n';
+    csv += [r.studyId,r.age,r.sex,r.hospital,r.dateOfCollection,r.collectorName,r.diagnosis,r.cancerType,r.cancerName,r.stage,fmtDate(r.admissionDate),fmtDate(r.dischargeDate),r.los,r.ward,r.outcome,r.readmission30d,r.deEscalation,r.antibiotics?r.antibiotics.length:0,r.cultures?r.cultures.length:0,r.requiredForAnalysis,r.createdBy,fmtDate(r.createdAt)].map(function(v){return v==null?'':String(v).indexOf(',')>=0?'"'+v+'"':v}).join(',') + '\n';
   });
   var blob = new Blob([csv], { type: 'text/csv' });
   var url = URL.createObjectURL(blob);
@@ -874,6 +915,7 @@ function emptyCult() { return {sent:'',date:'',type:'',result:'',organism:'',gra
 
 function openNewRecord() {
   modalMode = 'new'; modalStudyId = ''; formAbx = [emptyAbx()]; formCult = [emptyCult()]; formVersion = 0;
+  window._editRec = null;
   generateStudyId();
 }
 
@@ -898,6 +940,13 @@ function viewRecord(studyId) {
 function editRecord(studyId) {
   var rec = rawData.find(function(r){return r.studyId===studyId});
   if (!rec) return toast('Record not found','error');
+  // Check permission: Admin or owner
+  var isOwner = rec.createdBy === currentUser.username;
+  var isAdmin = currentUser && currentUser.role === 'Admin';
+  if (!isAdmin && !isOwner) {
+    toast('You can only edit records you created', 'error');
+    return;
+  }
   modalMode = 'edit'; modalStudyId = rec.studyId; formVersion = rec.version || 0;
   populateFormFromRecord(rec);
   renderRecordModal();
@@ -918,7 +967,7 @@ function renderRecordModal() {
   var isView = modalMode === 'view';
   var dis = isView ? 'disabled' : '';
 
-  document.getElementById('modal-title').textContent = isView ? 'View Record' : modalMode==='edit' ? 'Edit Record' : 'New Record';
+  document.getElementById('modal-title').textContent = isView ? 'View Record' : modalMode==='edit' ? 'Edit Record' : 'New Patient Entry';
   document.getElementById('modal-subtitle').textContent = isView ? 'Record '+modalStudyId : modalMode==='edit' ? 'Editing '+modalStudyId : 'Enter patient data below';
 
   var html = '';
@@ -926,7 +975,7 @@ function renderRecordModal() {
   // ─── Collection Info ───
   html += '<div class="section-title">Collection Information</div><div class="form-grid">';
   html += '<div><label>Timestamp</label><input value="'+esc(rec.timestamp||fmtDate(new Date()))+'" readonly></div>';
-  html += '<div><label>Study ID</label><input value="'+esc(modalStudyId)+'" readonly></div>';
+  html += '<div><label>Study ID</label><input value="'+esc(modalStudyId)+'" readonly style="font-weight:600;color:var(--accent)"></div>';
   html += '<div><label>Created By</label><input value="'+esc(rec.createdBy||currentUser.username)+'" readonly></div>';
   html += '<div><label>Hospital</label><input value="'+esc(rec.hospital||sessionInfo.hospital)+'" readonly></div>';
   html += '<div><label>Date of Collection</label><input value="'+esc(rec.dateOfCollection||sessionInfo.dateOfCollection)+'" readonly></div>';
@@ -943,12 +992,12 @@ function renderRecordModal() {
   html += '<div class="section-title">B. Admission & Clinical Details</div><div class="form-grid">';
   html += '<div><label class="required">Admission Date</label><input type="date" id="f-admit" value="'+esc(fmtDate(rec.admissionDate))+'" '+dis+'></div>';
   html += '<div><label>Discharge Date</label><input type="date" id="f-discharge" value="'+esc(fmtDate(rec.dischargeDate))+'" '+dis+'></div>';
-  html += '<div><label>LOS</label><input id="f-los" value="'+(rec.los!=null?rec.los+' days':'')+'" readonly style="opacity:.6"></div>';
+  html += '<div><label>LOS (auto-calculated)</label><input id="f-los" value="'+(rec.los!=null?rec.los+' days':'')+'" readonly style="opacity:.6"></div>';
   html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+'><option value="">Select</option><option value="Emergency" '+(rec.admissionType==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(rec.admissionType==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(rec.admissionType==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
 
-  var isWardOther = !['Oncology ward','ICU','HDU',''].includes(rec.ward||'');
-  html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(rec.ward==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(rec.ward==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(rec.ward==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
-  html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther?rec.ward||'':'')+'" '+dis+'></div>';
+  var isWardOther = rec.ward && !['Oncology ward','ICU','HDU'].includes(rec.ward);
+  html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(rec.ward==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(rec.ward==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(rec.ward==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther||rec.ward==='Other'?'selected':'')+'>Other</option></select></div>';
+  html += '<div id="ward-other-wrap" style="display:'+(isWardOther||rec.ward==='Other'?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&rec.ward!=='Other'?rec.ward||'':rec.wardOther||'')+'" '+dis+'></div>';
 
   html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(rec.diagnosis||'')+'" '+dis+' placeholder="Enter diagnosis"></div>';
 
@@ -956,27 +1005,27 @@ function renderRecordModal() {
   ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerType===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
-  var isCancerOther = !['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma',''].includes(rec.cancerName||'');
+  var isCancerOther = rec.cancerName && !['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma'].includes(rec.cancerName);
   html += '<div><label>Cancer Name</label><select id="f-cancername" '+dis+' onchange="toggleField(\'cancername\')"><option value="">Select</option>';
-  ['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerName===v?'selected':'')+'>'+v+'</option>';});
+  ['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerName===v||(isCancerOther&&v==='Other')?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
-  html += '<div id="cancername-other-wrap" style="display:'+(isCancerOther||rec.cancerName==='Other'?'block':'none')+'"><label>Cancer Name Other</label><input id="f-cancer-other" value="'+esc(isCancerOther?rec.cancerName||'':rec.cancerNameOther||'')+'" '+dis+'></div>';
+  html += '<div id="cancername-other-wrap" style="display:'+(isCancerOther||rec.cancerName==='Other'?'block':'none')+'"><label>Cancer Name Other</label><input id="f-cancer-other" value="'+esc(isCancerOther&&rec.cancerName!=='Other'?rec.cancerName||'':rec.cancerNameOther||'')+'" '+dis+'></div>';
 
   html += '<div><label>Stage</label><select id="f-stage" '+dis+'><option value="">Select</option>';
   ['I','II','III','IV','Not staged'].forEach(function(v){html+='<option value="'+v+'" '+(rec.stage===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
-  var isTreatOther = !['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care',''].includes(rec.treatment||'');
+  var isTreatOther = rec.treatment && !['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care'].includes(rec.treatment);
   html += '<div><label>Treatment</label><select id="f-treatment" '+dis+' onchange="toggleField(\'treatment\')"><option value="">Select</option>';
-  ['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.treatment===v?'selected':'')+'>'+v+'</option>';});
+  ['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.treatment===v||(isTreatOther&&v==='Other')?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
-  html += '<div id="treatment-other-wrap" style="display:'+(isTreatOther||rec.treatment==='Other'?'block':'none')+'"><label>Treatment Other</label><input id="f-treatment-other" value="'+esc(isTreatOther?rec.treatment||'':rec.treatmentOther||'')+'" '+dis+'></div>';
+  html += '<div id="treatment-other-wrap" style="display:'+(isTreatOther||rec.treatment==='Other'?'block':'none')+'"><label>Treatment Other</label><input id="f-treatment-other" value="'+esc(isTreatOther&&rec.treatment!=='Other'?rec.treatment||'':rec.treatmentOther||'')+'" '+dis+'></div>';
 
-  var isComorbOther = !['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None',''].includes(rec.comorbidities||'');
+  var isComorbOther = rec.comorbidities && !['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None'].includes(rec.comorbidities);
   html += '<div><label>Comorbidities</label><select id="f-comorb" '+dis+' onchange="toggleField(\'comorb\')"><option value="">Select</option>';
-  ['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.comorbidities===v?'selected':'')+'>'+v+'</option>';});
+  ['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.comorbidities===v||(isComorbOther&&v==='Other')?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
-  html += '<div id="comorb-other-wrap" style="display:'+(isComorbOther||rec.comorbidities==='Other'?'block':'none')+'"><label>Comorbidities Other</label><input id="f-comorb-other" value="'+esc(isComorbOther?rec.comorbidities||'':rec.comorbiditiesOther||'')+'" '+dis+'></div>';
+  html += '<div id="comorb-other-wrap" style="display:'+(isComorbOther||rec.comorbidities==='Other'?'block':'none')+'"><label>Comorbidities Other</label><input id="f-comorb-other" value="'+esc(isComorbOther&&rec.comorbidities!=='Other'?rec.comorbidities||'':rec.comorbiditiesOther||'')+'" '+dis+'></div>';
 
   html += '<div><label>Immunosuppression</label><select id="f-immuno" '+dis+'><option value="">Select</option>';
   ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.immunosuppressed===v?'selected':'')+'>'+v+'</option>';});
@@ -1013,11 +1062,14 @@ function renderRecordModal() {
 
   document.getElementById('modal-body').innerHTML = html;
 
-  // Footer
+  // Footer buttons
   var footer = '';
   if (isView) {
+    var rec2 = rawData.find(function(r){return r.studyId===modalStudyId});
+    var isOwner2 = rec2 && rec2.createdBy === currentUser.username;
+    var canEdit2 = (currentUser && currentUser.role === 'Admin') || isOwner2;
     footer = '<button class="btn btn-ghost" onclick="closeRecordModal()">Close</button>';
-    if (currentUser && currentUser.role === 'Admin') footer += '<button class="btn btn-primary" onclick="editRecord(\''+esc(modalStudyId)+'\')">Edit</button>';
+    if (canEdit2) footer += '<button class="btn btn-primary" onclick="editRecord(\''+esc(modalStudyId)+'\')">&#9998; Edit Record</button>';
   } else {
     footer = '<button class="btn btn-ghost" onclick="closeRecordModal()">Cancel</button><button class="btn btn-primary" id="save-btn" onclick="saveRecord()">Save Record</button>';
   }
@@ -1036,7 +1088,7 @@ function renderRecordModal() {
   }
 
   // Toggle other fields on load
-  toggleField('ward'); toggleField('cancername'); toggleField('treatment'); toggleField('comorb');
+  setTimeout(function(){ toggleField('ward'); toggleField('cancername'); toggleField('treatment'); toggleField('comorb'); }, 50);
 }
 
 function toggleField(field) {
@@ -1074,7 +1126,7 @@ function renderAbxSlots(isView) {
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
     html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
     html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
-    html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
+    html += '<div><label>Category (AWaRe)</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+'><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
     html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="e.g. 1g"></div>';
     html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+'><option value="">Select</option>';
@@ -1103,7 +1155,7 @@ function renderCultSlots(isView) {
     if (!isView && formCult.length > 1) html += '<button class="slot-remove" onclick="removeCultSlot('+i+')">&times;</button>';
     html += '<div class="slot-title">Culture '+(i+1)+'</div>';
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
-    html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
     html += '<div><label>Date</label><input type="date" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+'></div>';
     html += '<div><label>Sample Type</label><select id="cult-type-'+i+'" '+dis+'><option value="">Select</option>';
     ['Blood','Urine','Sputum','Wound','BAL','CSF','Other'].forEach(function(v){html+='<option value="'+v+'" '+(c.type===v?'selected':'')+'>'+v+'</option>';});
@@ -1131,7 +1183,7 @@ function autoCalcAbx(idx) {
     var days = calcLos(start.value, stop.value);
     if (days != null) {
       if (dur && !dur.value) dur.value = days;
-      if (dot) dot.value = days; // DOT = duration in days
+      if (dot) dot.value = days;
     }
   }
 }
@@ -1149,12 +1201,6 @@ function autoCalcDot(idx) {
   var dur = document.getElementById('abx-dur-'+idx);
   var dot = document.getElementById('abx-dot-'+idx);
   if (dur && dur.value && dot) dot.value = dur.value;
-}
-
-// ─── Conditional culture fields ───
-function toggleCultDetails(idx) {
-  var sent = document.getElementById('cult-sent-'+idx);
-  // If "No", could hide details — for now just visual cue
 }
 
 // ─── ABX SEARCH ─────────────────────────────────────────────
@@ -1176,7 +1222,7 @@ function renderAbxOptions(idx, query) {
   dd.classList.remove('hidden');
   dd.innerHTML = filtered.map(function(a) {
     var catClass = a.category==='Access'?'badge-access':a.category==='Watch'?'badge-watch':'badge-reserve';
-    return '<div onmousedown="selectAbx('+idx+',\''+esc(a.name).replace(/'/g,"\\'")+'\',\''+esc(a.abxClass).replace(/'/g,"\\'")+'\',\''+esc(a.category).replace(/'/g,"\\'")+'\','+a.dd+')">'+esc(a.name)+' <span class="abx-cat badge '+catClass+'">'+esc(a.category)+'</span></div>';
+    return '<div onmousedown="selectAbx('+idx+',\''+esc(a.name).replace(/'/g,"\\'")+'\',\''+esc(a.abxClass).replace(/'/g,"\\'")+'\',\''+esc(a.category).replace(/'/g,"\\'")+'\','+a.ddd+')">'+esc(a.name)+' <span class="abx-cat badge '+catClass+'">'+esc(a.category)+'</span></div>';
   }).join('');
 }
 function selectAbx(idx, name, abxClass, category, ddd) {
@@ -1202,15 +1248,11 @@ async function saveRecord() {
 
   try {
     var ward = document.getElementById('f-ward') ? document.getElementById('f-ward').value : '';
-    var effectiveWard = ward==='Other' ? (document.getElementById('f-ward-other')?document.getElementById('f-ward-other').value:'') : ward;
     var cancerName = document.getElementById('f-cancername') ? document.getElementById('f-cancername').value : '';
-    var effectiveCancer = cancerName==='Other' ? '' : cancerName;
     var cancerNameOther = cancerName==='Other' ? (document.getElementById('f-cancer-other')?document.getElementById('f-cancer-other').value:'') : '';
     var treatment = document.getElementById('f-treatment') ? document.getElementById('f-treatment').value : '';
-    var effectiveTreatment = treatment==='Other' ? '' : treatment;
     var treatmentOther = treatment==='Other' ? (document.getElementById('f-treatment-other')?document.getElementById('f-treatment-other').value:'') : '';
     var comorb = document.getElementById('f-comorb') ? document.getElementById('f-comorb').value : '';
-    var effectiveComorb = comorb==='Other' ? '' : comorb;
     var comorbOther = comorb==='Other' ? (document.getElementById('f-comorb-other')?document.getElementById('f-comorb-other').value:'') : '';
 
     var antibiotics = formAbx.map(function(a, idx) {
@@ -1255,9 +1297,9 @@ async function saveRecord() {
       record: {
         studyId: modalStudyId,
         version: formVersion,
-        hospital: sessionInfo.hospital,
-        dateOfCollection: sessionInfo.dateOfCollection,
-        collectorName: sessionInfo.collectorName,
+        hospital: window._editRec ? (window._editRec.hospital || sessionInfo.hospital) : sessionInfo.hospital,
+        dateOfCollection: window._editRec ? (window._editRec.dateOfCollection || sessionInfo.dateOfCollection) : sessionInfo.dateOfCollection,
+        collectorName: window._editRec ? (window._editRec.collectorName || sessionInfo.collectorName) : sessionInfo.collectorName,
         age: document.getElementById('f-age')?document.getElementById('f-age').value:'',
         sex: document.getElementById('f-sex')?document.getElementById('f-sex').value:'',
         diagnosis: document.getElementById('f-diagnosis')?document.getElementById('f-diagnosis').value:'',
@@ -1287,7 +1329,7 @@ async function saveRecord() {
 
     var data = await apiCall('save', payload);
     if (data.success) {
-      toast('Record saved successfully', 'success');
+      toast('Record saved successfully!', 'success');
       formVersion = data.version || formVersion + 1;
       closeRecordModal();
       await loadData();
@@ -1299,7 +1341,7 @@ async function saveRecord() {
       toast(data.message || 'Failed to save record', 'error');
     }
   } catch(e) {
-    toast('Failed to save record: ' + e.message, 'error');
+    toast('Failed to save: ' + e.message, 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Save Record'; }
   }
@@ -1316,13 +1358,353 @@ async function deleteRecord(studyId) {
 }
 
 function closeRecordModal() {
-  document.getElementById('record-modal').classList.remove('hidden');
+  document.getElementById('record-modal').classList.add('hidden');
   window._editRec = null; modalMode = null;
+}
+
+// ═══════════════════ ADMIN PANEL ═════════════════════════════
+function renderAdmin(container) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    container.innerHTML = '<p style="color:var(--text-muted)">Admin access required.</p>';
+    return;
+  }
+
+  var html = '<h2 class="text-xl font-bold mb-6">Admin Panel</h2>';
+
+  // ─── Database Overview Cards ───
+  var totalPatients = rawData.length;
+  var totalAbx = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
+  var totalCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.length:0)},0);
+  var losArr = rawData.map(function(r){return r.los}).filter(function(v){return v!=null});
+  var totalPD = losArr.reduce(function(s,v){return s+v},0) || 0;
+  var activeUsers = usersList.filter(function(u){return u.active}).length;
+
+  html += '<div class="grid grid-cols-4 gap-4 mb-6">';
+  html += '<div class="card card-stat"><div class="stat-icon" style="background:#0ea5e920;color:#0ea5e9">&#9823;</div><div class="stat-value">'+totalPatients+'</div><div class="stat-label">Records (Sheet 1)</div></div>';
+  html += '<div class="card card-stat"><div class="stat-icon" style="background:#22c55e20;color:#22c55e">&#176;</div><div class="stat-value">'+totalAbx+'</div><div class="stat-label">Antibiotic Rows (Sheet 2)</div></div>';
+  html += '<div class="card card-stat"><div class="stat-icon" style="background:#f59e0b20;color:#f59e0b">&#9878;</div><div class="stat-value">'+totalCult+'</div><div class="stat-label">Culture Rows (Sheet 3)</div></div>';
+  html += '<div class="card card-stat"><div class="stat-icon" style="background:#8b5cf620;color:#8b5cf6">&#128100;</div><div class="stat-value">'+activeUsers+'/'+usersList.length+'</div><div class="stat-label">Active Users</div></div>';
+  html += '</div>';
+
+  // ─── Tab Bar ───
+  html += '<div class="tab-bar" id="admin-tabs">';
+  html += '<button class="tab-btn active" onclick="showAdminTab(\'structure\')">Database Structure</button>';
+  html += '<button class="tab-btn" onclick="showAdminTab(\'export\')">Data Export</button>';
+  html += '<button class="tab-btn" onclick="showAdminTab(\'users\')">User Management</button>';
+  html += '<button class="tab-btn" onclick="showAdminTab(\'audit\')">Audit Log</button>';
+  html += '<button class="tab-btn" onclick="showAdminTab(\'tools\')">Admin Tools</button>';
+  html += '</div>';
+
+  html += '<div id="admin-tab-content"></div>';
+  container.innerHTML = html;
+  showAdminTab('structure');
+}
+
+function showAdminTab(tab) {
+  // Update tab styling
+  var tabs = document.querySelectorAll('#admin-tabs .tab-btn');
+  tabs.forEach(function(t){ t.classList.remove('active'); });
+  var tabMap = {'structure':0,'export':1,'users':2,'audit':3,'tools':4};
+  if (tabs[tabMap[tab]]) tabs[tabMap[tab]].classList.add('active');
+
+  var content = document.getElementById('admin-tab-content');
+  if (!content) return;
+
+  switch(tab) {
+    case 'structure': renderAdminStructure(content); break;
+    case 'export': renderAdminExport(content); break;
+    case 'users': renderAdminUsers(content); break;
+    case 'audit': renderAdminAudit(content); break;
+    case 'tools': renderAdminTools(content); break;
+  }
+}
+
+function renderAdminStructure(content) {
+  var html = '<div class="admin-section">';
+  html += '<h3>&#128218; Relational Database Structure (3 Sheets linked by Study ID)</h3>';
+  html += '<div class="admin-grid">';
+
+  // Sheet 1: Records
+  html += '<div class="card-info">';
+  html += '<h4>Sheet 1: Records (1 row per patient)</h4>';
+  html += '<div class="info-row"><span class="info-label">Primary Key</span><span class="info-value">Study ID (PID-XXXXXX)</span></div>';
+  html += '<div class="info-row"><span class="info-label">Fields</span><span class="info-value">36 columns</span></div>';
+  html += '<div class="info-row"><span class="info-label">Includes</span><span class="info-value">Demographics, Admission, Oncology, Outcome</span></div>';
+  html += '<div class="info-row"><span class="info-label">JSON Backup</span><span class="info-value">Antibiotics JSON, Cultures JSON</span></div>';
+  html += '<div class="info-row"><span class="info-label">Meta</span><span class="info-value">Created/Updated Date, Version, Soft Delete</span></div>';
+  html += '</div>';
+
+  // Sheet 2: Antibiotics
+  html += '<div class="card-info">';
+  html += '<h4>Sheet 2: Antibiotics (1 row per antibiotic)</h4>';
+  html += '<div class="info-row"><span class="info-label">Foreign Key</span><span class="info-value">Study ID → Records</span></div>';
+  html += '<div class="info-row"><span class="info-label">Fields</span><span class="info-value">18 columns</span></div>';
+  var abxFields = ['Antibiotic Name','Class','Category (AWaRe)','Route','Dose','Frequency','Start/Stop','Duration','DDD','Grams','DDD Calc','DOT','Indication','Therapy Type','Febrile Neutro','Febrile Episodes'];
+  html += '<div class="info-row"><span class="info-label">Key Fields</span><span class="info-value" style="font-size:.7rem;line-height:1.4">'+abxFields.join(', ')+'</span></div>';
+  html += '<div class="info-row"><span class="info-label">Max per patient</span><span class="info-value">30 antibiotic entries</span></div>';
+  html += '</div>';
+
+  // Sheet 3: Cultures
+  html += '<div class="card-info">';
+  html += '<h4>Sheet 3: Cultures (1 row per culture)</h4>';
+  html += '<div class="info-row"><span class="info-label">Foreign Key</span><span class="info-value">Study ID → Records</span></div>';
+  html += '<div class="info-row"><span class="info-label">Fields</span><span class="info-value">12 columns</span></div>';
+  var cultFields = ['Sent','Date','Sample Type','Result','Organism','Gram Stain','AST','Resistance','MDR','XDR','ESKAPE'];
+  html += '<div class="info-row"><span class="info-label">Key Fields</span><span class="info-value" style="font-size:.7rem;line-height:1.4">'+cultFields.join(', ')+'</span></div>';
+  html += '<div class="info-row"><span class="info-label">Max per patient</span><span class="info-value">30 culture entries</span></div>';
+  html += '</div>';
+
+  html += '</div>';
+
+  // WHO AWaRe Reference
+  html += '<h4 style="color:var(--accent);margin-top:1rem">WHO AWaRe 2023 Classification</h4>';
+  var accessCount = whoList.filter(function(a){return a.category==='Access'}).length;
+  var watchCount = whoList.filter(function(a){return a.category==='Watch'}).length;
+  var reserveCount = whoList.filter(function(a){return a.category==='Reserve'}).length;
+  html += '<div class="flex gap-3 flex-wrap mt-2">';
+  html += '<span class="badge badge-access">Access: '+accessCount+' antibiotics</span>';
+  html += '<span class="badge badge-watch">Watch: '+watchCount+' antibiotics</span>';
+  html += '<span class="badge badge-reserve">Reserve: '+reserveCount+' antibiotics</span>';
+  html += '</div>';
+
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+function renderAdminExport(content) {
+  var html = '<div class="admin-section">';
+  html += '<h3>&#11015; Data Export Options</h3>';
+  html += '<p class="text-sm mb-4" style="color:var(--text-secondary)">Choose the export format that fits your analysis tool.</p>';
+
+  html += '<div class="admin-grid">';
+
+  // Flat export
+  html += '<div class="card-info">';
+  html += '<h4>Flat CSV (SPSS/R/Stata)</h4>';
+  html += '<p class="text-xs mb-3" style="color:var(--text-muted)">Single table: all antibiotics/cultures as numbered columns. Best for SPSS, Stata, R analysis.</p>';
+  html += '<div class="admin-actions"><button class="btn btn-primary btn-sm" onclick="exportFlatCsv()">&#11015; Export Flat CSV</button></div>';
+  html += '</div>';
+
+  // Quick export
+  html += '<div class="card-info">';
+  html += '<h4>Quick Summary CSV</h4>';
+  html += '<p class="text-xs mb-3" style="color:var(--text-muted)">Summary only: no antibiotics/cultures detail. Quick overview of patient records.</p>';
+  html += '<div class="admin-actions"><button class="btn btn-ghost btn-sm" onclick="exportSimpleCsv()">&#11015; Export Quick CSV</button></div>';
+  html += '</div>';
+
+  // Relational export
+  html += '<div class="card-info">';
+  html += '<h4>Relational CSV (3 Files)</h4>';
+  html += '<p class="text-xs mb-3" style="color:var(--text-muted)">Three separate CSV files: Records, Antibiotics, Cultures. Linked by Study ID. Best for SQL/Power BI.</p>';
+  html += '<div class="admin-actions"><button class="btn btn-success btn-sm" onclick="exportRelationalCsv()">&#11015; Export Relational (3 CSVs)</button></div>';
+  html += '</div>';
+
+  html += '</div></div>';
+  content.innerHTML = html;
+}
+
+async function exportRelationalCsv() {
+  try {
+    toast('Preparing relational export...', 'info');
+    var data = await apiCall('exportRelational', { filters: {} });
+    if (data.success) {
+      // Download Records CSV
+      downloadBlob(data.recordsCsv, data.filenames.records);
+      setTimeout(function(){ downloadBlob(data.antibioticsCsv, data.filenames.antibiotics); }, 500);
+      setTimeout(function(){ downloadBlob(data.culturesCsv, data.filenames.cultures); }, 1000);
+      toast('Relational CSV exported (3 files)', 'success');
+    } else { toast(data.message || 'Export failed', 'error'); }
+  } catch(e) { toast('Export failed: ' + e.message, 'error'); }
+}
+
+function downloadBlob(content, filename) {
+  var blob = new Blob([content], { type: 'text/csv' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function renderAdminUsers(content) {
+  var html = '<div class="admin-section">';
+  html += '<h3>&#128100; User Management</h3>';
+  html += '<div class="admin-actions mb-4"><button class="btn btn-primary btn-sm" onclick="openUserModal()">+ Add New User</button></div>';
+
+  html += '<div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Status</th><th>Created</th><th>Last Login</th><th>Actions</th></tr></thead><tbody>';
+  usersList.forEach(function(u) {
+    var isSelf = u.username === currentUser.username;
+    var statusBadge = u.active ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-inactive">Inactive</span>';
+    var roleBadge = u.role === 'Admin' ? '<span class="badge badge-admin">Admin</span>' : '<span class="badge badge-agent">Agent</span>';
+    html += '<tr><td class="font-medium">'+esc(u.username)+(isSelf?' (you)':'')+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td><td class="text-xs">'+esc(u.createdAt||'-')+'</td><td class="text-xs">'+esc(u.lastLogin||'-')+'</td>';
+    html += '<td><div class="flex gap-1">';
+    if (!isSelf) {
+      html += '<button class="btn btn-ghost btn-sm" style="color:'+(u.active?'var(--danger)':'var(--success)')+'" onclick="toggleUserStatus(\''+esc(u.username)+'\','+(!u.active)+')">'+(u.active?'Disable':'Enable')+'</button>';
+    }
+    html += '</div></td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+async function toggleUserStatus(username, active) {
+  try {
+    var data = await apiCall('toggleUser', { username: username, active: active });
+    if (data.success) {
+      toast('User ' + (active ? 'enabled' : 'disabled'), 'success');
+      await loadUsers();
+      showAdminTab('users');
+    } else { toast(data.message, 'error'); }
+  } catch(e) { toast('Failed to update user', 'error'); }
+}
+
+function renderAdminAudit(content) {
+  var html = '<div class="admin-section">';
+  html += '<h3>&#128203; Audit Log</h3>';
+  html += '<div id="audit-log-content"><p style="color:var(--text-muted)">Loading audit log...</p></div>';
+  html += '</div>';
+  content.innerHTML = html;
+  loadAuditLog();
+}
+
+async function loadAuditLog() {
+  try {
+    var data = await apiCall('getAuditLog', { limit: 100 });
+    var el = document.getElementById('audit-log-content');
+    if (!el) return;
+    if (data.success && data.logs && data.logs.length) {
+      var html = '<div class="table-wrap"><table><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>';
+      data.logs.forEach(function(log) {
+        var actionColor = log.action.includes('DELETE') ? 'var(--danger)' : log.action.includes('LOGIN') ? 'var(--success)' : 'var(--text-primary)';
+        html += '<tr><td class="text-xs">'+esc(log.timestamp)+'</td><td>'+esc(log.user)+'</td><td style="color:'+actionColor+';font-weight:500">'+esc(log.action)+'</td><td class="text-xs">'+esc(log.details)+'</td></tr>';
+      });
+      html += '</tbody></table></div>';
+      el.innerHTML = html;
+    } else {
+      el.innerHTML = '<p style="color:var(--text-muted)">No audit log entries found.</p>';
+    }
+  } catch(e) {
+    var el = document.getElementById('audit-log-content');
+    if (el) el.innerHTML = '<p style="color:var(--danger)">Failed to load audit log.</p>';
+  }
+}
+
+function renderAdminTools(content) {
+  var html = '<div class="admin-section">';
+  html += '<h3>&#128295; Admin Tools</h3>';
+
+  html += '<div class="admin-grid">';
+
+  // Password Change
+  html += '<div class="card-info">';
+  html += '<h4>&#128274; Change Your Password</h4>';
+  html += '<p class="text-xs mb-3" style="color:var(--text-muted)">Update your account password. Must meet strength requirements.</p>';
+  html += '<div class="admin-actions"><button class="btn btn-ghost btn-sm" onclick="showPasswordModal()">Change Password</button></div>';
+  html += '</div>';
+
+  // Data Sync
+  html += '<div class="card-info">';
+  html += '<h4>&#128260; Sync Data</h4>';
+  html += '<p class="text-xs mb-3" style="color:var(--text-muted)">Force reload all data from Google Sheets.</p>';
+  html += '<div class="admin-actions"><button class="btn btn-ghost btn-sm" onclick="refreshData()">&#128260; Sync Now</button></div>';
+  html += '</div>';
+
+  // System Info
+  html += '<div class="card-info">';
+  html += '<h4>&#9432; System Information</h4>';
+  html += '<div class="info-row"><span class="info-label">Version</span><span class="info-value">OncoCollect v3.0</span></div>';
+  html += '<div class="info-row"><span class="info-label">Backend</span><span class="info-value">Google Apps Script</span></div>';
+  html += '<div class="info-row"><span class="info-label">Database</span><span class="info-value">Google Sheets (3 sheets, relational)</span></div>';
+  html += '<div class="info-row"><span class="info-label">WHO Antibiotics</span><span class="info-value">'+whoList.length+' (AWaRe 2023)</span></div>';
+  html += '<div class="info-row"><span class="info-label">Session Timeout</span><span class="info-value">8 hours</span></div>';
+  html += '<div class="info-row"><span class="info-label">MDR Alert Threshold</span><span class="info-value">50%</span></div>';
+  html += '</div>';
+
+  html += '</div>';
+
+  // Important Notes
+  html += '<div class="card-info mt-4" style="border-color:var(--warning)">';
+  html += '<h4 style="color:var(--warning)">&#9888; Important Notes</h4>';
+  html += '<ul style="color:var(--text-secondary);font-size:.8125rem;padding-left:1.25rem;margin-top:.5rem">';
+  html += '<li>Run <strong>setupSheets()</strong> in GAS editor after updating Code.gs to create relational sheets</li>';
+  html += '<li>Default admin password: <strong>Admin@123</strong> \u2014 change it immediately after first login</li>';
+  html += '<li>Change <strong>CONFIG.HMAC_SECRET</strong> in Code.gs before production deployment</li>';
+  html += '<li>Weekly backups are created automatically (check GAS triggers)</li>';
+  html += '<li>Soft-deleted records are preserved in the Records sheet (Deleted = true)</li>';
+  html += '<li>MDR alert emails are sent when rate exceeds 50% with 10+ records</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+// ─── USER MODAL ─────────────────────────────────────────────
+function openUserModal() {
+  document.getElementById('user-modal').classList.remove('hidden');
+  document.getElementById('new-username').value = '';
+  document.getElementById('new-password').value = '';
+  document.getElementById('new-role').value = 'Agent';
+}
+function closeUserModal() {
+  document.getElementById('user-modal').classList.add('hidden');
+}
+async function createUser() {
+  var username = document.getElementById('new-username').value.trim();
+  var password = document.getElementById('new-password').value;
+  var role = document.getElementById('new-role').value;
+  var btn = document.getElementById('create-user-btn');
+  if (!username || !password) return toast('Username and password required', 'error');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    var data = await apiCall('addUser', { username: username, password: password, role: role });
+    if (data.success) {
+      toast('User created successfully', 'success');
+      closeUserModal();
+      await loadUsers();
+      showAdminTab('users');
+    } else { toast(data.message, 'error'); }
+  } catch(e) { toast('Failed to create user', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Create User'; }
+}
+
+// ─── PASSWORD CHANGE ────────────────────────────────────────
+function showPasswordModal() {
+  document.getElementById('password-modal').classList.remove('hidden');
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+}
+function closePasswordModal() {
+  document.getElementById('password-modal').classList.add('hidden');
+}
+async function changePassword() {
+  var current = document.getElementById('pw-current').value;
+  var newPw = document.getElementById('pw-new').value;
+  var confirm = document.getElementById('pw-confirm').value;
+  var btn = document.getElementById('pw-btn');
+
+  if (!current || !newPw) return toast('Please fill all fields', 'error');
+  if (newPw !== confirm) return toast('New passwords do not match', 'error');
+  if (newPw.length < 8) return toast('Password must be at least 8 characters', 'error');
+  if (!/[A-Z]/.test(newPw)) return toast('Password must contain uppercase letter', 'error');
+  if (!/[0-9]/.test(newPw)) return toast('Password must contain a number', 'error');
+  if (!/[^A-Za-z0-9]/.test(newPw)) return toast('Password must contain a special character', 'error');
+
+  btn.disabled = true; btn.textContent = 'Updating...';
+  try {
+    var data = await apiCall('changePassword', { currentPassword: current, newPassword: newPw });
+    if (data.success) {
+      toast('Password changed successfully', 'success');
+      closePasswordModal();
+    } else { toast(data.message, 'error'); }
+  } catch(e) { toast('Failed to change password', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Update Password'; }
 }
 
 // ═══════════════════ ANALYTICS ═══════════════════════════════
 function renderAnalytics(container) {
-  if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
+  if (!currentUser) { container.innerHTML = '<p style="color:var(--text-muted)">Please log in</p>'; return; }
 
   var totalPatients = rawData.length;
   var totalAbxCourses = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
@@ -1335,14 +1717,14 @@ function renderAnalytics(container) {
     if(!a.name)return; if(!abxCounts[a.name])abxCounts[a.name]={name:a.name,aware:a.aware||'N/A',n:0,days:[],routes:[]}; abxCounts[a.name].n++;
     if(a.duration)abxCounts[a.name].days.push(+a.duration); if(a.route)abxCounts[a.name].routes.push(a.route);
   })});
-  var obj1 = Object.values(abxCounts).sort(function(a,b){return b.n-a.n}).map(function(it){return{name:it.name,aware:it.aware,n:it.n,pct:totalAbxCourses?+(it.n/totalAbxCourses*100).toFixed(1):0,medianDays:median(it.days),route:[...new Set(it.routes)].join(', ')||'-'}});
+  var obj1 = Object.values(abxCounts).sort(function(a,b){return b.n-a.n}).slice(0,15).map(function(it){return{name:it.name,aware:it.aware,n:it.n,pct:totalAbxCourses?+(it.n/totalAbxCourses*100).toFixed(1):0,medianDays:median(it.days),route:[...new Set(it.routes)].join(', ')||'-'}});
 
   // Obj2: DDD/DOT
   var abxDdd = {};
   rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){if(!a.name)return;if(!abxDdd[a.name])abxDdd[a.name]={name:a.name,totalDdd:0,totalDot:0};if(a.dddCalc)abxDdd[a.name].totalDdd+=+a.dddCalc;if(a.dot)abxDdd[a.name].totalDot+=+a.dot})});
-  var obj2 = Object.values(abxDdd).sort(function(a,b){return b.totalDdd-a.totalDdd}).map(function(it){return{name:it.name,totalDdd:+it.totalDdd.toFixed(1),dddPer1000:+(it.totalDdd/totalPatientDays*1000).toFixed(1),totalDot:it.totalDot,dotPer1000:+(it.totalDot/totalPatientDays*1000).toFixed(1)}});
+  var obj2 = Object.values(abxDdd).sort(function(a,b){return b.totalDdd-a.totalDdd}).slice(0,10).map(function(it){return{name:it.name,totalDdd:+it.totalDdd.toFixed(1),dddPer1000:+(it.totalDdd/totalPatientDays*1000).toFixed(1),totalDot:it.totalDot,dotPer1000:+(it.totalDot/totalPatientDays*1000).toFixed(1)}});
 
-  // Obj3: AWaRe with Wilson CI
+  // Obj3: AWaRe
   var awareGroups={Access:{courses:0,totalDdd:0},Watch:{courses:0,totalDdd:0},Reserve:{courses:0,totalDdd:0}};
   rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){if(!a.name||!a.aware)return;var cat=a.aware;if(!awareGroups[cat])awareGroups[cat]={courses:0,totalDdd:0};awareGroups[cat].courses++;if(a.dddCalc)awareGroups[cat].totalDdd+=+a.dddCalc})});
   var totalAwareCourses=Object.values(awareGroups).reduce(function(s,g){return s+g.courses},0)||1;
@@ -1353,169 +1735,168 @@ function renderAnalytics(container) {
 
   // Obj4: Resistance
   var orgCounts={};
-  rawData.forEach(function(r){(r.cultures||[]).forEach(function(c){if(!c.organism)return;if(!orgCounts[c.organism])orgCounts[c.organism]={name:c.organism,n:0,mdr:0,xdr:0,eskape:0};orgCounts[c.organism].n++;if(c.mdr==='Yes')orgCounts[c.organism].mdr++;if(c.xdr==='Yes')orgCounts[c.organism].xdr++;if(c.eskape==='Yes')orgCounts[c.organism].eskape++})});
-  var totalOrgs=Object.values(orgCounts).reduce(function(s,o){return s+o.n},0)||1;
-  var obj4=Object.values(orgCounts).sort(function(a,b){return b.n-a.n}).map(function(it){return{name:it.name,n:it.n,pct:+(it.n/totalOrgs*100).toFixed(1),mdrPct:it.n?+(it.mdr/it.n*100).toFixed(1):0,xdrPct:it.n?+(it.xdr/it.n*100).toFixed(1):0,eskape:it.eskape>0?'Yes':'No'}});
+  rawData.forEach(function(r){(r.cultures||[]).forEach(function(c){if(c.organism&&c.result==='Positive'){if(!orgCounts[c.organism])orgCounts[c.organism]={organism:c.organism,total:0,mdr:0,xdr:0,eskape:0};orgCounts[c.organism].total++;if(c.mdr==='Yes')orgCounts[c.organism].mdr++;if(c.xdr==='Yes')orgCounts[c.organism].xdr++;if(c.eskape==='Yes')orgCounts[c.organism].eskape++}})});
+  var obj4=Object.values(orgCounts).sort(function(a,b){return b.total-a.total}).slice(0,10);
 
-  // Obj5: Spearman with p-value
-  var abxResist={};
-  obj2.forEach(function(item){abxResist[item.name]={name:item.name,ddd1000:item.dddPer1000,resistCount:0,resistTotal:0}});
-  rawData.forEach(function(r){(r.antibiotics||[]).forEach(function(a){if(a.name&&abxResist[a.name])abxResist[a.name].resistTotal++});(r.cultures||[]).forEach(function(c){if(c.result!=='Positive'||!c.organism)return;(r.antibiotics||[]).forEach(function(a){if(!a.name||!abxResist[a.name])return;if(c.mdr==='Yes'||c.eskape==='Yes')abxResist[a.name].resistCount++})})});
-  var obj5=Object.values(abxResist).filter(function(v){return v.resistTotal>0}).map(function(v){return{name:v.name,ddd1000:v.ddd1000,resistPct:v.resistTotal?+(v.resistCount/v.resistTotal*100).toFixed(1):0}});
-  var rho=spearman(obj5.map(function(v){return v.ddd1000}),obj5.map(function(v){return v.resistPct}));
-  var rhoPvalue = rho !== null && obj5.length >= 4 ? spearmanPvalue(rho, obj5.length) : null;
-  var rhoInterp='Insufficient data (need ≥3 data points)';
-  if(rho!==null){var abs=Math.abs(rho),dir=rho>0?'positive':'negative';rhoInterp=abs>=0.7?'Strong '+dir+' correlation':abs>=0.4?'Moderate '+dir+' correlation':'Weak '+dir+' correlation';if(rhoPvalue!==null)rhoInterp+=rhoPvalue<0.05?' (p='+rhoPvalue.toFixed(3)+' — significant)':' (p='+rhoPvalue.toFixed(3)+' — not significant)';}
+  // Obj5: Spearman
+  var obj5Data = [];
+  rawData.forEach(function(r){
+    if(r.los!=null && r.antibiotics){
+      r.antibiotics.forEach(function(a){if(a.name)obj5Data.push({los:r.los,abxCount:r.antibiotics.length})});
+    }
+  });
+  var xLos = obj5Data.map(function(d){return d.los});
+  var yAbx = obj5Data.map(function(d){return d.abxCount});
+  var rho = spearman(xLos, yAbx);
+  var rhoP = rho != null ? spearmanPvalue(rho, obj5Data.length) : null;
 
-  var html = '';
+  // ─── Render HTML ───
+  var html = '<h2 class="text-xl font-bold mb-6">Research Analytics</h2>';
 
-  // Date filter
-  html += '<div class="filter-bar mb-4">';
-  html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Analysis Period:</label>';
-  html += '<input type="date" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
-  html += '<input type="date" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
-  if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(function(){currentView=\'analytics\';renderView()})">Clear</button>';
-  html += '<span class="text-sm" style="color:var(--text-muted)">'+totalPatients+' patients, '+totalPatientDays+' patient-days</span>';
+  // Obj1
+  html += '<div class="obj-card"><h3>Objective 1: Antibiotic Prescribing Patterns</h3><p class="text-sm" style="color:var(--text-secondary)">Top 15 most prescribed antibiotics with AWaRe classification</p>';
+  if (obj1.length) {
+    html += '<div class="table-wrap"><table><thead><tr><th>Antibiotic</th><th>AWaRe</th><th>Prescriptions</th><th>%</th><th>Median Days</th><th>Route</th></tr></thead><tbody>';
+    obj1.forEach(function(it){
+      var catClass=it.aware==='Access'?'badge-access':it.aware==='Watch'?'badge-watch':'badge-reserve';
+      html+='<tr><td>'+esc(it.name)+'</td><td><span class="badge '+catClass+'">'+esc(it.aware)+'</span></td><td>'+it.n+'</td><td>'+it.pct+'%</td><td>'+it.medianDays+'</td><td class="text-xs">'+esc(it.route)+'</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '<div class="chart-container"><canvas id="chart-obj1"></canvas></div>';
+  } else { html += '<p class="text-sm" style="color:var(--text-muted)">No antibiotic data available</p>'; }
   html += '</div>';
 
-  // Obj 1
-  html += '<div class="obj-card"><h3>Obj 1: Antibiotic Prescribing Patterns</h3><p>Frequency, percentage, median duration and route</p>';
-  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>AWaRe</th><th>N</th><th>%</th><th>Median Days</th><th>Routes</th></tr></thead><tbody>';
-  obj1.forEach(function(r){var badge=r.aware==='Access'?'badge-access':r.aware==='Watch'?'badge-watch':r.aware==='Reserve'?'badge-reserve':'';html+='<tr><td>'+esc(r.name)+'</td><td>'+(badge?'<span class="badge '+badge+'">'+esc(r.aware)+'</span>':esc(r.aware))+'</td><td>'+r.n+'</td><td>'+r.pct+'%</td><td>'+r.medianDays+'</td><td>'+esc(r.route)+'</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj1"></canvas></div></div>';
-
-  // Obj 2
-  html += '<div class="obj-card"><h3>Obj 2: DDD &amp; DOT per 1000 Patient-Days</h3><p>Total PD: '+totalPatientDays+'</p>';
-  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>Total DDD</th><th>DDD/1000PD</th><th>Total DOT</th><th>DOT/1000PD</th></tr></thead><tbody>';
-  obj2.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.totalDdd+'</td><td>'+r.dddPer1000+'</td><td>'+r.totalDot+'</td><td>'+r.dotPer1000+'</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj2"></canvas></div></div>';
-
-  // Obj 3 with CI
-  html += '<div class="obj-card"><h3>Obj 3: WHO AWaRe Classification</h3><p>AWaRe distribution with WHO 60% Access benchmark</p>';
-  html += '<div style="margin-bottom:1rem"><div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem"><span class="text-sm font-medium" style="color:var(--text-secondary)">Access: '+accessPct+'%</span><span class="text-sm" style="color:'+(accessPct>=60?'var(--success)':'var(--danger)')+'">'+(accessPct>=60?'\u2713 Meets WHO 60% target':'\u2717 Below WHO 60% target')+'</span><span class="text-xs" style="color:var(--text-muted)">95% CI: '+accessCI.lower.toFixed(1)+'%–'+accessCI.upper.toFixed(1)+'%</span></div>';
-  html += '<div class="progress" style="height:8px;margin-bottom:.25rem"><div class="progress-bar" style="width:'+Math.min(accessPct,100)+'%;background:#22c55e"></div></div><div style="position:relative;height:0"><div style="position:absolute;left:60%;top:-12px;width:2px;height:20px;background:var(--danger)"></div></div></div>';
-  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Category</th><th>Courses</th><th>%</th><th>95% CI</th><th>Total DDD</th><th>DDD %</th></tr></thead><tbody>';
-  obj3.forEach(function(r){var badge=r.aware==='Access'?'badge-access':r.aware==='Watch'?'badge-watch':'badge-reserve';html+='<tr><td><span class="badge '+badge+'">'+esc(r.aware)+'</span></td><td>'+r.courses+'</td><td>'+r.pct+'%</td><td>'+r.ciLower+'%–'+r.ciUpper+'%</td><td>'+r.totalDdd+'</td><td>'+r.dddPct+'%</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj3"></canvas></div></div>';
-
-  // Obj 4
-  html += '<div class="obj-card"><h3>Obj 4: Antimicrobial Resistance Patterns</h3><p>Organism frequency with MDR, XDR, ESKAPE rates</p>';
-  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Organism</th><th>N</th><th>%</th><th>MDR %</th><th>XDR %</th><th>ESKAPE</th></tr></thead><tbody>';
-  obj4.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.n+'</td><td>'+r.pct+'%</td><td>'+r.mdrPct+'%</td><td>'+r.xdrPct+'%</td><td>'+r.eskape+'</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj4"></canvas></div></div>';
-
-  // Obj 5 with p-value
-  html += '<div class="obj-card"><h3>Obj 5: Correlation — Utilization vs Resistance</h3><p>Spearman \u03C1 = '+(rho!==null?rho.toFixed(3):'N/A')+(rhoPvalue!==null?' (p='+rhoPvalue.toFixed(3)+')':'')+'</p><p class="text-sm font-medium" style="color:var(--accent)">'+rhoInterp+'</p>';
-  html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>DDD/1000PD</th><th>Resistance %</th></tr></thead><tbody>';
-  obj5.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.ddd1000+'</td><td>'+r.resistPct+'%</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj5"></canvas></div></div>';
-
-  container.innerHTML = html;
-
-  // Charts
-  var chartColors = {Access:'#22c55e',Watch:'#f59e0b',Reserve:'#ef4444'};
-  var darkGrid='rgba(255,255,255,0.06)', darkText='#94a3b8';
-
-  if (obj1.length) {
-    chartInstances.obj1 = new Chart(document.getElementById('chart-obj1'),{type:'bar',data:{labels:obj1.map(function(r){return r.name}),datasets:[{label:'Courses',data:obj1.map(function(r){return r.n}),backgroundColor:obj1.map(function(r){return chartColors[r.aware]||'#0ea5e9'})}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText}}}}});
-  }
+  // Obj2
+  html += '<div class="obj-card"><h3>Objective 2: DDD & DOT per 1000 Patient-Days</h3><p class="text-sm" style="color:var(--text-secondary)">Antibiotic consumption metrics (top 10 by DDD)</p>';
   if (obj2.length) {
-    chartInstances.obj2 = new Chart(document.getElementById('chart-obj2'),{type:'bar',data:{labels:obj2.map(function(r){return r.name}),datasets:[{label:'DDD/1000PD',data:obj2.map(function(r){return r.dddPer1000}),backgroundColor:'#0ea5e9'},{label:'DOT/1000PD',data:obj2.map(function(r){return r.dotPer1000}),backgroundColor:'#8b5cf6'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:darkText}}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText}}}}});
-  }
+    html += '<div class="table-wrap"><table><thead><tr><th>Antibiotic</th><th>Total DDD</th><th>DDD/1000PD</th><th>Total DOT</th><th>DOT/1000PD</th></tr></thead><tbody>';
+    obj2.forEach(function(it){html+='<tr><td>'+esc(it.name)+'</td><td>'+it.totalDdd+'</td><td>'+it.dddPer1000+'</td><td>'+it.totalDot+'</td><td>'+it.dotPer1000+'</td></tr>';});
+    html += '</tbody></table></div>';
+    html += '<div class="chart-container"><canvas id="chart-obj2"></canvas></div>';
+  } else { html += '<p class="text-sm" style="color:var(--text-muted)">No DDD/DOT data available</p>'; }
+  html += '</div>';
+
+  // Obj3
+  html += '<div class="obj-card"><h3>Objective 3: WHO AWaRe Classification Compliance</h3><p class="text-sm" style="color:var(--text-secondary)">WHO target: ≥60% Access antibiotics</p>';
   if (obj3.length) {
-    chartInstances.obj3 = new Chart(document.getElementById('chart-obj3'),{type:'doughnut',data:{labels:obj3.map(function(r){return r.aware}),datasets:[{data:obj3.map(function(r){return r.courses}),backgroundColor:obj3.map(function(r){return chartColors[r.aware]||'#0ea5e9'}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:darkText,padding:16}}}}});
-  }
+    html += '<div class="flex items-center gap-4 mb-4 flex-wrap">';
+    html += '<div style="font-size:2rem;font-weight:700;color:'+(accessPct>=60?'var(--success)':'var(--danger)')+'">'+accessPct+'%</div>';
+    html += '<div><div class="text-sm" style="color:var(--text-secondary)">Access proportion</div>';
+    html += '<div class="text-xs" style="color:var(--text-muted)">95% CI: '+(accessCI.lower*100).toFixed(1)+'%–'+(accessCI.upper*100).toFixed(1)+'%</div></div>';
+    html += '<div class="progress" style="flex:1;min-width:200px"><div class="progress-bar" style="width:'+Math.min(accessPct,100)+'%;background:'+(accessPct>=60?'var(--success)':'var(--danger)')+'"></div></div>';
+    html += '<div class="text-xs" style="color:var(--text-muted)">WHO 60% target</div>';
+    html += '</div>';
+    html += '<div class="table-wrap"><table><thead><tr><th>Category</th><th>Courses</th><th>%</th><th>95% CI</th><th>Total DDD</th><th>DDD %</th></tr></thead><tbody>';
+    obj3.forEach(function(it){
+      var catClass=it.aware==='Access'?'badge-access':it.aware==='Watch'?'badge-watch':'badge-reserve';
+      html+='<tr><td><span class="badge '+catClass+'">'+esc(it.aware)+'</span></td><td>'+it.courses+'</td><td>'+it.pct+'%</td><td class="text-xs">'+it.ciLower+'%–'+it.ciUpper+'%</td><td>'+it.totalDdd+'</td><td>'+it.dddPct+'%</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '<div class="chart-container" style="max-width:350px;margin:1rem auto"><canvas id="chart-obj3"></canvas></div>';
+  } else { html += '<p class="text-sm" style="color:var(--text-muted)">No AWaRe data available</p>'; }
+  html += '</div>';
+
+  // Obj4
+  html += '<div class="obj-card"><h3>Objective 4: Resistance Patterns (MDR/XDR/ESKAPE)</h3><p class="text-sm" style="color:var(--text-secondary)">Organisms with resistance markers from positive cultures</p>';
   if (obj4.length) {
-    chartInstances.obj4 = new Chart(document.getElementById('chart-obj4'),{type:'bar',data:{labels:obj4.map(function(r){return r.name}),datasets:[{label:'MDR %',data:obj4.map(function(r){return r.mdrPct}),backgroundColor:'#f59e0b'},{label:'XDR %',data:obj4.map(function(r){return r.xdrPct}),backgroundColor:'#ef4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:darkText}}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText},max:100}}}});
-  }
-  if (obj5.length>=2) {
-    chartInstances.obj5 = new Chart(document.getElementById('chart-obj5'),{type:'scatter',data:{datasets:[{label:'ABX',data:obj5.map(function(r){return{x:r.ddd1000,y:r.resistPct}}),backgroundColor:'#0ea5e9',pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return obj5[ctx.dataIndex]?obj5[ctx.dataIndex].name+': '+ctx.parsed.x+', '+ctx.parsed.y+'%':''}}}},scales:{x:{title:{display:true,text:'DDD/1000PD',color:darkText},grid:{color:darkGrid},ticks:{color:darkText}},y:{title:{display:true,text:'Resistance %',color:darkText},grid:{color:darkGrid},ticks:{color:darkText}}}}});
-  }
-}
+    html += '<div class="table-wrap"><table><thead><tr><th>Organism</th><th>Positive</th><th>MDR</th><th>XDR</th><th>ESKAPE</th><th>MDR %</th></tr></thead><tbody>';
+    obj4.forEach(function(it){html+='<tr><td>'+esc(it.organism)+'</td><td>'+it.total+'</td><td>'+it.mdr+'</td><td>'+it.xdr+'</td><td>'+it.eskape+'</td><td>'+(it.total?+(it.mdr/it.total*100).toFixed(1):0)+'%</td></tr>';});
+    html += '</tbody></table></div>';
+    html += '<div class="chart-container"><canvas id="chart-obj4"></canvas></div>';
+  } else { html += '<p class="text-sm" style="color:var(--text-muted)">No resistance data available</p>'; }
+  html += '</div>';
 
-// ═══════════════════ USERS ═══════════════════════════════════
-function renderUsers(container) {
-  if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
-  var html = '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">User Management</h2><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'user-modal\').classList.remove(\'hidden\')">+ Add User</button></div>';
-  html += '<div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Active</th><th>Created</th><th>Last Login</th><th>Actions</th></tr></thead><tbody>';
-  usersList.forEach(function(u){
-    html += '<tr><td>'+esc(u.username)+'</td><td>'+esc(u.role)+'</td><td>'+(u.active?'<span style="color:var(--success)">Active</span>':'<span style="color:var(--danger)">Disabled</span>')+'</td><td>'+esc(fmtDate(u.createdAt))+'</td><td>'+esc(fmtDate(u.lastLogin))+'</td><td>';
-    if (u.username !== currentUser.username) {
-      html += '<button class="btn btn-ghost btn-sm" onclick="toggleUserStatus(\''+esc(u.username)+'\','+(!u.active)+')">'+(u.active?'Disable':'Enable')+'</button>';
-    }
-    html += '</td></tr>';
-  });
-  html += '</tbody></table></div>';
+  // Obj5
+  html += '<div class="obj-card"><h3>Objective 5: Correlation — LOS vs Antibiotic Count</h3><p class="text-sm" style="color:var(--text-secondary)">Spearman rank correlation between length of stay and number of antibiotics</p>';
+  if (rho != null) {
+    html += '<div class="flex gap-6 mb-4 flex-wrap">';
+    html += '<div><span class="text-xs" style="color:var(--text-secondary)">Spearman ρ</span><div style="font-size:1.5rem;font-weight:700;color:'+(Math.abs(rho)>.3?'var(--accent)':'var(--text-muted)')+'">'+rho.toFixed(3)+'</div></div>';
+    if (rhoP != null) html += '<div><span class="text-xs" style="color:var(--text-secondary)">p-value</span><div style="font-size:1.5rem;font-weight:700;color:'+(rhoP<0.05?'var(--success)':'var(--text-muted)')+'">'+rhoP.toFixed(4)+'</div></div>';
+    html += '<div><span class="text-xs" style="color:var(--text-secondary)">n</span><div style="font-size:1.5rem;font-weight:700">'+obj5Data.length+'</div></div>';
+    html += '<div><span class="text-xs" style="color:var(--text-secondary)">Interpretation</span><div class="text-sm font-medium">'+(Math.abs(rho)<.2?'Negligible':Math.abs(rho)<.4?'Weak':Math.abs(rho)<.6?'Moderate':Math.abs(rho)<.8?'Strong':'Very strong')+' '+(rho>0?'positive':'negative')+' correlation</div></div>';
+    html += '</div>';
+    html += '<div class="chart-container"><canvas id="chart-obj5"></canvas></div>';
+  } else { html += '<p class="text-sm" style="color:var(--text-muted)">Insufficient data for correlation (need ≥3 paired observations)</p>'; }
+  html += '</div>';
+
   container.innerHTML = html;
-}
 
-async function toggleUserStatus(username, active) {
-  try {
-    var data = await apiCall('toggleUser', { username: username, active: active });
-    if (data.success) { toast(data.message, 'success'); await loadUsers(); renderView(); }
-    else toast(data.message, 'error');
-  } catch(e) { toast('Failed to update user', 'error'); }
-}
-
-function closeUserModal() {
-  document.getElementById('user-modal').classList.add('hidden');
-  document.getElementById('new-username').value = '';
-  document.getElementById('new-password').value = '';
-  document.getElementById('new-role').value = 'Agent';
-}
-
-async function createUser() {
-  var btn = document.getElementById('create-user-btn');
-  var username = document.getElementById('new-username').value.trim();
-  var password = document.getElementById('new-password').value;
-  var role = document.getElementById('new-role').value;
-  if (!username || !password) { toast('Username and password required','error'); return; }
-  btn.disabled = true; btn.textContent = 'Creating...';
-  try {
-    var data = await apiCall('addUser', { username: username, password: password, role: role });
-    if (data.success) { toast('User created','success'); closeUserModal(); await loadUsers(); renderView(); }
-    else toast(data.message||'Failed to create user','error');
-  } catch(e) { toast('Failed to create user','error'); }
-  finally { btn.disabled = false; btn.textContent = 'Create User'; }
-}
-
-// ═══════════════════ AUDIT LOG ═══════════════════════════════
-async function renderAudit(container) {
-  if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
-
-  container.innerHTML = '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">Audit Log</h2></div><div id="audit-content" class="text-sm" style="color:var(--text-muted)">Loading...</div>';
-
-  try {
-    var data = await apiCall('getAuditLog', { limit: 200 });
-    if (data.success && data.logs) {
-      var html = '<div class="table-wrap"><table><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>';
-      data.logs.forEach(function(log) {
-        html += '<tr><td>'+esc(log.timestamp)+'</td><td>'+esc(log.user)+'</td><td>'+esc(log.action)+'</td><td>'+esc(log.details)+'</td></tr>';
+  // ─── Render Charts ───
+  setTimeout(function() {
+    // Obj1: Horizontal Bar
+    if (obj1.length && document.getElementById('chart-obj1')) {
+      chartInstances.obj1 = new Chart(document.getElementById('chart-obj1'), {
+        type: 'bar',
+        data: {
+          labels: obj1.map(function(o){return o.name}),
+          datasets: [{
+            label: 'Prescriptions',
+            data: obj1.map(function(o){return o.n}),
+            backgroundColor: obj1.map(function(o){return o.aware==='Access'?'rgba(34,197,94,.7)':o.aware==='Watch'?'rgba(245,158,11,.7)':'rgba(239,68,68,.7)'}),
+            borderRadius: 4
+          }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' } }, y: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { display: false } } } }
       });
-      html += '</tbody></table></div>';
-      document.getElementById('audit-content').innerHTML = html;
     }
-  } catch(e) {
-    document.getElementById('audit-content').innerHTML = 'Failed to load audit log';
-  }
-}
 
-// ─── HOSPITAL OTHER TOGGLE ──────────────────────────────────
-document.getElementById('login-hospital').addEventListener('change', function() {
-  document.getElementById('hospital-other-wrap').style.display = this.value === 'OTHER' ? 'block' : 'none';
-});
+    // Obj2: Grouped Bar
+    if (obj2.length && document.getElementById('chart-obj2')) {
+      chartInstances.obj2 = new Chart(document.getElementById('chart-obj2'), {
+        type: 'bar',
+        data: {
+          labels: obj2.map(function(o){return o.name}),
+          datasets: [
+            { label: 'DDD/1000PD', data: obj2.map(function(o){return o.dddPer1000}), backgroundColor: 'rgba(14,165,233,.7)', borderRadius: 4 },
+            { label: 'DOT/1000PD', data: obj2.map(function(o){return o.dotPer1000}), backgroundColor: 'rgba(139,92,246,.7)', borderRadius: 4 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' } } } }
+      });
+    }
 
-// ─── INIT ───────────────────────────────────────────────────
-document.getElementById('login-form').addEventListener('submit', handleLogin);
+    // Obj3: Doughnut
+    if (obj3.length && document.getElementById('chart-obj3')) {
+      chartInstances.obj3 = new Chart(document.getElementById('chart-obj3'), {
+        type: 'doughnut',
+        data: {
+          labels: obj3.map(function(o){return o.aware}),
+          datasets: [{
+            data: obj3.map(function(o){return o.courses}),
+            backgroundColor: ['rgba(34,197,94,.8)','rgba(245,158,11,.8)','rgba(239,68,68,.8)'],
+            borderWidth: 2, borderColor: '#111827'
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
+      });
+    }
 
-// Auto-fill date
-document.getElementById('login-date').value = new Date().toISOString().split('T')[0];
+    // Obj4: Grouped Bar
+    if (obj4.length && document.getElementById('chart-obj4')) {
+      chartInstances.obj4 = new Chart(document.getElementById('chart-obj4'), {
+        type: 'bar',
+        data: {
+          labels: obj4.map(function(o){return o.organism}),
+          datasets: [
+            { label: 'MDR', data: obj4.map(function(o){return o.mdr}), backgroundColor: 'rgba(239,68,68,.7)', borderRadius: 4 },
+            { label: 'XDR', data: obj4.map(function(o){return o.xdr}), backgroundColor: 'rgba(245,158,11,.7)', borderRadius: 4 },
+            { label: 'ESKAPE', data: obj4.map(function(o){return o.eskape}), backgroundColor: 'rgba(139,92,246,.7)', borderRadius: 4 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' } } } }
+      });
+    }
 
-if (loadSession()) {
-  showApp();
-} else {
-  document.getElementById('login-view').style.display = 'flex';
-}
-</script>
-</body>
-</html>
+    // Obj5: Scatter
+    if (rho != null && document.getElementById('chart-obj5')) {
+      chartInstances.obj5 = new Chart(document.getElementById('chart-obj5'), {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'LOS vs ABX Count',
+            data: obj5Data.map(function(d){return {x:d.los,y:d.abxCount}}),
+            backgroundColor: 'rgba(14,165,233,.6)',
+            pointRadius: 5
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { x: { title: { display: true, text: 'Length of Stay (days)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' } }, y: { title: { display: true, text: 'Antibiotic Count', color: '#94a3b8' }, ticks:
