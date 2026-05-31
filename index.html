@@ -10,12 +10,33 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg-body:#050a13;--bg-sidebar:#0c1322;--bg-card:#111827;
-  --bg-input:#050a13;--accent:#0ea5e9;--accent-dim:rgba(14,165,233,.15);
+  --bg-input:#050a13;--accent:#0ea5e9;--accent-hover:#0284c7;--accent-dim:rgba(14,165,233,.15);
   --text-primary:#f8fafc;--text-secondary:#94a3b8;--text-muted:#64748b;
   --border:rgba(255,255,255,.06);--border-input:rgba(255,255,255,.08);
   --danger:#ef4444;--success:#22c55e;--warning:#f59e0b;--info:#3b82f6;
   --radius:8px;--radius-lg:12px;--transition:150ms ease;
+  --bg-table-hover:rgba(255,255,255,.02);
+  --scrollbar-thumb:rgba(255,255,255,.1);
+  --scrollbar-thumb-hover:rgba(255,255,255,.2);
+  --progress-bg:rgba(255,255,255,.06);
+  --abx-dropdown-bg:#1e293b;
+  --btn-ghost-hover:rgba(255,255,255,.05);
 }
+
+/* ────────────── LIGHT MODE OVERRIDES ────────────── */
+html[data-theme="light"]{
+  --bg-body:#f1f5f9;--bg-sidebar:#ffffff;--bg-card:#ffffff;
+  --bg-input:#f8fafc;--accent:#0284c7;--accent-hover:#0369a1;--accent-dim:rgba(2,132,199,.12);
+  --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#64748b;
+  --border:#e2e8f0;--border-input:#cbd5e1;
+  --bg-table-hover:rgba(0,0,0,.03);
+  --scrollbar-thumb:rgba(0,0,0,.15);
+  --scrollbar-thumb-hover:rgba(0,0,0,.25);
+  --progress-bg:rgba(0,0,0,.08);
+  --abx-dropdown-bg:#ffffff;
+  --btn-ghost-hover:rgba(0,0,0,.05);
+}
+
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg-body);color:var(--text-primary);overflow:hidden}
 
 /* ────────────── UTILITY ────────────── */
@@ -32,7 +53,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .mt-2{margin-top:.5rem}.mt-4{margin-top:1rem}.mt-auto{margin-top:auto}
 .ml-2{margin-left:.5rem}.mr-1{margin-right:.25rem}.mr-2{margin-right:.5rem}
 .rounded{border-radius:var(--radius)}.rounded-lg{border-radius:var(--radius-lg)}.rounded-full{border-radius:9999px}
-.overflow-auto{overflow:auto}.overflow-y-auto{overflow-y:auto}.overflow-hidden{overflow:hidden}
+.overflow-auto{overflow:auto}.overflow-y-auto{overflow-y-auto}.overflow-hidden{overflow:hidden}
 .grid{display:grid}.grid-cols-2{grid-template-columns:repeat(2,1fr)}.grid-cols-3{grid-template-columns:repeat(3,1fr)}.grid-cols-4{grid-template-columns:repeat(4,1fr)}
 .relative{position:relative}.absolute{position:absolute}.fixed{position:fixed}.sticky{position:sticky}
 .inset-0{top:0;right:0;bottom:0;left:0}.top-0{top:0}.left-0{left:0}.z-40{z-index:40}.z-50{z-index:50}
@@ -98,9 +119,9 @@ label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary
 }
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover:not(:disabled){background:#0284c7}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover)}
 .btn-ghost{background:transparent;color:var(--text-secondary)}
-.btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.05);color:var(--text-primary)}
+.btn-ghost:hover:not(:disabled){background:var(--btn-ghost-hover);color:var(--text-primary)}
 .btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover:not(:disabled){background:#dc2626}
 .btn-success{background:var(--success);color:#fff}
@@ -113,7 +134,7 @@ table{width:100%;border-collapse:collapse;font-size:.875rem}
 th{background:var(--bg-sidebar);color:var(--text-secondary);font-weight:500;text-align:left;padding:.625rem .75rem;white-space:nowrap;border-bottom:1px solid var(--border)}
 td{padding:.625rem .75rem;border-bottom:1px solid var(--border);color:var(--text-primary)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,.02)}
+tr:hover td{background:var(--bg-table-hover)}
 
 /* ────────────── BADGE ────────────── */
 .badge{display:inline-flex;align-items:center;padding:.125rem .5rem;border-radius:9999px;font-size:.75rem;font-weight:500}
@@ -136,7 +157,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .slot-title{font-size:.75rem;font-weight:600;color:var(--accent);margin-bottom:.75rem}
 
 /* ────────────── PROGRESS BAR ────────────── */
-.progress{height:.5rem;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden}
+.progress{height:.5rem;background:var(--progress-bg);border-radius:9999px;overflow:hidden}
 .progress-bar{height:100%;border-radius:9999px;transition:width .4s ease}
 
 /* ────────────── TOAST ────────────── */
@@ -152,8 +173,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
 /* ────────────── SCROLLBAR ────────────── */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover)}
 
 /* ────────────── ANALYTICS ────────────── */
 .chart-container{position:relative;width:100%;height:280px;margin-top:1rem}
@@ -163,7 +184,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 /* ────────────── ABX SEARCH DROPDOWN ────────────── */
 .abx-search-wrap{position:relative}
-.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:#1e293b;border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10}
+.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--abx-dropdown-bg);border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10}
 .abx-dropdown div{padding:.5rem .75rem;cursor:pointer;font-size:.8125rem;color:var(--text-primary)}
 .abx-dropdown div:hover{background:var(--accent-dim)}
 .abx-dropdown .abx-cat{font-size:.6875rem;margin-left:.5rem}
@@ -186,6 +207,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <!-- LOGIN VIEW -->
 <div id="login-view">
+  <button class="btn btn-ghost btn-icon" id="theme-toggle-login" onclick="toggleTheme()" style="position:fixed;top:1rem;right:1rem;font-size:1.25rem;width:2.5rem;height:2.5rem;z-index:100" title="Toggle Theme">&#x2600;</button>
   <div id="login-card">
     <div class="flex flex-col items-center gap-2 mb-8">
       <div style="width:3rem;height:3rem;border-radius:var(--radius);background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:#fff">O</div>
@@ -239,9 +261,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div id="app-main">
     <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
     <aside id="sidebar">
-      <div class="flex items-center gap-3 px-5 h-16 shrink-0 border-b" style="border-color:var(--border)">
-        <div style="width:2rem;height:2rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
-        <span class="font-bold text-lg">OncoCollect</span>
+      <div class="flex items-center justify-between px-5 h-16 shrink-0 border-b" style="border-color:var(--border)">
+        <div class="flex items-center gap-3">
+          <div style="width:2rem;height:2rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
+          <span class="font-bold text-lg">OncoCollect</span>
+        </div>
+        <button class="btn btn-ghost btn-icon" id="theme-toggle-sidebar" onclick="toggleTheme()" style="font-size:1.1rem;width:2rem;height:2rem" title="Toggle Theme">&#x2600;</button>
       </div>
       <nav id="sidebar-nav" class="flex-1 py-4 px-3 flex flex-col gap-1 overflow-y-auto"></nav>
       <div class="px-3 py-4 flex flex-col gap-2 border-t" style="border-color:var(--border)">
@@ -264,9 +289,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </aside>
     <main class="flex flex-col flex-1 min-w-0">
-      <header id="topbar">
-        <button class="btn btn-ghost btn-icon" onclick="toggleSidebar(true)">&#9776;</button>
-        <span class="font-bold">OncoCollect</span>
+      <header id="topbar" style="justify-content:space-between">
+        <div class="flex items-center gap-3">
+          <button class="btn btn-ghost btn-icon" onclick="toggleSidebar(true)">&#9776;</button>
+          <span class="font-bold">OncoCollect</span>
+        </div>
+        <button class="btn btn-ghost btn-icon" id="theme-toggle-topbar" onclick="toggleTheme()" style="font-size:1.1rem;width:2rem;height:2rem" title="Toggle Theme">&#x2600;</button>
       </header>
       <div id="content" class="flex-1"></div>
     </main>
@@ -322,6 +350,44 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 // ─── GITHUB PAGES CONFIG ────────────────────────────────────
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbyInBkr1u4ZKJCdgmWjYc2BTi-7aFYXYfG6F_fgN2N4gqJxfnxoDzoBNCkibOQAT3ay/exec';
+
+// ─── THEME MANAGEMENT (Dark / Light Mode) ───────────────────
+function initTheme() {
+  var theme = localStorage.getItem('oc_theme') || 'dark';
+  setTheme(theme);
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('oc_theme', theme);
+  
+  var isLight = theme === 'light';
+  var icon = isLight ? '&#9790;' : '&#x2600;'; // Moon symbol (&#9790;) for light, Sun symbol (&#x2600;) for dark
+  var title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+  
+  var toggles = ['theme-toggle-sidebar', 'theme-toggle-topbar', 'theme-toggle-login'];
+  toggles.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.innerHTML = icon;
+      el.title = title;
+    }
+  });
+}
+
+function toggleTheme() {
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  var newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  setTheme(newTheme);
+  
+  // Re-render current view to update active element themes (like charts)
+  if (!document.getElementById('app').classList.contains('hidden')) {
+    renderView();
+  }
+}
+
+// Initialize theme immediately to prevent flashing
+initTheme();
 
 // ─── AUTO-DETECT ENVIRONMENT ────────────────────────────────
 var IS_GAS = (typeof google !== 'undefined' && google.script && google.script.run);
@@ -398,19 +464,6 @@ function incompleteBeta(a, b, x) {
     if (Math.abs(c * d - 1) < 1e-10) break;
   }
   return t;
-}
-
-function logBeta(a, b) {
-  return logGamma(a) + logGamma(b) - logGamma(a + b);
-}
-
-function logGamma(z) {
-  var c = [76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
-  var x = z, y = z, tmp = x + 5.5;
-  tmp -= (x + 0.5) * Math.log(tmp);
-  var ser = 1.000000000190015;
-  for (var j = 0; j < 6; j++) ser += c[j] / ++y;
-  return -tmp + Math.log(2.5066282746310005 * ser / x);
 }
 
 // Wilson score interval for proportions
@@ -805,6 +858,7 @@ async function showApp() {
   document.getElementById('sidebar-hospital').textContent = sessionInfo.hospital;
   document.getElementById('sidebar-date').textContent = sessionInfo.dateOfCollection;
   renderNav();
+  setTheme(localStorage.getItem('oc_theme') || 'dark');
   await Promise.all([loadData(), loadAntibiotics(), loadUsers()]);
   renderView();
 }
@@ -1524,24 +1578,26 @@ function renderAnalytics(container) {
 
   container.innerHTML = html;
 
-  // Charts
+  // Charts Theme Settings
   var chartColors = {Access:'#22c55e',Watch:'#f59e0b',Reserve:'#ef4444'};
-  var darkGrid='rgba(255,255,255,0.06)', darkText='#94a3b8';
+  var isLightTheme = document.documentElement.getAttribute('data-theme') === 'light';
+  var gridColor = isLightTheme ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  var textColor = isLightTheme ? '#475569' : '#94a3b8';
 
   if (obj1.length) {
-    chartInstances.obj1 = new Chart(document.getElementById('chart-obj1'),{type:'bar',data:{labels:obj1.map(function(r){return r.name}),datasets:[{label:'Courses',data:obj1.map(function(r){return r.n}),backgroundColor:obj1.map(function(r){return chartColors[r.aware]||'#0ea5e9'})}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText}}}}});
+    chartInstances.obj1 = new Chart(document.getElementById('chart-obj1'),{type:'bar',data:{labels:obj1.map(function(r){return r.name}),datasets:[{label:'Courses',data:obj1.map(function(r){return r.n}),backgroundColor:obj1.map(function(r){return chartColors[r.aware]||'#0ea5e9'})}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor}}}}});
   }
   if (obj2.length) {
-    chartInstances.obj2 = new Chart(document.getElementById('chart-obj2'),{type:'bar',data:{labels:obj2.map(function(r){return r.name}),datasets:[{label:'DDD/1000PD',data:obj2.map(function(r){return r.dddPer1000}),backgroundColor:'#0ea5e9'},{label:'DOT/1000PD',data:obj2.map(function(r){return r.dotPer1000}),backgroundColor:'#8b5cf6'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:darkText}}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText}}}}});
+    chartInstances.obj2 = new Chart(document.getElementById('chart-obj2'),{type:'bar',data:{labels:obj2.map(function(r){return r.name}),datasets:[{label:'DDD/1000PD',data:obj2.map(function(r){return r.dddPer1000}),backgroundColor:'#0ea5e9'},{label:'DOT/1000PD',data:obj2.map(function(r){return r.dotPer1000}),backgroundColor:'#8b5cf6'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor}}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor}}}}});
   }
   if (obj3.length) {
-    chartInstances.obj3 = new Chart(document.getElementById('chart-obj3'),{type:'doughnut',data:{labels:obj3.map(function(r){return r.aware}),datasets:[{data:obj3.map(function(r){return r.courses}),backgroundColor:obj3.map(function(r){return chartColors[r.aware]||'#0ea5e9'}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:darkText,padding:16}}}}});
+    chartInstances.obj3 = new Chart(document.getElementById('chart-obj3'),{type:'doughnut',data:{labels:obj3.map(function(r){return r.aware}),datasets:[{data:obj3.map(function(r){return r.courses}),backgroundColor:obj3.map(function(r){return chartColors[r.aware]||'#0ea5e9'}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:textColor,padding:16}}}}});
   }
   if (obj4.length) {
-    chartInstances.obj4 = new Chart(document.getElementById('chart-obj4'),{type:'bar',data:{labels:obj4.map(function(r){return r.name}),datasets:[{label:'MDR %',data:obj4.map(function(r){return r.mdrPct}),backgroundColor:'#f59e0b'},{label:'XDR %',data:obj4.map(function(r){return r.xdrPct}),backgroundColor:'#ef4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:darkText}}},scales:{x:{grid:{color:darkGrid},ticks:{color:darkText}},y:{grid:{color:darkGrid},ticks:{color:darkText},max:100}}}});
+    chartInstances.obj4 = new Chart(document.getElementById('chart-obj4'),{type:'bar',data:{labels:obj4.map(function(r){return r.name}),datasets:[{label:'MDR %',data:obj4.map(function(r){return r.mdrPct}),backgroundColor:'#f59e0b'},{label:'XDR %',data:obj4.map(function(r){return r.xdrPct}),backgroundColor:'#ef4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor}}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor},max:100}}}});
   }
   if (losAbxPairs.length >= 2) {
-    chartInstances.obj5 = new Chart(document.getElementById('chart-obj5'),{type:'scatter',data:{datasets:[{label:'LOS vs ABX',data:losAbxPairs.map(function(p){return{x:p.los,y:p.abxCount}}),backgroundColor:'#0ea5e9',pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return 'LOS: '+ctx.parsed.x+'d, ABX: '+ctx.parsed.y}}}},scales:{x:{title:{display:true,text:'Length of Stay (days)',color:darkText},grid:{color:darkGrid},ticks:{color:darkText}},y:{title:{display:true,text:'Antibiotic Count',color:darkText},grid:{color:darkGrid},ticks:{color:darkText}}}}});
+    chartInstances.obj5 = new Chart(document.getElementById('chart-obj5'),{type:'scatter',data:{datasets:[{label:'LOS vs ABX',data:losAbxPairs.map(function(p){return{x:p.los,y:p.abxCount}}),backgroundColor:'#0ea5e9',pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return 'LOS: '+ctx.parsed.x+'d, ABX: '+ctx.parsed.y}}}},scales:{x:{title:{display:true,text:'Length of Stay (days)',color:textColor},grid:{color:gridColor},ticks:{color:textColor}},y:{title:{display:true,text:'Antibiotic Count',color:textColor},grid:{color:gridColor},ticks:{color:textColor}}}}});
   }
 }
 
@@ -1551,7 +1607,7 @@ function renderDataMgmt(container) {
 
   var totalPatients = rawData.length;
   var totalAbx = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
-  var totalCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.length:0)},0);
+  var totalCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.sent==='Yes'}).length:0)},0);
   var losArr = rawData.map(function(r){return r.los}).filter(function(v){return v!=null});
   var totalPD = losArr.reduce(function(s,v){return s+v},0) || 0;
   var mdrCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.mdr==='Yes'}).length:0)},0);
