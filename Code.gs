@@ -93,6 +93,7 @@ const CULTURE_HEADERS = [
   'Sent',
   'Date',
   'Type',
+  'Type Other',
   'Result',
   'Organism',
   'Gram',
@@ -100,7 +101,8 @@ const CULTURE_HEADERS = [
   'Resistance',
   'MDR',
   'XDR',
-  'ESKAPE'
+  'ESKAPE',
+  'ESKAPE Organisms'
 ];
 
 // WHO AWaRe 2023 antibiotic list with ATC codes
@@ -749,7 +751,7 @@ function apiExportFlat(token, params) {
     });
   }
   for (var c = 1; c <= maxCult; c++) {
-    ['Sent','Date','Type','Result','Organism','Gram','AST','Resist','MDR','XDR','ESKAPE'].forEach(function(f) {
+    ['Sent','Date','Type','Type_Other','Result','Organism','Gram','AST','Resist','MDR','XDR','ESKAPE','ESKAPE_Organisms'].forEach(function(f) {
       headers.push('Cult_' + c + '_' + f);
     });
   }
@@ -777,9 +779,9 @@ function apiExportFlat(token, params) {
     }
     for (var c = 0; c < maxCult; c++) {
       var cult = (r.cultures && r.cultures[c]) || {};
-      row.push(csvSafe(cult.sent), csvSafe(cult.date), csvSafe(cult.type), csvSafe(cult.result),
-        csvSafe(cult.organism), csvSafe(cult.gram), csvSafe(cult.ast), csvSafe(cult.resist),
-        csvSafe(cult.mdr), csvSafe(cult.xdr), csvSafe(cult.eskape));
+      row.push(csvSafe(cult.sent), csvSafe(cult.date), csvSafe(cult.type), csvSafe(cult.typeOther),
+        csvSafe(cult.result), csvSafe(cult.organism), csvSafe(cult.gram), csvSafe(cult.ast), csvSafe(cult.resist),
+        csvSafe(cult.mdr), csvSafe(cult.xdr), csvSafe(cult.eskape), csvSafe(cult.eskapeOrganisms));
     }
     row.push(csvSafe(r.requiredForAnalysis));
     rows.push(row.join(','));
@@ -1246,6 +1248,7 @@ function saveCultures(studyId, cultures) {
       cult.sent || '',
       cult.date || '',
       cult.type || '',
+      cult.typeOther || '',
       cult.result || '',
       cult.organism || '',
       cult.gram || '',
@@ -1253,7 +1256,8 @@ function saveCultures(studyId, cultures) {
       cult.resist || '',
       cult.mdr || '',
       cult.xdr || '',
-      cult.eskape || ''
+      cult.eskape || '',
+      cult.eskapeOrganisms || ''
     ]);
   });
 }
@@ -1270,14 +1274,16 @@ function loadCulturesForStudy(studyId) {
           sent: data[i][1] || '',
           date: formatDate(data[i][2]) || '',
           type: data[i][3] || '',
-          result: data[i][4] || '',
-          organism: data[i][5] || '',
-          gram: data[i][6] || '',
-          ast: data[i][7] || '',
-          resist: data[i][8] || '',
-          mdr: data[i][9] || '',
-          xdr: data[i][10] || '',
-          eskape: data[i][11] || ''
+          typeOther: data[i][4] || '',
+          result: data[i][5] || '',
+          organism: data[i][6] || '',
+          gram: data[i][7] || '',
+          ast: data[i][8] || '',
+          resist: data[i][9] || '',
+          mdr: data[i][10] || '',
+          xdr: data[i][11] || '',
+          eskape: data[i][12] || '',
+          eskapeOrganisms: data[i][13] || ''
         });
       }
     }
