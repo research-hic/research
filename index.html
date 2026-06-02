@@ -155,6 +155,12 @@ tr:hover td{background:var(--bg-table-hover)}
 .slot-card .slot-remove{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;border-radius:50%;border:none;background:rgba(239,68,68,.15);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;line-height:1}
 .slot-card .slot-remove:hover{background:rgba(239,68,68,.3)}
 .slot-title{font-size:.75rem;font-weight:600;color:var(--accent);margin-bottom:.75rem}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:4px}
+.checkbox-label{display:inline-flex;align-items:center;gap:4px;font-size:.8125rem;color:var(--text-primary);cursor:pointer;white-space:nowrap}
+.checkbox-label input[type="checkbox"]{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.cult-type-other-input{font-size:.8125rem;padding:4px 8px;border:1px solid var(--border-input);border-radius:var(--radius);background:var(--bg-input);color:var(--text-primary);outline:none}
+.cult-type-other-input:focus{border-color:var(--accent)}
+.eskape-organisms-wrap{margin-bottom:.5rem}
 
 /* ────────────── PROGRESS BAR ────────────── */
 .progress{height:.5rem;background:var(--progress-bg);border-radius:9999px;overflow:hidden}
@@ -1011,7 +1017,7 @@ var formCult = [];
 var formVersion = 0;
 
 function emptyAbx() { return {name:'',abxClass:'',aware:'',route:'',dose:'',freq:'',start:'',stop:'',duration:'',ddd:'',grams:'',dddCalc:'',dot:'',indication:'',therapyType:'',febrileNeutro:'',febrileEpisodes:''}; }
-function emptyCult() { return {sent:'',date:'',type:'',result:'',organism:'',gram:'',ast:'',resist:'',mdr:'',xdr:'',eskape:''}; }
+function emptyCult() { return {sent:'',date:'',type:'',typeOther:'',result:'',organism:'',gram:'',ast:'',resist:'',mdr:'',xdr:'',eskape:'',eskapeOrganisms:''}; }
 
 function openNewRecord() {
   modalMode = 'new'; modalStudyId = ''; formAbx = [emptyAbx()]; formCult = [emptyCult()]; formVersion = 0;
@@ -1057,7 +1063,7 @@ function populateFormFromRecord(rec) {
     ? rec.antibiotics.map(function(a){return{name:a.name||'',abxClass:a.abxClass||'',aware:a.aware||'',route:a.route||'',dose:a.dose||'',freq:a.freq||'',start:a.start||'',stop:a.stop||'',duration:a.duration!=null?String(a.duration):'',ddd:a.ddd!=null?String(a.ddd):'',grams:a.grams!=null?String(a.grams):'',dddCalc:a.dddCalc!=null?String(a.dddCalc):'',dot:a.dot!=null?String(a.dot):'',indication:a.indication||'',therapyType:a.therapyType||'',febrileNeutro:a.febrileNeutro||'',febrileEpisodes:a.febrileEpisodes!=null?String(a.febrileEpisodes):''}})
     : [emptyAbx()];
   formCult = rec.cultures && rec.cultures.length
-    ? rec.cultures.map(function(c){return{sent:c.sent||'',date:c.date||'',type:c.type||'',result:c.result||'',organism:c.organism||'',gram:c.gram||'',ast:c.ast||'',resist:c.resist||'',mdr:c.mdr||'',xdr:c.xdr||'',eskape:c.eskape||''}})
+    ? rec.cultures.map(function(c){return{sent:c.sent||'',date:c.date||'',type:c.type||'',typeOther:c.typeOther||'',result:c.result||'',organism:c.organism||'',gram:c.gram||'',ast:c.ast||'',resist:c.resist||'',mdr:c.mdr||'',xdr:c.xdr||'',eskape:c.eskape||'',eskapeOrganisms:c.eskapeOrganisms||''}})
     : [emptyCult()];
   window._editRec = rec;
 }
@@ -1260,9 +1266,12 @@ function renderCultSlots(isView) {
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
     html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
     html += '<div><label>Date</label><input type="date" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+'></div>';
-    html += '<div><label>Sample Type</label><select id="cult-type-'+i+'" '+dis+'><option value="">Select</option>';
-    ['Blood','Urine','Sputum','Wound','BAL','CSF','Other'].forEach(function(v){html+='<option value="'+v+'" '+(c.type===v?'selected':'')+'>'+v+'</option>';});
-    html += '</select></div>';
+    var typeArr = (c.type||'').split(',').filter(Boolean);
+    html += '<div style="grid-column:span 3"><label>Sample Type</label><div class="checkbox-group" id="cult-type-group-'+i+'">';
+    ['Blood','Urine','Sputum','Wound','BAL','CSF'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="cult-type-cb" data-idx="'+i+'" value="'+v+'" '+(typeArr.indexOf(v)>=0?'checked':'')+' '+dis+'> '+v+'</label>';});
+    html += '<label class="checkbox-label"><input type="checkbox" class="cult-type-cb cult-type-other-cb" data-idx="'+i+'" value="Other" '+(typeArr.indexOf('Other')>=0?'checked':'')+' '+dis+' onchange="toggleCultTypeOther('+i+')"> Other</label>';
+    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify other type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px">';
+    html += '</div></div>';
     html += '<div><label>Result</label><select id="cult-result-'+i+'" '+dis+'><option value="">Select</option><option value="Positive" '+(c.result==='Positive'?'selected':'')+'>Positive</option><option value="Negative" '+(c.result==='Negative'?'selected':'')+'>Negative</option><option value="Contaminant" '+(c.result==='Contaminant'?'selected':'')+'>Contaminant</option></select></div>';
     html += '<div><label>Organism</label><input id="cult-org-'+i+'" value="'+esc(c.organism)+'" '+dis+'></div>';
     html += '<div><label>Gram Stain</label><select id="cult-gram-'+i+'" '+dis+'><option value="">Select</option><option value="Gram +ve" '+(c.gram==='Gram +ve'?'selected':'')+'>Gram +ve</option><option value="Gram -ve" '+(c.gram==='Gram -ve'?'selected':'')+'>Gram -ve</option><option value="Yeast" '+(c.gram==='Yeast'?'selected':'')+'>Yeast</option></select></div>';
@@ -1270,8 +1279,14 @@ function renderCultSlots(isView) {
     html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="e.g. ESBL, carbapenemase"></div>';
     html += '<div><label>MDR</label><select id="cult-mdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.mdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.mdr==='No'?'selected':'')+'>No</option></select></div>';
     html += '<div><label>XDR</label><select id="cult-xdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.xdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.xdr==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>ESKAPE</label><select id="cult-eskape-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.eskape==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.eskape==='No'?'selected':'')+'>No</option></select></div>';
+    var eskapeOrgArr = (c.eskapeOrganisms||'').split(',').filter(Boolean);
+    html += '<div><label>ESKAPE</label><select id="cult-eskape-'+i+'" '+dis+' onchange="toggleEskapeDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.eskape==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.eskape==='No'?'selected':'')+'>No</option></select></div>';
+    html += '</div>';
+    html += '<div class="eskape-organisms-wrap" id="eskape-org-wrap-'+i+'" style="display:'+(c.eskape==='Yes'?'block':'none')+';margin-top:8px;padding:10px 14px;background:var(--accent-dim);border-radius:var(--radius);border:1px solid var(--border)">';
+    html += '<label style="font-weight:600;margin-bottom:6px;display:block">ESKAPE Organisms</label><div class="checkbox-group" id="eskape-org-group-'+i+'">';
+    ['Enterococcus faecium','Staphylococcus aureus','Klebsiella pneumoniae','Acinetobacter baumannii','Pseudomonas aeruginosa','Enterobacter species'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="eskape-org-cb" data-idx="'+i+'" value="'+v+'" '+(eskapeOrgArr.indexOf(v)>=0?'checked':'')+' '+dis+'> '+v+'</label>';});
     html += '</div></div>';
+    html += '</div>';
     return html;
   }).join('');
 }
@@ -1309,6 +1324,28 @@ function autoCalcDot(idx) {
 function toggleCultDetails(idx) {
   var sent = document.getElementById('cult-sent-'+idx);
   // Visual cue only for now
+}
+
+function toggleCultTypeOther(idx) {
+  var otherCb = document.querySelector('.cult-type-other-cb[data-idx="'+idx+'"]');
+  var otherInput = document.getElementById('cult-type-other-'+idx);
+  if (otherCb && otherInput) {
+    otherInput.style.display = otherCb.checked ? 'inline-block' : 'none';
+    if (!otherCb.checked) otherInput.value = '';
+  }
+}
+
+function toggleEskapeDetails(idx) {
+  var eskapeSel = document.getElementById('cult-eskape-'+idx);
+  var wrap = document.getElementById('eskape-org-wrap-'+idx);
+  if (eskapeSel && wrap) {
+    wrap.style.display = eskapeSel.value === 'Yes' ? 'block' : 'none';
+    if (eskapeSel.value !== 'Yes') {
+      // Uncheck all ESKAPE organism checkboxes when No/empty
+      var cbs = wrap.querySelectorAll('.eskape-org-cb');
+      cbs.forEach(function(cb){ cb.checked = false; });
+    }
+  }
 }
 
 // ─── ABX SEARCH ─────────────────────────────────────────────
@@ -1393,7 +1430,8 @@ async function saveRecord() {
       return {
         sent: document.getElementById('cult-sent-'+idx)?document.getElementById('cult-sent-'+idx).value:'',
         date: document.getElementById('cult-date-'+idx)?document.getElementById('cult-date-'+idx).value:'',
-        type: document.getElementById('cult-type-'+idx)?document.getElementById('cult-type-'+idx).value:'',
+        type: (function(){ var cbs=document.querySelectorAll('.cult-type-cb[data-idx="'+idx+'"]'); var vals=[]; cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); }); return vals.join(','); })(),
+        typeOther: document.getElementById('cult-type-other-'+idx)?document.getElementById('cult-type-other-'+idx).value:'',
         result: document.getElementById('cult-result-'+idx)?document.getElementById('cult-result-'+idx).value:'',
         organism: document.getElementById('cult-org-'+idx)?document.getElementById('cult-org-'+idx).value:'',
         gram: document.getElementById('cult-gram-'+idx)?document.getElementById('cult-gram-'+idx).value:'',
@@ -1402,6 +1440,7 @@ async function saveRecord() {
         mdr: document.getElementById('cult-mdr-'+idx)?document.getElementById('cult-mdr-'+idx).value:'',
         xdr: document.getElementById('cult-xdr-'+idx)?document.getElementById('cult-xdr-'+idx).value:'',
         eskape: document.getElementById('cult-eskape-'+idx)?document.getElementById('cult-eskape-'+idx).value:'',
+        eskapeOrganisms: (function(){ var cbs=document.querySelectorAll('.eskape-org-cb[data-idx="'+idx+'"]'); var vals=[]; cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); }); return vals.join(','); })(),
       };
     }).filter(function(c){return c.sent||c.type});
 
@@ -1633,7 +1672,7 @@ function renderDataMgmt(container) {
   html += '<div class="card"><div class="text-sm font-semibold mb-2" style="color:var(--warning)">Cultures Sheet</div>';
   html += '<div class="text-2xl font-bold mb-1">' + totalCult + '</div>';
   html += '<div class="text-xs" style="color:var(--text-muted)">Culture entries (1 row/culture)</div>';
-  html += '<div class="text-xs mt-2" style="color:var(--text-secondary)">12 columns: Type, Organism, MDR, XDR, ESKAPE, etc.</div>';
+  html += '<div class="text-xs mt-2" style="color:var(--text-secondary)">14 columns: Type, Type_Other, Organism, MDR, XDR, ESKAPE, ESKAPE_Organisms, etc.</div>';
   html += '</div>';
 
   html += '</div></div>';
@@ -1703,7 +1742,7 @@ function renderDataMgmt(container) {
 
   html += '<div><div class="text-sm font-semibold mb-2" style="color:var(--warning)">Cultures Sheet Fields</div>';
   html += '<div class="text-xs" style="color:var(--text-muted);line-height:1.6">';
-  ['Study_ID (FK)','Sent','Date','Type','Result','Organism','Gram','AST','Resistance','MDR','XDR','ESKAPE'].forEach(function(f){
+  ['Study_ID (FK)','Sent','Date','Type','Type_Other','Result','Organism','Gram','AST','Resistance','MDR','XDR','ESKAPE','ESKAPE_Organisms'].forEach(function(f){
     html += f + '<br>';
   });
   html += '</div></div>';
