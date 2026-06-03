@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OncoCollect v3 — Clinical Research Database</title>
+<title>OncoCollect</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-/* ────────────── RESET & VARIABLES ────────────── */
+/* reset & variables */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg-body:#050a13;--bg-sidebar:#0c1322;--bg-card:#111827;
@@ -23,7 +24,7 @@
   --btn-ghost-hover:rgba(255,255,255,.05);
 }
 
-/* ────────────── LIGHT MODE OVERRIDES ────────────── */
+/* light mode */
 html[data-theme="light"]{
   --bg-body:#f1f5f9;--bg-sidebar:#ffffff;--bg-card:#ffffff;
   --bg-input:#f8fafc;--accent:#0284c7;--accent-hover:#0369a1;--accent-dim:rgba(2,132,199,.12);
@@ -39,7 +40,7 @@ html[data-theme="light"]{
 
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg-body);color:var(--text-primary);overflow:hidden}
 
-/* ────────────── UTILITY ────────────── */
+/* utility */
 .flex{display:flex}.flex-col{flex-direction:column}.flex-1{flex:1}.items-center{align-items:center}.justify-center{justify-content:center}
 .gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}
 .w-full{width:100%}.min-w-0{min-width:0}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -66,7 +67,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .required::after{content:' *';color:var(--danger)}
 .error-border{border-color:var(--danger)!important}
 
-/* ────────────── APP LAYOUT ────────────── */
+/* app layout */
 #app{display:flex;flex-direction:column;height:100vh}
 #app-main{display:flex;flex:1;overflow:hidden}
 #sidebar{width:240px;min-width:240px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .2s ease;z-index:50}
@@ -75,28 +76,23 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 #topbar{display:none;height:3.5rem;align-items:center;gap:.75rem;padding:0 1rem;background:var(--bg-sidebar);border-bottom:1px solid var(--border)}
 footer{background:var(--bg-sidebar);border-top:1px solid var(--border);padding:.75rem 1.5rem;text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:auto}
 
-/* Mobile */
+/* mobile sidebar/topbar */
 @media(max-width:1023px){
   #sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%)}
   #sidebar.open{transform:translateX(0)}
   #sidebar-overlay.open{display:block}
   #topbar{display:flex}
   #content{padding:1rem}
-  .grid-cols-3{grid-template-columns:1fr}
-  .grid-cols-4{grid-template-columns:repeat(2,1fr)}
-}
-@media(min-width:640px) and (max-width:1023px){
-  .grid-cols-3{grid-template-columns:repeat(2,1fr)}
 }
 
-/* ────────────── CARDS ────────────── */
-.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+/* cards */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:1.25rem}
 .card-stat{display:flex;flex-direction:column;gap:.25rem}
-.card-stat .stat-icon{width:2.5rem;height:2.5rem;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.125rem}
+.card-stat .stat-icon{width:2.5rem;height:2.5rem;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.125rem}
 .card-stat .stat-value{font-size:1.5rem;font-weight:700;color:var(--text-primary)}
 .card-stat .stat-label{font-size:.75rem;color:var(--text-secondary)}
 
-/* ────────────── FORM ELEMENTS ────────────── */
+/* form elements */
 input,select,textarea{
   width:100%;height:2.5rem;padding:0 .75rem;background:var(--bg-input);
   border:1px solid var(--border-input);border-radius:var(--radius);
@@ -111,7 +107,7 @@ label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 @media(max-width:639px){.form-grid{grid-template-columns:1fr}}
 
-/* ────────────── BUTTONS ────────────── */
+/* buttons */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.375rem;
   padding:.5rem 1rem;border-radius:var(--radius);font-size:.875rem;font-weight:500;
@@ -128,21 +124,21 @@ label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary
 .btn-sm{height:2rem;padding:.25rem .625rem;font-size:.75rem}
 .btn-icon{width:2rem;height:2rem;padding:0;border-radius:var(--radius)}
 
-/* ────────────── TABLE ────────────── */
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg)}
+/* table */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:11px}
 table{width:100%;border-collapse:collapse;font-size:.875rem}
 th{background:var(--bg-sidebar);color:var(--text-secondary);font-weight:500;text-align:left;padding:.625rem .75rem;white-space:nowrap;border-bottom:1px solid var(--border)}
 td{padding:.625rem .75rem;border-bottom:1px solid var(--border);color:var(--text-primary)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg-table-hover)}
 
-/* ────────────── BADGE ────────────── */
+/* badge */
 .badge{display:inline-flex;align-items:center;padding:.125rem .5rem;border-radius:9999px;font-size:.75rem;font-weight:500}
 .badge-access{background:rgba(34,197,94,.15);color:#22c55e}
 .badge-watch{background:rgba(245,158,11,.15);color:#f59e0b}
 .badge-reserve{background:rgba(239,68,68,.15);color:#ef4444}
 
-/* ────────────── MODAL ────────────── */
+/* modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
 .modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:56rem;margin:1rem auto;position:relative}
 .modal-header{position:sticky;top:0;background:var(--bg-card);padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);z-index:1;display:flex;align-items:center;justify-content:space-between}
@@ -150,8 +146,8 @@ tr:hover td{background:var(--bg-table-hover)}
 .modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.75rem;position:sticky;bottom:0;background:var(--bg-card)}
 .section-title{font-size:.875rem;font-weight:600;color:var(--accent);padding-bottom:.5rem;margin:1.25rem 0 .75rem;border-bottom:1px solid var(--border)}
 
-/* ────────────── SLOT CARD ────────────── */
-.slot-card{background:rgba(14,165,233,.04);border:1px solid rgba(14,165,233,.12);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;position:relative}
+/* slot card */
+.slot-card{background:rgba(14,165,233,.04);border:1px solid rgba(14,165,233,.12);border-radius:9px;padding:1rem;margin-bottom:.75rem;position:relative}
 .slot-card .slot-remove{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;border-radius:50%;border:none;background:rgba(239,68,68,.15);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;line-height:1}
 .slot-card .slot-remove:hover{background:rgba(239,68,68,.3)}
 .slot-title{font-size:.75rem;font-weight:600;color:var(--accent);margin-bottom:.75rem}
@@ -162,48 +158,90 @@ tr:hover td{background:var(--bg-table-hover)}
 .cult-type-other-input:focus{border-color:var(--accent)}
 .eskape-organisms-wrap{margin-bottom:.5rem}
 
-/* ────────────── PROGRESS BAR ────────────── */
+/* progress bar */
 .progress{height:.5rem;background:var(--progress-bg);border-radius:9999px;overflow:hidden}
 .progress-bar{height:100%;border-radius:9999px;transition:width .4s ease}
 
-/* ────────────── TOAST ────────────── */
+/* toast */
 #toast-container{position:fixed;top:1rem;right:1rem;z-index:100;display:flex;flex-direction:column;gap:.5rem}
 .toast{padding:.75rem 1rem;border-radius:var(--radius);font-size:.875rem;color:#fff;animation:slideIn .2s ease;min-width:250px;max-width:400px;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .toast-success{background:#16a34a}.toast-error{background:#dc2626}.toast-info{background:#2563eb}.toast-warning{background:#d97706}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
-/* ────────────── LOGIN ────────────── */
+/* login */
 #login-view{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;background:var(--bg-body)}
-#login-card{width:100%;max-width:28rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem}
+#login-card{width:100%;max-width:28rem;background:var(--bg-card);border:1px solid var(--border);border-radius:13px;padding:2rem}
 
-/* ────────────── SCROLLBAR ────────────── */
+/* scrollbar */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover)}
 
-/* ────────────── ANALYTICS ────────────── */
+/* analytics */
 .chart-container{position:relative;width:100%;height:280px;margin-top:1rem}
-.obj-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem}
+.obj-card{background:var(--bg-card);border:1px solid var(--border);border-radius:13px;padding:1.5rem;margin-bottom:1.5rem}
 .obj-card h3{font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.25rem}
 .obj-card p{font-size:.8125rem;color:var(--text-secondary);margin-bottom:1rem}
 
-/* ────────────── ABX SEARCH DROPDOWN ────────────── */
+/* abx dropdown */
 .abx-search-wrap{position:relative}
 .abx-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--abx-dropdown-bg);border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10}
 .abx-dropdown div{padding:.5rem .75rem;cursor:pointer;font-size:.8125rem;color:var(--text-primary)}
 .abx-dropdown div:hover{background:var(--accent-dim)}
 .abx-dropdown .abx-cat{font-size:.6875rem;margin-left:.5rem}
 
-/* ────────────── DATE FILTER BAR ────────────── */
+/* filter bar */
 .filter-bar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
 .filter-bar input,.filter-bar select{width:auto;min-width:140px}
 
-/* ────────────── CONNECTION TEST ────────────── */
+/* connection test */
 .conn-status{font-size:.75rem;margin-top:.5rem;padding:.5rem .75rem;border-radius:var(--radius)}
 .conn-ok{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
 .conn-fail{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
 .conn-checking{background:rgba(14,165,233,.1);color:#0ea5e9;border:1px solid rgba(14,165,233,.2)}
+
+/* login logo (medical cross) */
+.login-logo{width:3rem;height:3rem;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff}
+
+/* mobile improvements */
+@media(max-width:639px){
+  #login-view{padding:.5rem;align-items:flex-start;padding-top:2rem}
+  #login-card{max-width:100%;border-radius:10px;padding:1.25rem}
+  #login-card input,#login-card select{height:2.75rem;font-size:1rem}
+  #login-card .btn{height:2.75rem;font-size:1rem}
+  .btn{min-height:44px}
+  .btn-sm{min-height:36px}
+  .btn-icon{min-width:44px;min-height:44px;width:auto;height:auto}
+  #sidebar-nav button{min-height:44px;padding:.625rem .75rem}
+  .form-grid{grid-template-columns:1fr!important}
+  .slot-card .form-grid{grid-template-columns:1fr!important}
+  .grid-cols-2{grid-template-columns:1fr}
+  .grid-cols-3{grid-template-columns:1fr}
+  .grid-cols-4{grid-template-columns:1fr}
+  .checkbox-group{flex-direction:column;align-items:flex-start;gap:6px 0}
+  .eskape-organisms-wrap .checkbox-group{flex-direction:column;align-items:flex-start;gap:6px 0}
+  .modal{max-width:100%;margin:0;border-radius:0;min-height:100vh;min-height:100dvh}
+  .modal-overlay{padding:0;align-items:stretch}
+  .modal-header{padding:1rem}
+  .modal-body{padding:1rem}
+  .modal-footer{padding:.75rem 1rem}
+  footer{display:none}
+  .filter-bar{flex-direction:column;align-items:stretch;gap:.5rem}
+  .filter-bar input,.filter-bar select{width:100%;min-width:0}
+  .chart-container{height:220px}
+  input,select,textarea{height:2.75rem;font-size:16px}
+  .table-wrap{margin:0 -1rem;border-radius:0;border-left:none;border-right:none}
+  table th:first-child,table td:first-child{position:sticky;left:0;z-index:2;background:var(--bg-sidebar)}
+  table td:first-child{background:var(--bg-card)}
+  tr:hover td:first-child{background:var(--bg-table-hover)}
+}
+@media(min-width:640px) and (max-width:1023px){
+  .grid-cols-3{grid-template-columns:1fr}
+  .grid-cols-4{grid-template-columns:repeat(2,1fr)}
+  .checkbox-group{flex-wrap:wrap}
+  .modal{max-width:calc(100vw - 2rem)}
+}
 </style>
 </head>
 <body>
@@ -216,9 +254,9 @@ tr:hover td{background:var(--bg-table-hover)}
   <button class="btn btn-ghost btn-icon" id="theme-toggle-login" onclick="toggleTheme()" style="position:fixed;top:1rem;right:1rem;font-size:1.25rem;width:2.5rem;height:2.5rem;z-index:100" title="Toggle Theme">&#x2600;</button>
   <div id="login-card">
     <div class="flex flex-col items-center gap-2 mb-8">
-      <div style="width:3rem;height:3rem;border-radius:var(--radius);background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:#fff">O</div>
-      <h1 class="text-2xl font-bold">OncoCollect v3</h1>
-      <p class="text-sm" style="color:var(--text-secondary)">Antimicrobial Stewardship in Oncology</p>
+      <div class="login-logo" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="14" y="4" width="8" height="22" rx="2" fill="currentColor"/><rect x="4" y="14" width="22" height="8" rx="2" fill="currentColor"/><circle cx="18" cy="18" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+      <h1 class="text-2xl font-bold">OncoCollect</h1>
+      <p class="text-sm" style="color:var(--text-secondary)">Antimicrobial Stewardship Data Collection</p>
     </div>
     <form id="login-form" class="flex flex-col gap-4">
       <div>
@@ -303,7 +341,7 @@ tr:hover td{background:var(--bg-table-hover)}
       <div id="content" class="flex-1"></div>
     </main>
   </div>
-  <footer>OncoCollect v3 &mdash; Clinical Research Database &bull; Antimicrobial Stewardship in Oncology</footer>
+  <footer>OncoCollect</footer>
 </div>
 
 <!-- RECORD MODAL -->
@@ -348,14 +386,12 @@ tr:hover td{background:var(--bg-table-hover)}
 </div>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   OncoCollect v3.0 Frontend
-   ══════════════════════════════════════════════════════════════ */
+// OncoCollect Frontend
 
-// ─── GITHUB PAGES CONFIG ────────────────────────────────────
+// config
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbyInBkr1u4ZKJCdgmWjYc2BTi-7aFYXYfG6F_fgN2N4gqJxfnxoDzoBNCkibOQAT3ay/exec';
 
-// ─── THEME MANAGEMENT (Dark / Light Mode) ───────────────────
+// theme
 function initTheme() {
   var theme = localStorage.getItem('oc_theme') || 'dark';
   setTheme(theme);
@@ -393,10 +429,10 @@ function toggleTheme() {
 // Initialize theme immediately to prevent flashing
 initTheme();
 
-// ─── AUTO-DETECT ENVIRONMENT ────────────────────────────────
+// environment detection
 var IS_GAS = (typeof google !== 'undefined' && google.script && google.script.run);
 
-// ─── STATE ──────────────────────────────────────────────────
+// state
 var currentUser = null;
 var sessionInfo = { hospital: '', dateOfCollection: '', collectorName: '' };
 var rawData = [];
@@ -407,7 +443,7 @@ var chartInstances = {};
 var dateFilterFrom = '';
 var dateFilterTo = '';
 
-// ─── HELPERS ────────────────────────────────────────────────
+// helpers
 function esc(str) {
   if (str == null) return '';
   var d = document.createElement('div');
@@ -500,7 +536,7 @@ function toast(msg, type) {
   setTimeout(function(){ el.remove(); }, 4000);
 }
 
-// ═══════════════════ API LAYER ═══════════════════════════════
+// api layer
 // CRITICAL FIX: All API calls use POST with Content-Type: text/plain
 // This avoids CORS preflight and handles the GAS 302 redirect properly.
 // GAS returns 302 → script.googleusercontent.com → fetch follows redirect
@@ -644,7 +680,7 @@ function apiCallFetch(action, data) {
   });
 }
 
-// ─── TEST CONNECTION ────────────────────────────────────────
+// test connection
 function testConnection() {
   var resultEl = document.getElementById('conn-result');
   resultEl.style.display = 'block';
@@ -699,7 +735,7 @@ function testConnection() {
   });
 }
 
-// ─── SESSION PERSISTENCE ────────────────────────────────────
+// session
 function saveSession() {
   if (currentUser) {
     localStorage.setItem('oc_session', JSON.stringify(currentUser));
@@ -737,7 +773,7 @@ function showLoginScreen() {
   document.getElementById('login-view').style.display = 'flex';
 }
 
-// ─── AUTH ───────────────────────────────────────────────────
+// auth
 async function handleLogin(e) {
   e.preventDefault();
   var username = document.getElementById('login-user').value.trim();
@@ -790,7 +826,7 @@ function logout() {
   showLoginScreen();
 }
 
-// ─── NAVIGATION ─────────────────────────────────────────────
+// navigation
 var NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: '&#9632;' },
   { key: 'records', label: 'Records', icon: '&#9998;' },
@@ -820,7 +856,7 @@ function toggleSidebar(open) {
   document.getElementById('sidebar-overlay').classList.toggle('open', open);
 }
 
-// ─── DATA LOADING ───────────────────────────────────────────
+// data loading
 async function loadData() {
   try {
     var filters = {};
@@ -852,7 +888,7 @@ async function refreshData() {
   toast('Data synced', 'success');
 }
 
-// ─── SHOW APP ───────────────────────────────────────────────
+// show app
 async function showApp() {
   document.getElementById('login-view').style.display = 'none';
   document.getElementById('app').classList.remove('hidden');
@@ -867,7 +903,7 @@ async function showApp() {
   renderView();
 }
 
-// ─── RENDER ROUTER ──────────────────────────────────────────
+// render router
 function renderView() {
   var c = document.getElementById('content');
   Object.values(chartInstances).forEach(function(ch){ try{ch.destroy()}catch(e){} });
@@ -884,7 +920,7 @@ function renderView() {
   renderNav();
 }
 
-// ═══════════════════ DASHBOARD ═══════════════════════════════
+// dashboard
 function renderDashboard(container) {
   var total = rawData.length;
   var abxCourses = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
@@ -929,7 +965,7 @@ function renderDashboard(container) {
   container.innerHTML = html;
 }
 
-// ═══════════════════ RECORDS ═════════════════════════════════
+// records
 function renderRecords(container) {
   var html = '<div class="flex items-center gap-3 mb-4 flex-wrap">';
   html += '<input type="text" id="search-input" placeholder="Search by ID, diagnosis, cancer..." style="max-width:300px" oninput="filterRecords()">';
@@ -978,7 +1014,7 @@ function buildRecordTable(records, showActions) {
   return html;
 }
 
-// ─── FLAT CSV EXPORT ────────────────────────────────────────
+// csv export
 async function exportFlatCsv() {
   if (!rawData.length) return toast('No records to export', 'error');
   try {
@@ -1009,7 +1045,7 @@ function exportSimpleCsv() {
   toast('Quick CSV exported', 'success');
 }
 
-// ═══════════════════ RECORD MODAL ════════════════════════════
+// record modal
 var modalMode = null;
 var modalStudyId = '';
 var formAbx = [];
@@ -1078,7 +1114,7 @@ function renderRecordModal() {
 
   var html = '';
 
-  // ─── Collection Info ───
+  // collection info
   html += '<div class="section-title">Collection Information</div><div class="form-grid">';
   html += '<div><label>Timestamp</label><input value="'+esc(rec.timestamp||fmtDate(new Date()))+'" readonly></div>';
   html += '<div><label>Study ID</label><input value="'+esc(modalStudyId)+'" readonly></div>';
@@ -1088,13 +1124,13 @@ function renderRecordModal() {
   html += '<div><label>Collector Name</label><input value="'+esc(rec.collectorName||sessionInfo.collectorName)+'" readonly></div>';
   html += '</div>';
 
-  // ─── A. Demographics ───
+  // demographics
   html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
   html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(rec.age!=null?rec.age:'')+'" '+dis+' placeholder="0-120"></div>';
   html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+'><option value="">Select</option><option value="Male" '+(rec.sex==='Male'?'selected':'')+'>Male</option><option value="Female" '+(rec.sex==='Female'?'selected':'')+'>Female</option></select></div>';
   html += '</div>';
 
-  // ─── B. Admission & Clinical ───
+  // admission & clinical
   html += '<div class="section-title">B. Admission & Clinical Details</div><div class="form-grid">';
   html += '<div><label class="required">Admission Date</label><input type="date" id="f-admit" value="'+esc(fmtDate(rec.admissionDate))+'" '+dis+'></div>';
   html += '<div><label>Discharge Date</label><input type="date" id="f-discharge" value="'+esc(fmtDate(rec.dischargeDate))+'" '+dis+'></div>';
@@ -1151,15 +1187,15 @@ function renderRecordModal() {
 
   html += '</div>';
 
-  // ─── C. Antibiotics ───
+  // antibiotics
   html += '<div class="section-title">C. Antibiotics (up to 30)</div><div id="abx-slots">' + renderAbxSlots(isView) + '</div>';
   if (!isView && formAbx.length < 30) html += '<button class="btn btn-ghost btn-sm mt-2" onclick="addAbxSlot()">+ Add Antibiotic (' + formAbx.length + '/30)</button>';
 
-  // ─── D. Cultures ───
+  // cultures
   html += '<div class="section-title">D. Cultures (up to 30)</div><div id="cult-slots">' + renderCultSlots(isView) + '</div>';
   if (!isView && formCult.length < 30) html += '<button class="btn btn-ghost btn-sm mt-2" onclick="addCultSlot()">+ Add Culture (' + formCult.length + '/30)</button>';
 
-  // ─── E. Required for Analysis ───
+  // data analysis
   html += '<div class="section-title">E. Data Analysis</div><div class="form-grid">';
   html += '<div><label>Is this data required during analysis?</label><select id="f-required" '+dis+'><option value="">Select</option>';
   ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.requiredForAnalysis===v?'selected':'')+'>'+v+'</option>';});
@@ -1291,7 +1327,7 @@ function renderCultSlots(isView) {
   }).join('');
 }
 
-// ─── AUTO-CALC HELPERS ──────────────────────────────────────
+// auto-calc helpers
 function autoCalcAbx(idx) {
   var start = document.getElementById('abx-start-'+idx);
   var stop = document.getElementById('abx-stop-'+idx);
@@ -1348,7 +1384,7 @@ function toggleEskapeDetails(idx) {
   }
 }
 
-// ─── ABX SEARCH ─────────────────────────────────────────────
+// abx search
 function openAbxDropdown(idx) { renderAbxOptions(idx, ''); }
 function filterAbxDropdown(idx) {
   var input = document.querySelector('.abx-search-input[data-idx="'+idx+'"]');
@@ -1386,7 +1422,7 @@ function removeAbxSlot(idx) { if (formAbx.length<=1) return; formAbx.splice(idx,
 function addCultSlot() { if (formCult.length>=30) return; formCult.push(emptyCult()); renderRecordModal(); }
 function removeCultSlot(idx) { if (formCult.length<=1) return; formCult.splice(idx,1); renderRecordModal(); }
 
-// ─── SAVE RECORD ────────────────────────────────────────────
+// save record
 async function saveRecord() {
   var btn = document.getElementById('save-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
@@ -1498,7 +1534,7 @@ async function saveRecord() {
   }
 }
 
-// ─── DELETE RECORD ──────────────────────────────────────────
+// delete record
 async function deleteRecord(studyId) {
   if (!confirm('Delete this record? This is a soft delete (data preserved).')) return;
   try {
@@ -1513,7 +1549,7 @@ function closeRecordModal() {
   window._editRec = null; modalMode = null;
 }
 
-// ═══════════════════ ANALYTICS ═══════════════════════════════
+// analytics
 function renderAnalytics(container) {
   if (!currentUser) { container.innerHTML = '<p style="color:var(--text-muted)">Please log in</p>'; return; }
 
@@ -1638,7 +1674,7 @@ function renderAnalytics(container) {
   }
 }
 
-// ═══════════════════ DATA MANAGEMENT (Admin) ═════════════════
+// data management
 function renderDataMgmt(container) {
   if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
 
@@ -1783,7 +1819,7 @@ async function purgeDeletedRecords() {
   } catch(e) { toast('Purge failed: ' + e.message, 'error'); }
 }
 
-// ─── PASSWORD CHANGE ────────────────────────────────────────
+// password change
 function showPasswordModal() {
   var html = '<div class="flex flex-col gap-4">';
   html += '<div><label class="required">Current Password</label><input type="password" id="cp-current" placeholder="Enter current password"></div>';
@@ -1827,7 +1863,7 @@ async function changePassword() {
   }
 }
 
-// ═══════════════════ USERS ═══════════════════════════════════
+// users
 function renderUsers(container) {
   if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
   var html = '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">User Management</h2><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'user-modal\').classList.remove(\'hidden\')">+ Add User</button></div>';
@@ -1873,7 +1909,7 @@ async function createUser() {
   finally { btn.disabled = false; btn.textContent = 'Create User'; }
 }
 
-// ═══════════════════ AUDIT LOG ═══════════════════════════════
+// audit log
 async function renderAudit(container) {
   if (!currentUser || currentUser.role !== 'Admin') { container.innerHTML = '<p style="color:var(--text-muted)">Admin access required</p>'; return; }
 
@@ -1894,12 +1930,12 @@ async function renderAudit(container) {
   }
 }
 
-// ─── HOSPITAL OTHER TOGGLE ──────────────────────────────────
+// hospital toggle
 document.getElementById('login-hospital').addEventListener('change', function() {
   document.getElementById('hospital-other-wrap').style.display = this.value === 'Other' ? 'block' : 'none';
 });
 
-// ─── INIT ───────────────────────────────────────────────────
+// init
 document.getElementById('login-form').addEventListener('submit', handleLogin);
 
 // Auto-fill date
