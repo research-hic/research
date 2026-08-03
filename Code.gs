@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   OncoCollect v3.0 — Google Apps Script Backend (Enhanced)
+   OncoCollect v3.1 — Google Apps Script Backend (Enhanced)
    
    NEW FIELDS: Hospital, Date of Collection, Collector Name,
                Required for Analysis, Treatment Other, Ward Other,
@@ -18,6 +18,9 @@
    - Data backup automation
    - Email notifications for critical thresholds
    - ATC codes in WHO list
+   - Input sanitization (XSS protection)
+   - JSDoc type annotations
+   - Improved error handling
    
    DEPLOYMENT:
    
@@ -34,12 +37,15 @@
      3. Set GAS_URL in index.html
    
    SETUP (run once): Run > setupSheets
+   
+   SECURITY NOTICE: Change CONFIG.HMAC_SECRET before production!
    ══════════════════════════════════════════════════════════════ */
 
 // ─── CONFIG ─────────────────────────────────────────────────
+/** @type {Object} */
 const CONFIG = {
   SPREADSHEET_NAME: 'OncoCollectDB',
-  HMAC_SECRET: '0nc0C0ll3ct_S3cr3t_K3y_2024_Ch4ng3_M3!', // CHANGE THIS IN PRODUCTION!
+  HMAC_SECRET: 'CHANGE_THIS_SECRET_BEFORE_PRODUCTION_' + Math.random().toString(36).substring(2), // CHANGE THIS IN PRODUCTION!
   RECORD_HEADERS: [
     'Timestamp','Study ID','Age','Sex','Created By',
     'Hospital','Date of Collection','Collector Name',
@@ -163,12 +169,21 @@ const WHO_ANTIBIOTICS = [
 ];
 
 // ─── SPREADSHEET HELPERS ────────────────────────────────────
+/**
+ * Get or create the spreadsheet
+ * @returns {SpreadsheetApp.Spreadsheet}
+ */
 function getSpreadsheet() {
   const files = DriveApp.getFilesByName(CONFIG.SPREADSHEET_NAME);
   if (files.hasNext()) return SpreadsheetApp.open(files.next());
   return SpreadsheetApp.create(CONFIG.SPREADSHEET_NAME);
 }
 
+/**
+ * Get or create a sheet by name
+ * @param {string} name - Sheet name
+ * @returns {SpreadsheetApp.Sheet}
+ */
 function getSheet(name) {
   const ss = getSpreadsheet();
   let sheet = ss.getSheetByName(name);
@@ -176,17 +191,57 @@ function getSheet(name) {
   return sheet;
 }
 
+// ─── INPUT SANITIZATION (XSS Protection) ─────────────────────
+/**
+ * Sanitize user input to prevent XSS attacks
+ * @param {string} str - Input string to sanitize
+ * @returns {string} Sanitized string
+ */
+function sanitizeInput(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+/**
+ * Escape HTML for safe display in CSV/text exports
+ * @param {string} str - Input string
+ * @returns {string} Escaped string
+ */
+function escapeHtml(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.replace(/[&<>"']/g, function(m) {
+    var map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;'};
+    return map[m];
+  });
+}
+
 // ─── SERVE HTML (OPTION A) + API GET FALLBACK ───────────────
+/**
+ * Handle GET requests - serve HTML or handle API calls
+ * @param {Object} e - Event object with parameters
+ * @returns {HtmlOutput|TextOutput}
+ */
 function doGet(e) {
   var params = e.parameter || {};
   if (params.action) return handleGetApi(params);
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('OncoCollect v3 — Clinical Research Database')
+    .setTitle('OncoCollect v3.1 — Clinical Research Database')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
 }
 
 // ─── POST HANDLER (for save operations with large payloads) ──
+/**
+ * Handle POST requests for data mutations and API calls
+ * @param {Object} e - Event object with post data
+ * @returns {TextOutput}
+ */
 function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
@@ -201,7 +256,7 @@ function doPost(e) {
     }
 
     if (action === 'login') {
-      return corsJson(apiLogin(data.username, data.password));
+      return corsJson(apiLogin(sanitizeInput(data.username), data.password));
     }
 
     if (!verifyToken(token)) {
@@ -215,11 +270,11 @@ function doPost(e) {
       case 'delete':
         return corsJson(apiDelete(token, data.studyId));
       case 'addUser':
-        return corsJson(apiAddUser(token, data.username, data.password, data.role));
+        return corsJson(apiAddUser(token, sanitizeInput(data.username), data.password, sanitizeInput(data.role)));
       case 'changePassword':
         return corsJson(apiChangePassword(token, data.currentPassword, data.newPassword));
       case 'toggleUser':
-        return corsJson(apiToggleUser(token, data.username, data.active));
+        return corsJson(apiToggleUser(token, sanitizeInput(data.username), data.active));
       // Read operations (also accessible via POST for CORS compatibility)
       case 'read':
         return corsJson(apiRead(token, data.filters || data || {}));
@@ -238,21 +293,27 @@ function doPost(e) {
       case 'purgeDeleted':
         return corsJson(apiPurgeDeleted(token));
       default:
-        return corsJson({ success: false, message: 'Unknown action: ' + action });
+        return corsJson({ success: false, message: 'Unknown action: ' + escapeHtml(action) });
     }
   } catch (err) {
-    return corsJson({ success: false, message: 'Server error: ' + err.message });
+    Logger.log('POST error: ' + err.message);
+    return corsJson({ success: false, message: 'Server error: ' + escapeHtml(err.message) });
   }
 }
 
 // ─── API GET HANDLER (for read-only operations) ─────────────
+/**
+ * Handle GET API requests for read-only operations
+ * @param {Object} params - Request parameters
+ * @returns {TextOutput}
+ */
 function handleGetApi(params) {
   var action = params.action;
   var token = params.token || '';
 
   try {
     if (action === 'login') {
-      return corsJson(apiLogin(params.username, params.password));
+      return corsJson(apiLogin(sanitizeInput(params.username), params.password));
     }
 
     if (!verifyToken(token)) {
@@ -277,13 +338,19 @@ function handleGetApi(params) {
       case 'purgeDeleted':
         return corsJson(apiPurgeDeleted(token));
       default:
-        return corsJson({ success: false, message: 'Unknown action: ' + action });
+        return corsJson({ success: false, message: 'Unknown action: ' + escapeHtml(action) });
     }
   } catch (err) {
-    return corsJson({ success: false, message: 'Server error: ' + err.message });
+    Logger.log('GET API error: ' + err.message);
+    return corsJson({ success: false, message: 'Server error: ' + escapeHtml(err.message) });
   }
 }
 
+/**
+ * Create CORS-enabled JSON response
+ * @param {Object} data - Response data
+ * @returns {TextOutput}
+ */
 function corsJson(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
@@ -291,6 +358,12 @@ function corsJson(data) {
 
 // ─── SERVER-SIDE API FUNCTIONS ──────────────────────────────
 
+/**
+ * Handle user login with rate limiting and password verification
+ * @param {string} username - User's username
+ * @param {string} password - User's password
+ * @returns {Object} Login result
+ */
 function apiLogin(username, password) {
   username = (username || '').trim();
   if (!username || !password) {
@@ -345,6 +418,12 @@ function apiLogin(username, password) {
   return { success: false, message: 'Invalid username or password' };
 }
 
+/**
+ * Read records with optional filters
+ * @param {string} token - Auth token
+ * @param {Object} params - Filter parameters
+ * @returns {Object} Records and stats
+ */
 function apiRead(token, params) {
   if (!verifyToken(token)) return { success: false, message: 'Unauthorized', authError: true };
 
@@ -357,9 +436,9 @@ function apiRead(token, params) {
   if (params) {
     if (params.dateFrom) filters.dateFrom = params.dateFrom;
     if (params.dateTo) filters.dateTo = params.dateTo;
-    if (params.site && params.site !== 'all') filters.site = params.site;
-    if (params.ward && params.ward !== 'all') filters.ward = params.ward;
-    if (params.outcome && params.outcome !== 'all') filters.outcome = params.outcome;
+    if (params.site && params.site !== 'all') filters.site = sanitizeInput(params.site);
+    if (params.ward && params.ward !== 'all') filters.ward = sanitizeInput(params.ward);
+    if (params.outcome && params.outcome !== 'all') filters.outcome = sanitizeInput(params.outcome);
   }
 
   // Column mapping:
@@ -435,6 +514,12 @@ function apiRead(token, params) {
   return { success: true, records: records, stats: stats };
 }
 
+/**
+ * Save a record with validation and optimistic concurrency
+ * @param {string} token - Auth token
+ * @param {Object} record - Record data to save
+ * @returns {Object} Save result
+ */
 function apiSave(token, record) {
   if (!verifyToken(token)) return { success: false, message: 'Unauthorized', authError: true };
   if (!record || !record.studyId) return { success: false, message: 'Missing record or studyId' };
@@ -1360,6 +1445,9 @@ function apiExportRelational(token, params) {
   };
 }
 
+/**
+ * Populate WHO AWaRe antibiotics sheet with ATC codes
+ */
 function populateWhoSheet() {
   const ss = getSpreadsheet();
   var whoSheet = ss.getSheetByName('WHO');
@@ -1371,4 +1459,80 @@ function populateWhoSheet() {
     whoSheet.appendRow([abx.name, abx.atc, abx.cls, abx.cat, abx.ddd]);
   });
   Logger.log('WHO sheet populated with ' + WHO_ANTIBIOTICS.length + ' antibiotics');
+}
+
+// ─── UNIT TEST HELPERS (for QUnit or manual testing) ─────────
+/**
+ * Test input sanitization
+ * @returns {Object} Test results
+ */
+function testSanitizeInput() {
+  var tests = [
+    {input: '<script>alert("xss")</script>', expected: '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'},
+    {input: 'Normal text', expected: 'Normal text'},
+    {input: '5 > 3 & 2 < 4', expected: '5 &gt; 3 &amp; 2 &lt; 4'},
+    {input: null, expected: ''},
+    {input: '', expected: ''}
+  ];
+  
+  var passed = 0;
+  var failed = 0;
+  
+  tests.forEach(function(t) {
+    var result = sanitizeInput(t.input);
+    if (result === t.expected) {
+      passed++;
+    } else {
+      failed++;
+      Logger.log('FAIL: sanitizeInput("' + t.input + '") = "' + result + '" (expected: "' + t.expected + '")');
+    }
+  });
+  
+  return { passed: passed, failed: failed, total: tests.length };
+}
+
+/**
+ * Test password strength validation
+ * @returns {Object} Test results
+ */
+function testPasswordStrength() {
+  var tests = [
+    {password: 'weak', valid: false},
+    {password: 'NoSpecial1', valid: false},
+    {password: 'NoNumber!', valid: false},
+    {password: 'nouppercase1!', valid: false},
+    {password: 'ValidPass1!', valid: true}
+  ];
+  
+  var passed = 0;
+  var failed = 0;
+  
+  tests.forEach(function(t) {
+    var result = checkPasswordStrength(t.password);
+    if (result.valid === t.valid) {
+      passed++;
+    } else {
+      failed++;
+      Logger.log('FAIL: checkPasswordStrength("' + t.password + '").valid = ' + result.valid + ' (expected: ' + t.valid + ')');
+    }
+  });
+  
+  return { passed: passed, failed: failed, total: tests.length };
+}
+
+/**
+ * Run all unit tests
+ * @returns {Object} Combined test results
+ */
+function runAllTests() {
+  var sanitizeResult = testSanitizeInput();
+  var passwordResult = testPasswordStrength();
+  
+  return {
+    sanitizeInput: sanitizeResult,
+    passwordStrength: passwordResult,
+    totalPassed: sanitizeResult.passed + passwordResult.passed,
+    totalFailed: sanitizeResult.failed + passwordResult.failed,
+    totalTests: sanitizeResult.total + passwordResult.total
+  };
 }
