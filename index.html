@@ -194,7 +194,7 @@ tr:hover td{background:var(--bg-table-hover)}
 
 /* abx dropdown */
 .abx-search-wrap{position:relative}
-.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--abx-dropdown-bg);border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10}
+.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--abx-dropdown-bg);border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10;margin-top:2px}
 .abx-dropdown div{padding:.5rem .75rem;cursor:pointer;font-size:.8125rem;color:var(--text-primary)}
 .abx-dropdown div:hover{background:var(--accent-dim)}
 .abx-dropdown .abx-cat{font-size:.6875rem;margin-left:.5rem}
@@ -224,6 +224,7 @@ tr:hover td{background:var(--bg-table-hover)}
   #sidebar-nav button{min-height:44px;padding:.625rem .75rem}
   .form-grid{grid-template-columns:1fr!important}
   .slot-card .form-grid{grid-template-columns:1fr!important}
+  .abx-slot-grid{grid-template-columns:1fr!important}
   .grid-cols-2{grid-template-columns:1fr}
   .grid-cols-3{grid-template-columns:1fr}
   .grid-cols-4{grid-template-columns:1fr}
@@ -252,6 +253,12 @@ tr:hover td{background:var(--bg-table-hover)}
   #content{padding:.75rem}
   .slot-card{padding:.75rem}
   .section-title{font-size:.8125rem;margin:.75rem 0 .5rem}
+  .slot-title{font-size:.875rem;margin-bottom:.5rem}
+  .slot-remove{top:6px;right:6px;width:28px;height:28px;font-size:18px}
+  .abx-dropdown{max-height:200px}
+  #abx-other-wrap-0,#abx-other-wrap-1,#abx-other-wrap-2,#abx-other-wrap-3,#abx-other-wrap-4,#abx-other-wrap-5,#abx-other-wrap-6,#abx-other-wrap-7,#abx-other-wrap-8,#abx-other-wrap-9,
+  #abx-other-wrap-10,#abx-other-wrap-11,#abx-other-wrap-12,#abx-other-wrap-13,#abx-other-wrap-14,#abx-other-wrap-15,#abx-other-wrap-16,#abx-other-wrap-17,#abx-other-wrap-18,#abx-other-wrap-19,
+  #abx-other-wrap-20,#abx-other-wrap-21,#abx-other-wrap-22,#abx-other-wrap-23,#abx-other-wrap-24,#abx-other-wrap-25,#abx-other-wrap-26,#abx-other-wrap-27,#abx-other-wrap-28,#abx-other-wrap-29{grid-column:span 1!important}
 }
 @media(min-width:768px) and (max-width:1023px){
   .grid-cols-3{grid-template-columns:repeat(2,1fr)}
@@ -1279,9 +1286,9 @@ function renderAbxSlots(isView) {
     var html = '<div class="slot-card" data-abx-idx="'+i+'">';
     if (!isView && formAbx.length > 1) html += '<button class="slot-remove" onclick="removeAbxSlot('+i+')">&times;</button>';
     html += '<div class="slot-title">Antibiotic '+(i+1)+'</div>';
-    html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
-    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)" onchange="checkOtherAntibiotic('+i+')"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
-    html += '<div id="abx-other-wrap-'+i+'" class="hidden" style="grid-column:span 3"><label>Specify Other Antibiotic</label><input type="text" id="abx-other-'+i+'" value="'+esc(a.otherName||'')+'" '+dis+' placeholder="Enter antibiotic name..."></div>';
+    html += '<div class="form-grid abx-slot-grid" style="grid-template-columns:repeat(3,1fr)">';
+    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)" onchange="checkOtherAntibiotic('+i+')"></div>';
+    html += '<div id="abx-other-wrap-'+i+'" class="hidden"><label>Specify Other Antibiotic</label><input type="text" id="abx-other-'+i+'" value="'+esc(a.otherName||'')+'" '+dis+' placeholder="Enter antibiotic name..."></div>';
     html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+'><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
@@ -1411,11 +1418,11 @@ function renderAbxOptions(idx, query) {
   if (!dd) return;
   var q = query.toLowerCase();
   var filtered = whoList.filter(function(a){return !q || a.name.toLowerCase().includes(q)}).slice(0, 20);
-  // Add "Other" option if not already in the list and query is empty or matches "other"
+  // Add "Other" option at the top if query is empty or matches "other"
   if (query === '' || query.toLowerCase() === 'other') {
     var hasOther = filtered.some(function(a){return a.name.toLowerCase()==='other'});
     if (!hasOther) {
-      filtered.push({name:'Other', abxClass:'Custom', category:'Custom', ddd:0});
+      filtered.unshift({name:'Other', abxClass:'Custom', category:'Custom', ddd:0});
     }
   }
   if (!filtered.length) { dd.classList.add('hidden'); return; }
