@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0c1322">
-<title>OncoCollect</title>
+<title>OncoCollect v3.1</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
@@ -194,7 +194,7 @@ tr:hover td{background:var(--bg-table-hover)}
 
 /* abx dropdown */
 .abx-search-wrap{position:relative}
-.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--abx-dropdown-bg);border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10}
+.abx-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--abx-dropdown-bg);border:1px solid var(--border-input);border-radius:0 0 var(--radius) var(--radius);max-height:180px;overflow-y:auto;z-index:10;margin-top:2px}
 .abx-dropdown div{padding:.5rem .75rem;cursor:pointer;font-size:.8125rem;color:var(--text-primary)}
 .abx-dropdown div:hover{background:var(--accent-dim)}
 .abx-dropdown .abx-cat{font-size:.6875rem;margin-left:.5rem}
@@ -224,6 +224,7 @@ tr:hover td{background:var(--bg-table-hover)}
   #sidebar-nav button{min-height:44px;padding:.625rem .75rem}
   .form-grid{grid-template-columns:1fr!important}
   .slot-card .form-grid{grid-template-columns:1fr!important}
+  .abx-slot-grid{grid-template-columns:1fr!important}
   .grid-cols-2{grid-template-columns:1fr}
   .grid-cols-3{grid-template-columns:1fr}
   .grid-cols-4{grid-template-columns:1fr}
@@ -252,6 +253,12 @@ tr:hover td{background:var(--bg-table-hover)}
   #content{padding:.75rem}
   .slot-card{padding:.75rem}
   .section-title{font-size:.8125rem;margin:.75rem 0 .5rem}
+  .slot-title{font-size:.875rem;margin-bottom:.5rem}
+  .slot-remove{top:6px;right:6px;width:28px;height:28px;font-size:18px}
+  .abx-dropdown{max-height:200px}
+  #abx-other-wrap-0,#abx-other-wrap-1,#abx-other-wrap-2,#abx-other-wrap-3,#abx-other-wrap-4,#abx-other-wrap-5,#abx-other-wrap-6,#abx-other-wrap-7,#abx-other-wrap-8,#abx-other-wrap-9,
+  #abx-other-wrap-10,#abx-other-wrap-11,#abx-other-wrap-12,#abx-other-wrap-13,#abx-other-wrap-14,#abx-other-wrap-15,#abx-other-wrap-16,#abx-other-wrap-17,#abx-other-wrap-18,#abx-other-wrap-19,
+  #abx-other-wrap-20,#abx-other-wrap-21,#abx-other-wrap-22,#abx-other-wrap-23,#abx-other-wrap-24,#abx-other-wrap-25,#abx-other-wrap-26,#abx-other-wrap-27,#abx-other-wrap-28,#abx-other-wrap-29{grid-column:span 1!important}
 }
 @media(min-width:768px) and (max-width:1023px){
   .grid-cols-3{grid-template-columns:repeat(2,1fr)}
@@ -273,7 +280,7 @@ tr:hover td{background:var(--bg-table-hover)}
   <div id="login-card">
     <div class="flex flex-col items-center gap-2 mb-8">
       <div class="login-logo" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="14" y="4" width="8" height="22" rx="2" fill="currentColor"/><rect x="4" y="14" width="22" height="8" rx="2" fill="currentColor"/><circle cx="18" cy="18" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
-      <h1 class="text-2xl font-bold">OncoCollect</h1>
+      <h1 class="text-2xl font-bold">OncoCollect v3.1</h1>
       <p class="text-sm" style="color:var(--text-secondary)">Antimicrobial Stewardship Data Collection</p>
     </div>
     <form id="login-form" class="flex flex-col gap-4">
@@ -357,7 +364,7 @@ tr:hover td{background:var(--bg-table-hover)}
       <div id="content" class="flex-1"></div>
     </main>
   </div>
-  <footer>OncoCollect</footer>
+  <footer>OncoCollect v3.1 — Antimicrobial Stewardship Data Collection</footer>
 </div>
 
 <!-- RECORD MODAL -->
@@ -1061,7 +1068,7 @@ var formAbx = [];
 var formCult = [];
 var formVersion = 0;
 
-function emptyAbx() { return {name:'',abxClass:'',aware:'',route:'',dose:'',freq:'',start:'',stop:'',duration:'',ddd:'',grams:'',dddCalc:'',dot:'',indication:'',therapyType:'',febrileNeutro:'',febrileEpisodes:''}; }
+function emptyAbx() { return {name:'',abxClass:'',aware:'',route:'',dose:'',freq:'',start:'',stop:'',duration:'',ddd:'',grams:'',dddCalc:'',dot:'',indication:'',therapyType:'',febrileNeutro:'',febrileEpisodes:'',otherName:''}; }
 function emptyCult() { return {sent:'',date:'',type:'',typeOther:'',result:'',organism:'',gram:'',ast:'',resist:'',mdr:'',xdr:'',eskape:'',eskapeOrganisms:''}; }
 
 function openNewRecord() {
@@ -1105,7 +1112,7 @@ function editRecord(studyId) {
 
 function populateFormFromRecord(rec) {
   formAbx = rec.antibiotics && rec.antibiotics.length
-    ? rec.antibiotics.map(function(a){return{name:a.name||'',abxClass:a.abxClass||'',aware:a.aware||'',route:a.route||'',dose:a.dose||'',freq:a.freq||'',start:a.start||'',stop:a.stop||'',duration:a.duration!=null?String(a.duration):'',ddd:a.ddd!=null?String(a.ddd):'',grams:a.grams!=null?String(a.grams):'',dddCalc:a.dddCalc!=null?String(a.dddCalc):'',dot:a.dot!=null?String(a.dot):'',indication:a.indication||'',therapyType:a.therapyType||'',febrileNeutro:a.febrileNeutro||'',febrileEpisodes:a.febrileEpisodes!=null?String(a.febrileEpisodes):''}})
+    ? rec.antibiotics.map(function(a){return{name:a.name||'',abxClass:a.abxClass||'',aware:a.aware||'',route:a.route||'',dose:a.dose||'',freq:a.freq||'',start:a.start||'',stop:a.stop||'',duration:a.duration!=null?String(a.duration):'',ddd:a.ddd!=null?String(a.ddd):'',grams:a.grams!=null?String(a.grams):'',dddCalc:a.dddCalc!=null?String(a.dddCalc):'',dot:a.dot!=null?String(a.dot):'',indication:a.indication||'',therapyType:a.therapyType||'',febrileNeutro:a.febrileNeutro||'',febrileEpisodes:a.febrileEpisodes!=null?String(a.febrileEpisodes):'',otherName:a.otherName||''}})
     : [emptyAbx()];
   formCult = rec.cultures && rec.cultures.length
     ? rec.cultures.map(function(c){return{sent:c.sent||'',date:c.date||'',type:c.type||'',typeOther:c.typeOther||'',result:c.result||'',organism:c.organism||'',gram:c.gram||'',ast:c.ast||'',resist:c.resist||'',mdr:c.mdr||'',xdr:c.xdr||'',eskape:c.eskape||'',eskapeOrganisms:c.eskapeOrganisms||''}})
@@ -1277,8 +1284,9 @@ function renderAbxSlots(isView) {
     var html = '<div class="slot-card" data-abx-idx="'+i+'">';
     if (!isView && formAbx.length > 1) html += '<button class="slot-remove" onclick="removeAbxSlot('+i+')">&times;</button>';
     html += '<div class="slot-title">Antibiotic '+(i+1)+'</div>';
-    html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
-    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
+    html += '<div class="form-grid abx-slot-grid" style="grid-template-columns:repeat(3,1fr)">';
+    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)" onchange="checkOtherAntibiotic('+i+')"></div>';
+    html += '<div id="abx-other-wrap-'+i+'" class="hidden"><label>Specify Other Antibiotic</label><input type="text" id="abx-other-'+i+'" value="'+esc(a.otherName||'')+'" '+dis+' placeholder="Enter antibiotic name..."></div>';
     html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+'><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
@@ -1408,22 +1416,46 @@ function renderAbxOptions(idx, query) {
   if (!dd) return;
   var q = query.toLowerCase();
   var filtered = whoList.filter(function(a){return !q || a.name.toLowerCase().includes(q)}).slice(0, 20);
+  // Add "Other" option at the top if query is empty or matches "other"
+  if (query === '' || query.toLowerCase() === 'other') {
+    var hasOther = filtered.some(function(a){return a.name.toLowerCase()==='other'});
+    if (!hasOther) {
+      filtered.unshift({name:'Other', abxClass:'Custom', category:'Custom', ddd:0});
+    }
+  }
   if (!filtered.length) { dd.classList.add('hidden'); return; }
   dd.classList.remove('hidden');
   dd.innerHTML = filtered.map(function(a) {
     var catClass = a.category==='Access'?'badge-access':a.category==='Watch'?'badge-watch':'badge-reserve';
+    if (a.name === 'Other') catClass = 'badge-custom';
     return '<div onmousedown="selectAbx('+idx+',\''+esc(a.name).replace(/'/g,"\\'")+'\',\''+esc(a.abxClass).replace(/'/g,"\\'")+'\',\''+esc(a.category).replace(/'/g,"\\'")+'\','+a.ddd+')">'+esc(a.name)+' <span class="abx-cat badge '+catClass+'">'+esc(a.category)+'</span></div>';
   }).join('');
 }
 function selectAbx(idx, name, abxClass, category, ddd) {
-  formAbx[idx].name = name; formAbx[idx].abxClass = abxClass; formAbx[idx].aware = category; formAbx[idx].ddd = ddd;
+  formAbx[idx].name = name; formAbx[idx].abxClass = abxClass; formAbx[idx].aware = category; formAbx[idx].ddd = ddd; formAbx[idx].otherName = '';
   var input = document.querySelector('.abx-search-input[data-idx="'+idx+'"]');
   if (input) input.value = name;
   var classEl = document.getElementById('abx-class-'+idx); if (classEl) classEl.value = abxClass;
   var awareEl = document.getElementById('abx-aware-'+idx); if (awareEl) awareEl.value = category;
   var dddEl = document.getElementById('abx-ddd-'+idx); if (dddEl) dddEl.value = ddd;
+  var otherWrap = document.getElementById('abx-other-wrap-'+idx); if (otherWrap) otherWrap.classList.add('hidden');
   autoCalcDddCalc(idx);
   closeAbxDropdown(idx);
+}
+
+// Check if "Other" is selected and show/hide the other input field
+function checkOtherAntibiotic(idx) {
+  var input = document.querySelector('.abx-search-input[data-idx="'+idx+'"]');
+  var otherWrap = document.getElementById('abx-other-wrap-'+idx);
+  if (!input || !otherWrap) return;
+  
+  if (input.value.toLowerCase() === 'other') {
+    otherWrap.classList.remove('hidden');
+    formAbx[idx].name = 'Other';
+  } else {
+    otherWrap.classList.add('hidden');
+    formAbx[idx].otherName = '';
+  }
 }
 
 function addAbxSlot() { if (formAbx.length>=30) return; formAbx.push(emptyAbx()); renderRecordModal(); }
@@ -1450,6 +1482,7 @@ async function saveRecord() {
     var comorbOther = comorb==='Other' ? (document.getElementById('f-comorb-other')?document.getElementById('f-comorb-other').value:'') : '';
 
     var antibiotics = formAbx.map(function(a, idx) {
+      var otherNameVal = document.getElementById('abx-other-'+idx)?document.getElementById('abx-other-'+idx).value:'';
       return {
         name: (document.querySelector('.abx-search-input[data-idx="'+idx+'"]')?document.querySelector('.abx-search-input[data-idx="'+idx+'"]').value:'') || a.name,
         abxClass: (document.getElementById('abx-class-'+idx)?document.getElementById('abx-class-'+idx).value:'') || a.abxClass,
@@ -1468,6 +1501,7 @@ async function saveRecord() {
         therapyType: document.getElementById('abx-type-'+idx)?document.getElementById('abx-type-'+idx).value:'',
         febrileNeutro: document.getElementById('abx-neutro-'+idx)?document.getElementById('abx-neutro-'+idx).value:'',
         febrileEpisodes: document.getElementById('abx-episodes-'+idx)?document.getElementById('abx-episodes-'+idx).value:'',
+        otherName: otherNameVal,
       };
     }).filter(function(a){return a.name});
 
