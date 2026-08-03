@@ -259,6 +259,13 @@ tr:hover td{background:var(--bg-table-hover)}
   #abx-other-wrap-0,#abx-other-wrap-1,#abx-other-wrap-2,#abx-other-wrap-3,#abx-other-wrap-4,#abx-other-wrap-5,#abx-other-wrap-6,#abx-other-wrap-7,#abx-other-wrap-8,#abx-other-wrap-9,
   #abx-other-wrap-10,#abx-other-wrap-11,#abx-other-wrap-12,#abx-other-wrap-13,#abx-other-wrap-14,#abx-other-wrap-15,#abx-other-wrap-16,#abx-other-wrap-17,#abx-other-wrap-18,#abx-other-wrap-19,
   #abx-other-wrap-20,#abx-other-wrap-21,#abx-other-wrap-22,#abx-other-wrap-23,#abx-other-wrap-24,#abx-other-wrap-25,#abx-other-wrap-26,#abx-other-wrap-27,#abx-other-wrap-28,#abx-other-wrap-29{grid-column:span 1!important}
+  /* bottom navigation */
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--bg-sidebar);border-top:1px solid var(--border);justify-content:space-around;align-items:center;z-index:60;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom, 0px)}
+  .bottom-nav .nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:transparent;border:none;color:var(--text-secondary);padding:4px 8px;cursor:pointer;flex:1;max-width:80px;-webkit-tap-highlight-color:transparent}
+  .bottom-nav .nav-item.active{color:var(--accent)}
+  .bottom-nav .nav-icon{font-size:1.25rem;line-height:1}
+  .bottom-nav .nav-label{font-size:.625rem;font-weight:500}
+  #app > footer{display:none}
 }
 @media(min-width:768px) and (max-width:1023px){
   .grid-cols-3{grid-template-columns:repeat(2,1fr)}
@@ -266,6 +273,10 @@ tr:hover td{background:var(--bg-table-hover)}
   .checkbox-group{flex-wrap:wrap}
   .modal{max-width:calc(100vw - 2rem)}
   .form-grid{grid-template-columns:repeat(2,1fr)}
+  .bottom-nav{display:none}
+}
+@media(min-width:1024px){
+  .bottom-nav{display:none}
 }
 </style>
 </head>
@@ -364,7 +375,14 @@ tr:hover td{background:var(--bg-table-hover)}
       <div id="content" class="flex-1"></div>
     </main>
   </div>
-  <footer>OncoCollect v3.1 — Antimicrobial Stewardship Data Collection</footer>
+  <!-- Bottom Navigation (Mobile) -->
+  <nav id="bottom-nav" class="bottom-nav">
+    <button class="nav-item" data-view="dashboard"><span class="nav-icon">&#9632;</span><span class="nav-label">Home</span></button>
+    <button class="nav-item" data-view="records"><span class="nav-icon">&#9998;</span><span class="nav-label">Patients</span></button>
+    <button class="nav-item" data-view="new-entry"><span class="nav-icon">+</span><span class="nav-label">New Entry</span></button>
+    <button class="nav-item" data-view="analytics"><span class="nav-icon">&#9733;</span><span class="nav-label">Analytics</span></button>
+    <button class="nav-item" data-view="settings"><span class="nav-icon">&#9881;</span><span class="nav-label">Settings</span></button>
+  </nav>
 </div>
 
 <!-- RECORD MODAL -->
