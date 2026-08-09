@@ -1060,12 +1060,13 @@ var modalStudyId = '';
 var formAbx = [];
 var formCult = [];
 var formVersion = 0;
+var formTemp = {}; // temporary storage for demographics/admission fields while editing
 
 function emptyAbx() { return {name:'',abxClass:'',aware:'',route:'',dose:'',freq:'',start:'',stop:'',duration:'',ddd:'',grams:'',dddCalc:'',dot:'',indication:'',therapyType:'',febrileNeutro:'',febrileEpisodes:''}; }
 function emptyCult() { return {sent:'',date:'',type:'',typeOther:'',result:'',organism:'',gram:'',ast:'',resist:'',mdr:'',xdr:'',eskape:'',eskapeOrganisms:''}; }
 
 function openNewRecord() {
-  modalMode = 'new'; modalStudyId = ''; formAbx = [emptyAbx()]; formCult = [emptyCult()]; formVersion = 0;
+  modalMode = 'new'; modalStudyId = ''; formAbx = [emptyAbx()]; formCult = [emptyCult()]; formVersion = 0; formTemp = {};
   window._editRec = null;
   generateStudyId();
 }
@@ -1110,6 +1111,30 @@ function populateFormFromRecord(rec) {
   formCult = rec.cultures && rec.cultures.length
     ? rec.cultures.map(function(c){return{sent:c.sent||'',date:c.date||'',type:c.type||'',typeOther:c.typeOther||'',result:c.result||'',organism:c.organism||'',gram:c.gram||'',ast:c.ast||'',resist:c.resist||'',mdr:c.mdr||'',xdr:c.xdr||'',eskape:c.eskape||'',eskapeOrganisms:c.eskapeOrganisms||''}})
     : [emptyCult()];
+  // Store demographics and admission data in formTemp to persist across re-renders
+  formTemp = {
+    age: rec.age != null ? rec.age : '',
+    sex: rec.sex || '',
+    admissionDate: rec.admissionDate || '',
+    dischargeDate: rec.dischargeDate || '',
+    admissionType: rec.admissionType || '',
+    ward: rec.ward || '',
+    wardOther: rec.wardOther || '',
+    diagnosis: rec.diagnosis || '',
+    cancerType: rec.cancerType || '',
+    cancerName: rec.cancerName || '',
+    cancerNameOther: rec.cancerNameOther || '',
+    stage: rec.stage || '',
+    treatment: rec.treatment || '',
+    treatmentOther: rec.treatmentOther || '',
+    comorbidities: rec.comorbidities || '',
+    comorbiditiesOther: rec.comorbiditiesOther || '',
+    immunosuppressed: rec.immunosuppressed || '',
+    outcome: rec.outcome || '',
+    readmission30d: rec.readmission30d || '',
+    deEscalation: rec.deEscalation || '',
+    requiredForAnalysis: rec.requiredForAnalysis || ''
+  };
   window._editRec = rec;
 }
 
@@ -1135,63 +1160,85 @@ function renderRecordModal() {
 
   // demographics
   html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
-  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(rec.age!=null?rec.age:'')+'" '+dis+' placeholder="0-120"></div>';
-  html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+'><option value="">Select</option><option value="Male" '+(rec.sex==='Male'?'selected':'')+'>Male</option><option value="Female" '+(rec.sex==='Female'?'selected':'')+'>Female</option></select></div>';
+  var ageVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.age !== undefined ? formTemp.age : (rec.age != null ? rec.age : '');
+  var sexVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.sex !== undefined ? formTemp.sex : (rec.sex || '');
+  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(ageVal)+'" '+dis+' placeholder="0-120" onchange="saveFormTemp(\'age\', this.value)"></div>';
+  html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+' onchange="saveFormTemp(\'sex\', this.value)"><option value="">Select</option><option value="Male" '+(sexVal==='Male'?'selected':'')+'>Male</option><option value="Female" '+(sexVal==='Female'?'selected':'')+'>Female</option></select></div>';
   html += '</div>';
 
   // admission & clinical
   html += '<div class="section-title">B. Admission & Clinical Details</div><div class="form-grid">';
-  html += '<div><label class="required">Admission Date</label><input type="date" id="f-admit" value="'+esc(fmtDate(rec.admissionDate))+'" '+dis+'></div>';
-  html += '<div><label>Discharge Date</label><input type="date" id="f-discharge" value="'+esc(fmtDate(rec.dischargeDate))+'" '+dis+'></div>';
+  var admitDateVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.admissionDate !== undefined ? formTemp.admissionDate : (rec.admissionDate || '');
+  var dischargeDateVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.dischargeDate !== undefined ? formTemp.dischargeDate : (rec.dischargeDate || '');
+  var admTypeVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.admissionType !== undefined ? formTemp.admissionType : (rec.admissionType || '');
+  var wardVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.ward !== undefined ? formTemp.ward : (rec.ward || '');
+  var wardOtherVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.wardOther !== undefined ? formTemp.wardOther : (rec.wardOther || '');
+  var diagnosisVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.diagnosis !== undefined ? formTemp.diagnosis : (rec.diagnosis || '');
+  var cancerTypeVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.cancerType !== undefined ? formTemp.cancerType : (rec.cancerType || '');
+  var cancerNameVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.cancerName !== undefined ? formTemp.cancerName : (rec.cancerName || '');
+  var cancerNameOtherVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.cancerNameOther !== undefined ? formTemp.cancerNameOther : (rec.cancerNameOther || '');
+  var stageVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.stage !== undefined ? formTemp.stage : (rec.stage || '');
+  var treatmentVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.treatment !== undefined ? formTemp.treatment : (rec.treatment || '');
+  var treatmentOtherVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.treatmentOther !== undefined ? formTemp.treatmentOther : (rec.treatmentOther || '');
+  var comorbVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.comorbidities !== undefined ? formTemp.comorbidities : (rec.comorbidities || '');
+  var comorbOtherVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.comorbiditiesOther !== undefined ? formTemp.comorbiditiesOther : (rec.comorbiditiesOther || '');
+  var immunoVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.immunosuppressed !== undefined ? formTemp.immunosuppressed : (rec.immunosuppressed || '');
+  var outcomeVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.outcome !== undefined ? formTemp.outcome : (rec.outcome || '');
+  var readmitVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.readmission30d !== undefined ? formTemp.readmission30d : (rec.readmission30d || '');
+  var deescVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.deEscalation !== undefined ? formTemp.deEscalation : (rec.deEscalation || '');
+  var requiredVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : (rec.requiredForAnalysis || '');
+
+  html += '<div><label class="required">Admission Date</label><input type="date" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label>Discharge Date</label><input type="date" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
   html += '<div><label>LOS</label><input id="f-los" value="'+(rec.los!=null?rec.los+' days':'')+'" readonly style="opacity:.6"></div>';
-  html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+'><option value="">Select</option><option value="Emergency" '+(rec.admissionType==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(rec.admissionType==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(rec.admissionType==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
+  html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+' onchange="saveFormTemp(\'admissionType\', this.value)"><option value="">Select</option><option value="Emergency" '+(admTypeVal==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(admTypeVal==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(admTypeVal==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
 
-  var isWardOther = rec.ward === 'Other' || (!['Oncology ward','ICU','HDU',''].includes(rec.ward||'') && rec.ward);
-  html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(rec.ward==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(rec.ward==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(rec.ward==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
-  html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&rec.ward!=='Other'?rec.ward||'':rec.wardOther||'')+'" '+dis+'></div>';
+  var isWardOther = wardVal === 'Other' || (!['Oncology ward','ICU','HDU',''].includes(wardVal||'') && wardVal);
+  html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="saveFormTemp(\'ward\', this.value); toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(wardVal==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(wardVal==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(wardVal==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
+  html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&wardVal!=='Other'?wardVal||'':wardOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'wardOther\', this.value)"></div>';
 
-  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(rec.diagnosis||'')+'" '+dis+' placeholder="Enter diagnosis"></div>';
+  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(diagnosisVal)+'" '+dis+' placeholder="Enter diagnosis" onchange="saveFormTemp(\'diagnosis\', this.value)"></div>';
 
-  html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="toggleField(\'cancertype\')"><option value="">Select</option>';
-  ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerType===v?'selected':'')+'>'+v+'</option>';});
+  html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="saveFormTemp(\'cancerType\', this.value); toggleField(\'cancertype\')"><option value="">Select</option>';
+  ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(cancerTypeVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
-  var isCancerOther = rec.cancerName === 'Other' || (!['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma',''].includes(rec.cancerName||'') && rec.cancerName);
-  html += '<div><label>Cancer Name</label><select id="f-cancername" '+dis+' onchange="toggleField(\'cancername\')"><option value="">Select</option>';
-  ['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerName===v?'selected':'')+'>'+v+'</option>';});
+  var isCancerOther = cancerNameVal === 'Other' || (!['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma',''].includes(cancerNameVal||'') && cancerNameVal);
+  html += '<div><label>Cancer Name</label><select id="f-cancername" '+dis+' onchange="saveFormTemp(\'cancerName\', this.value); toggleField(\'cancername\')"><option value="">Select</option>';
+  ['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma','Other'].forEach(function(v){html+='<option value="'+v+'" '+(cancerNameVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
-  html += '<div id="cancername-other-wrap" style="display:'+(isCancerOther||rec.cancerName==='Other'?'block':'none')+'"><label>Cancer Name Other</label><input id="f-cancer-other" value="'+esc(isCancerOther&&rec.cancerName!=='Other'?rec.cancerName||'':rec.cancerNameOther||'')+'" '+dis+'></div>';
+  html += '<div id="cancername-other-wrap" style="display:'+(isCancerOther||cancerNameVal==='Other'?'block':'none')+'"><label>Cancer Name Other</label><input id="f-cancer-other" value="'+esc(isCancerOther&&cancerNameVal!=='Other'?cancerNameVal||'':cancerNameOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'cancerNameOther\', this.value)"></div>';
 
-  html += '<div><label>Stage</label><select id="f-stage" '+dis+'><option value="">Select</option>';
-  ['I','II','III','IV','Not staged'].forEach(function(v){html+='<option value="'+v+'" '+(rec.stage===v?'selected':'')+'>'+v+'</option>';});
-  html += '</select></div>';
-
-  var isTreatOther = rec.treatment === 'Other' || (!['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care',''].includes(rec.treatment||'') && rec.treatment);
-  html += '<div><label>Treatment</label><select id="f-treatment" '+dis+' onchange="toggleField(\'treatment\')"><option value="">Select</option>';
-  ['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.treatment===v?'selected':'')+'>'+v+'</option>';});
-  html += '</select></div>';
-  html += '<div id="treatment-other-wrap" style="display:'+(isTreatOther||rec.treatment==='Other'?'block':'none')+'"><label>Treatment Other</label><input id="f-treatment-other" value="'+esc(isTreatOther&&rec.treatment!=='Other'?rec.treatment||'':rec.treatmentOther||'')+'" '+dis+'></div>';
-
-  var isComorbOther = rec.comorbidities === 'Other' || (!['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None',''].includes(rec.comorbidities||'') && rec.comorbidities);
-  html += '<div><label>Comorbidities</label><select id="f-comorb" '+dis+' onchange="toggleField(\'comorb\')"><option value="">Select</option>';
-  ['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None','Other'].forEach(function(v){html+='<option value="'+v+'" '+(rec.comorbidities===v?'selected':'')+'>'+v+'</option>';});
-  html += '</select></div>';
-  html += '<div id="comorb-other-wrap" style="display:'+(isComorbOther||rec.comorbidities==='Other'?'block':'none')+'"><label>Comorbidities Other</label><input id="f-comorb-other" value="'+esc(isComorbOther&&rec.comorbidities!=='Other'?rec.comorbidities||'':rec.comorbiditiesOther||'')+'" '+dis+'></div>';
-
-  html += '<div><label>Immunosuppression</label><select id="f-immuno" '+dis+'><option value="">Select</option>';
-  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.immunosuppressed===v?'selected':'')+'>'+v+'</option>';});
+  html += '<div><label>Stage</label><select id="f-stage" '+dis+' onchange="saveFormTemp(\'stage\', this.value)"><option value="">Select</option>';
+  ['I','II','III','IV','Not staged'].forEach(function(v){html+='<option value="'+v+'" '+(stageVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
-  html += '<div><label class="required">Outcome</label><select id="f-outcome" '+dis+'><option value="">Select</option>';
-  ['Improved','Died','Discharged','Transferred','AMA'].forEach(function(v){html+='<option value="'+v+'" '+(rec.outcome===v?'selected':'')+'>'+v+'</option>';});
+  var isTreatOther = treatmentVal === 'Other' || (!['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care',''].includes(treatmentVal||'') && treatmentVal);
+  html += '<div><label>Treatment</label><select id="f-treatment" '+dis+' onchange="saveFormTemp(\'treatment\', this.value); toggleField(\'treatment\')"><option value="">Select</option>';
+  ['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care','Other'].forEach(function(v){html+='<option value="'+v+'" '+(treatmentVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="treatment-other-wrap" style="display:'+(isTreatOther||treatmentVal==='Other'?'block':'none')+'"><label>Treatment Other</label><input id="f-treatment-other" value="'+esc(isTreatOther&&treatmentVal!=='Other'?treatmentVal||'':treatmentOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'treatmentOther\', this.value)"></div>';
+
+  var isComorbOther = comorbVal === 'Other' || (!['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None',''].includes(comorbVal||'') && comorbVal);
+  html += '<div><label>Comorbidities</label><select id="f-comorb" '+dis+' onchange="saveFormTemp(\'comorbidities\', this.value); toggleField(\'comorb\')"><option value="">Select</option>';
+  ['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None','Other'].forEach(function(v){html+='<option value="'+v+'" '+(comorbVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="comorb-other-wrap" style="display:'+(isComorbOther||comorbVal==='Other'?'block':'none')+'"><label>Comorbidities Other</label><input id="f-comorb-other" value="'+esc(isComorbOther&&comorbVal!=='Other'?comorbVal||'':comorbOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'comorbiditiesOther\', this.value)"></div>';
+
+  html += '<div><label>Immunosuppression</label><select id="f-immuno" '+dis+' onchange="saveFormTemp(\'immunosuppressed\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(immunoVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
-  html += '<div><label>Readmission 30d</label><select id="f-readmit" '+dis+'><option value="">Select</option>';
-  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.readmission30d===v?'selected':'')+'>'+v+'</option>';});
+  html += '<div><label class="required">Outcome</label><select id="f-outcome" '+dis+' onchange="saveFormTemp(\'outcome\', this.value)"><option value="">Select</option>';
+  ['Improved','Died','Discharged','Transferred','AMA'].forEach(function(v){html+='<option value="'+v+'" '+(outcomeVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
-  html += '<div><label>De-escalation</label><select id="f-deesc" '+dis+'><option value="">Select</option>';
-  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.deEscalation===v?'selected':'')+'>'+v+'</option>';});
+  html += '<div><label>Readmission 30d</label><select id="f-readmit" '+dis+' onchange="saveFormTemp(\'readmission30d\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(readmitVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label>De-escalation</label><select id="f-deesc" '+dis+' onchange="saveFormTemp(\'deEscalation\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(deescVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
 
   html += '</div>';
@@ -1206,8 +1253,8 @@ function renderRecordModal() {
 
   // data analysis
   html += '<div class="section-title">E. Data Analysis</div><div class="form-grid">';
-  html += '<div><label>Is this data required during analysis?</label><select id="f-required" '+dis+'><option value="">Select</option>';
-  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(rec.requiredForAnalysis===v?'selected':'')+'>'+v+'</option>';});
+  html += '<div><label>Is this data required during analysis?</label><select id="f-required" '+dis+' onchange="saveFormTemp(\'requiredForAnalysis\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(requiredVal===v?'selected':'')+'>'+v+'</option>';});
   html += '</select></div>';
   html += '</div>';
 
@@ -1243,6 +1290,22 @@ function renderRecordModal() {
 
   // Show modal
   document.getElementById('record-modal').classList.remove('hidden');
+}
+
+// Save form temp data for demographics/admission fields
+function saveFormTemp(field, value) {
+  formTemp[field] = value;
+}
+
+// Auto-calculate LOS from admission/discharge dates
+function autoCalcLos() {
+  var admitEl = document.getElementById('f-admit');
+  var discEl = document.getElementById('f-discharge');
+  var losEl = document.getElementById('f-los');
+  if (admitEl && discEl && losEl) {
+    var los = calcLos(admitEl.value, discEl.value);
+    losEl.value = los != null ? los + ' days' : '';
+  }
 }
 
 function toggleField(field) {
@@ -1536,30 +1599,30 @@ async function saveRecord() {
         hospital: sessionInfo.hospital,
         dateOfCollection: sessionInfo.dateOfCollection,
         collectorName: sessionInfo.collectorName,
-        age: document.getElementById('f-age')?document.getElementById('f-age').value:'',
-        sex: document.getElementById('f-sex')?document.getElementById('f-sex').value:'',
-        diagnosis: document.getElementById('f-diagnosis')?document.getElementById('f-diagnosis').value:'',
-        cancerType: document.getElementById('f-cancertype')?document.getElementById('f-cancertype').value:'',
-        cancerName: cancerName,
-        cancerNameOther: cancerNameOther,
-        stage: document.getElementById('f-stage')?document.getElementById('f-stage').value:'',
-        treatment: treatment,
-        treatmentOther: treatmentOther,
-        comorbidities: comorb,
-        comorbiditiesOther: comorbOther,
-        immunosuppressed: document.getElementById('f-immuno')?document.getElementById('f-immuno').value:'',
-        admissionDate: document.getElementById('f-admit')?document.getElementById('f-admit').value:'',
-        dischargeDate: document.getElementById('f-discharge')?document.getElementById('f-discharge').value:'',
-        los: calcLos(document.getElementById('f-admit')?document.getElementById('f-admit').value:'', document.getElementById('f-discharge')?document.getElementById('f-discharge').value:''),
-        admissionType: document.getElementById('f-admtype')?document.getElementById('f-admtype').value:'',
-        ward: ward,
-        wardOther: ward==='Other'?(document.getElementById('f-ward-other')?document.getElementById('f-ward-other').value:''):'',
-        outcome: document.getElementById('f-outcome')?document.getElementById('f-outcome').value:'',
-        readmission30d: document.getElementById('f-readmit')?document.getElementById('f-readmit').value:'',
-        deEscalation: document.getElementById('f-deesc')?document.getElementById('f-deesc').value:'',
+        age: (modalMode === 'edit' || modalMode === 'new') && formTemp.age !== undefined ? formTemp.age : (document.getElementById('f-age')?document.getElementById('f-age').value:''),
+        sex: (modalMode === 'edit' || modalMode === 'new') && formTemp.sex !== undefined ? formTemp.sex : (document.getElementById('f-sex')?document.getElementById('f-sex').value:''),
+        diagnosis: (modalMode === 'edit' || modalMode === 'new') && formTemp.diagnosis !== undefined ? formTemp.diagnosis : (document.getElementById('f-diagnosis')?document.getElementById('f-diagnosis').value:''),
+        cancerType: (modalMode === 'edit' || modalMode === 'new') && formTemp.cancerType !== undefined ? formTemp.cancerType : (document.getElementById('f-cancertype')?document.getElementById('f-cancertype').value:''),
+        cancerName: (modalMode === 'edit' || modalMode === 'new') && formTemp.cancerName !== undefined ? formTemp.cancerName : cancerName,
+        cancerNameOther: (modalMode === 'edit' || modalMode === 'new') && formTemp.cancerNameOther !== undefined ? formTemp.cancerNameOther : cancerNameOther,
+        stage: (modalMode === 'edit' || modalMode === 'new') && formTemp.stage !== undefined ? formTemp.stage : (document.getElementById('f-stage')?document.getElementById('f-stage').value:''),
+        treatment: (modalMode === 'edit' || modalMode === 'new') && formTemp.treatment !== undefined ? formTemp.treatment : treatment,
+        treatmentOther: (modalMode === 'edit' || modalMode === 'new') && formTemp.treatmentOther !== undefined ? formTemp.treatmentOther : treatmentOther,
+        comorbidities: (modalMode === 'edit' || modalMode === 'new') && formTemp.comorbidities !== undefined ? formTemp.comorbidities : comorb,
+        comorbiditiesOther: (modalMode === 'edit' || modalMode === 'new') && formTemp.comorbiditiesOther !== undefined ? formTemp.comorbiditiesOther : comorbOther,
+        immunosuppressed: (modalMode === 'edit' || modalMode === 'new') && formTemp.immunosuppressed !== undefined ? formTemp.immunosuppressed : (document.getElementById('f-immuno')?document.getElementById('f-immuno').value:''),
+        admissionDate: (modalMode === 'edit' || modalMode === 'new') && formTemp.admissionDate !== undefined ? formTemp.admissionDate : (document.getElementById('f-admit')?document.getElementById('f-admit').value:''),
+        dischargeDate: (modalMode === 'edit' || modalMode === 'new') && formTemp.dischargeDate !== undefined ? formTemp.dischargeDate : (document.getElementById('f-discharge')?document.getElementById('f-discharge').value:''),
+        los: calcLos((modalMode === 'edit' || modalMode === 'new') && formTemp.admissionDate !== undefined ? formTemp.admissionDate : (document.getElementById('f-admit')?document.getElementById('f-admit').value:''), (modalMode === 'edit' || modalMode === 'new') && formTemp.dischargeDate !== undefined ? formTemp.dischargeDate : (document.getElementById('f-discharge')?document.getElementById('f-discharge').value:'')),
+        admissionType: (modalMode === 'edit' || modalMode === 'new') && formTemp.admissionType !== undefined ? formTemp.admissionType : (document.getElementById('f-admtype')?document.getElementById('f-admtype').value:''),
+        ward: (modalMode === 'edit' || modalMode === 'new') && formTemp.ward !== undefined ? formTemp.ward : ward,
+        wardOther: ((modalMode === 'edit' || modalMode === 'new') && formTemp.ward !== undefined ? formTemp.ward : ward)==='Other'?((modalMode === 'edit' || modalMode === 'new') && formTemp.wardOther !== undefined ? formTemp.wardOther : (document.getElementById('f-ward-other')?document.getElementById('f-ward-other').value:'')):'',
+        outcome: (modalMode === 'edit' || modalMode === 'new') && formTemp.outcome !== undefined ? formTemp.outcome : (document.getElementById('f-outcome')?document.getElementById('f-outcome').value:''),
+        readmission30d: (modalMode === 'edit' || modalMode === 'new') && formTemp.readmission30d !== undefined ? formTemp.readmission30d : (document.getElementById('f-readmit')?document.getElementById('f-readmit').value:''),
+        deEscalation: (modalMode === 'edit' || modalMode === 'new') && formTemp.deEscalation !== undefined ? formTemp.deEscalation : (document.getElementById('f-deesc')?document.getElementById('f-deesc').value:''),
         antibiotics: antibiotics,
         cultures: cultures,
-        requiredForAnalysis: document.getElementById('f-required')?document.getElementById('f-required').value:'',
+        requiredForAnalysis: (modalMode === 'edit' || modalMode === 'new') && formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : (document.getElementById('f-required')?document.getElementById('f-required').value:''),
       }
     };
 
