@@ -1278,12 +1278,12 @@ function renderAbxSlots(isView) {
     if (!isView && formAbx.length > 1) html += '<button class="slot-remove" onclick="removeAbxSlot('+i+')">&times;</button>';
     html += '<div class="slot-title">Antibiotic '+(i+1)+'</div>';
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
-    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
+    html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)" onchange="updateAbxField('+i+',\'name\',this.value)"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
     html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
-    html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+'><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
-    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="e.g. 1g"></div>';
-    html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+'><option value="">Select</option>';
+    html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'route\',this.value)"><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
+    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="e.g. 1g" onchange="updateAbxField('+i+',\'dose\',this.value)"></div>';
+    html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'freq\',this.value)"><option value="">Select</option>';
     ['OD','BD','TDS','QDS','6H','8H','12H','24H','Stat','Other'].forEach(function(f){html+='<option value="'+f+'" '+(a.freq===f?'selected':'')+'>'+f+'</option>';});
     html += '</select></div>';
     html += '<div><label>Start Date</label><input type="date" id="abx-start-'+i+'" value="'+esc(a.start)+'" '+dis+' onchange="autoCalcAbx('+i+')"></div>';
@@ -1293,10 +1293,10 @@ function renderAbxSlots(isView) {
     html += '<div><label>Grams/day</label><input type="number" step="0.01" id="abx-grams-'+i+'" value="'+esc(a.grams)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
     html += '<div><label>DDD Calculated</label><input type="number" step="0.01" id="abx-dddcalc-'+i+'" value="'+esc(a.dddCalc)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>DOT</label><input type="number" id="abx-dot-'+i+'" value="'+esc(a.dot)+'" readonly style="opacity:.6"></div>';
-    html += '<div><label>Indication</label><select id="abx-ind-'+i+'" '+dis+'><option value="">Select</option><option value="Empiric" '+(a.indication==='Empiric'?'selected':'')+'>Empiric</option><option value="Targeted" '+(a.indication==='Targeted'?'selected':'')+'>Targeted</option><option value="Prophylactic" '+(a.indication==='Prophylactic'?'selected':'')+'>Prophylactic</option></select></div>';
-    html += '<div><label>Therapy Type</label><select id="abx-type-'+i+'" '+dis+'><option value="">Select</option><option value="Monotherapy" '+(a.therapyType==='Monotherapy'?'selected':'')+'>Monotherapy</option><option value="Combination" '+(a.therapyType==='Combination'?'selected':'')+'>Combination</option></select></div>';
-    html += '<div><label>Febrile Neutropenia</label><select id="abx-neutro-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(a.febrileNeutro==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(a.febrileNeutro==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Febrile Episodes</label><input type="number" id="abx-episodes-'+i+'" value="'+esc(a.febrileEpisodes)+'" '+dis+'></div>';
+    html += '<div><label>Indication</label><select id="abx-ind-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'indication\',this.value)"><option value="">Select</option><option value="Empiric" '+(a.indication==='Empiric'?'selected':'')+'>Empiric</option><option value="Targeted" '+(a.indication==='Targeted'?'selected':'')+'>Targeted</option><option value="Prophylactic" '+(a.indication==='Prophylactic'?'selected':'')+'>Prophylactic</option></select></div>';
+    html += '<div><label>Therapy Type</label><select id="abx-type-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'therapyType\',this.value)"><option value="">Select</option><option value="Monotherapy" '+(a.therapyType==='Monotherapy'?'selected':'')+'>Monotherapy</option><option value="Combination" '+(a.therapyType==='Combination'?'selected':'')+'>Combination</option></select></div>';
+    html += '<div><label>Febrile Neutropenia</label><select id="abx-neutro-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'febrileNeutro\',this.value)"><option value="">Select</option><option value="Yes" '+(a.febrileNeutro==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(a.febrileNeutro==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Febrile Episodes</label><input type="number" id="abx-episodes-'+i+'" value="'+esc(a.febrileEpisodes)+'" '+dis+' onchange="updateAbxField('+i+',\'febrileEpisodes\',this.value)"></div>';
     html += '</div></div>';
     return html;
   }).join('');
@@ -1309,27 +1309,27 @@ function renderCultSlots(isView) {
     if (!isView && formCult.length > 1) html += '<button class="slot-remove" onclick="removeCultSlot('+i+')">&times;</button>';
     html += '<div class="slot-title">Culture '+(i+1)+'</div>';
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
-    html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Date</label><input type="date" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+'></div>';
+    html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="updateCultField('+i+',\'sent\',this.value); toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Date</label><input type="date" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+' onchange="updateCultField('+i+',\'date\',this.value)"></div>';
     var typeArr = (c.type||'').split(',').filter(Boolean);
     html += '<div style="grid-column:span 3"><label>Sample Type</label><div class="checkbox-group" id="cult-type-group-'+i+'">';
-    ['Blood','Urine','Sputum','Wound','BAL','CSF'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="cult-type-cb" data-idx="'+i+'" value="'+v+'" '+(typeArr.indexOf(v)>=0?'checked':'')+' '+dis+'> '+v+'</label>';});
-    html += '<label class="checkbox-label"><input type="checkbox" class="cult-type-cb cult-type-other-cb" data-idx="'+i+'" value="Other" '+(typeArr.indexOf('Other')>=0?'checked':'')+' '+dis+' onchange="toggleCultTypeOther('+i+')"> Other</label>';
-    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify other type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px">';
+    ['Blood','Urine','Sputum','Wound','BAL','CSF'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="cult-type-cb" data-idx="'+i+'" value="'+v+'" '+(typeArr.indexOf(v)>=0?'checked':'')+' '+dis+' onchange="updateCultTypeCheckbox('+i+')"> '+v+'</label>';});
+    html += '<label class="checkbox-label"><input type="checkbox" class="cult-type-cb cult-type-other-cb" data-idx="'+i+'" value="Other" '+(typeArr.indexOf('Other')>=0?'checked':'')+' '+dis+' onchange="toggleCultTypeOther('+i+'); updateCultTypeCheckbox('+i+')"> Other</label>';
+    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify other type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px" onchange="updateCultField('+i+',\'typeOther\',this.value)">';
     html += '</div></div>';
-    html += '<div><label>Result</label><select id="cult-result-'+i+'" '+dis+'><option value="">Select</option><option value="Positive" '+(c.result==='Positive'?'selected':'')+'>Positive</option><option value="Negative" '+(c.result==='Negative'?'selected':'')+'>Negative</option><option value="Contaminant" '+(c.result==='Contaminant'?'selected':'')+'>Contaminant</option></select></div>';
-    html += '<div><label>Organism</label><input id="cult-org-'+i+'" value="'+esc(c.organism)+'" '+dis+'></div>';
-    html += '<div><label>Gram Stain</label><select id="cult-gram-'+i+'" '+dis+'><option value="">Select</option><option value="Gram +ve" '+(c.gram==='Gram +ve'?'selected':'')+'>Gram +ve</option><option value="Gram -ve" '+(c.gram==='Gram -ve'?'selected':'')+'>Gram -ve</option><option value="Yeast" '+(c.gram==='Yeast'?'selected':'')+'>Yeast</option></select></div>';
-    html += '<div><label>AST Done</label><select id="cult-ast-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.ast==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.ast==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="e.g. ESBL, carbapenemase"></div>';
-    html += '<div><label>MDR</label><select id="cult-mdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.mdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.mdr==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>XDR</label><select id="cult-xdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.xdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.xdr==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Result</label><select id="cult-result-'+i+'" '+dis+' onchange="updateCultField('+i+',\'result\',this.value)"><option value="">Select</option><option value="Positive" '+(c.result==='Positive'?'selected':'')+'>Positive</option><option value="Negative" '+(c.result==='Negative'?'selected':'')+'>Negative</option><option value="Contaminant" '+(c.result==='Contaminant'?'selected':'')+'>Contaminant</option></select></div>';
+    html += '<div><label>Organism</label><input id="cult-org-'+i+'" value="'+esc(c.organism)+'" '+dis+' onchange="updateCultField('+i+',\'organism\',this.value)"></div>';
+    html += '<div><label>Gram Stain</label><select id="cult-gram-'+i+'" '+dis+' onchange="updateCultField('+i+',\'gram\',this.value)"><option value="">Select</option><option value="Gram +ve" '+(c.gram==='Gram +ve'?'selected':'')+'>Gram +ve</option><option value="Gram -ve" '+(c.gram==='Gram -ve'?'selected':'')+'>Gram -ve</option><option value="Yeast" '+(c.gram==='Yeast'?'selected':'')+'>Yeast</option></select></div>';
+    html += '<div><label>AST Done</label><select id="cult-ast-'+i+'" '+dis+' onchange="updateCultField('+i+',\'ast\',this.value)"><option value="">Select</option><option value="Yes" '+(c.ast==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.ast==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="e.g. ESBL, carbapenemase" onchange="updateCultField('+i+',\'resist\',this.value)"></div>';
+    html += '<div><label>MDR</label><select id="cult-mdr-'+i+'" '+dis+' onchange="updateCultField('+i+',\'mdr\',this.value)"><option value="">Select</option><option value="Yes" '+(c.mdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.mdr==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>XDR</label><select id="cult-xdr-'+i+'" '+dis+' onchange="updateCultField('+i+',\'xdr\',this.value)"><option value="">Select</option><option value="Yes" '+(c.xdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.xdr==='No'?'selected':'')+'>No</option></select></div>';
     var eskapeOrgArr = (c.eskapeOrganisms||'').split(',').filter(Boolean);
-    html += '<div><label>ESKAPE</label><select id="cult-eskape-'+i+'" '+dis+' onchange="toggleEskapeDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.eskape==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.eskape==='No'?'selected':'')+'>No</option></select></div>';
+    html += '<div><label>ESKAPE</label><select id="cult-eskape-'+i+'" '+dis+' onchange="updateCultField('+i+',\'eskape\',this.value); toggleEskapeDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.eskape==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.eskape==='No'?'selected':'')+'>No</option></select></div>';
     html += '</div>';
     html += '<div class="eskape-organisms-wrap" id="eskape-org-wrap-'+i+'" style="display:'+(c.eskape==='Yes'?'block':'none')+';margin-top:8px;padding:10px 14px;background:var(--accent-dim);border-radius:var(--radius);border:1px solid var(--border)">';
     html += '<label style="font-weight:600;margin-bottom:6px;display:block">ESKAPE Organisms</label><div class="checkbox-group" id="eskape-org-group-'+i+'">';
-    ['Enterococcus faecium','Staphylococcus aureus','Klebsiella pneumoniae','Acinetobacter baumannii','Pseudomonas aeruginosa','Enterobacter species'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="eskape-org-cb" data-idx="'+i+'" value="'+v+'" '+(eskapeOrgArr.indexOf(v)>=0?'checked':'')+' '+dis+'> '+v+'</label>';});
+    ['Enterococcus faecium','Staphylococcus aureus','Klebsiella pneumoniae','Acinetobacter baumannii','Pseudomonas aeruginosa','Enterobacter species'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="eskape-org-cb" data-idx="'+i+'" value="'+v+'" '+(eskapeOrgArr.indexOf(v)>=0?'checked':'')+' '+dis+' onchange="updateCultEskapeCheckbox('+i+')"> '+v+'</label>';});
     html += '</div></div>';
     html += '</div>';
     return html;
@@ -1347,6 +1347,11 @@ function autoCalcAbx(idx) {
     if (days != null) {
       if (dur && !dur.value) dur.value = days;
       if (dot) dot.value = days;
+      // Update formAbx state
+      formAbx[idx].start = start.value;
+      formAbx[idx].stop = stop.value;
+      if (dur) formAbx[idx].duration = dur.value;
+      formAbx[idx].dot = dot.value;
     }
   }
 }
@@ -1357,13 +1362,22 @@ function autoCalcDddCalc(idx) {
   var dddCalc = document.getElementById('abx-dddcalc-'+idx);
   if (ddd && grams && ddd.value && grams.value && +ddd.value > 0) {
     dddCalc.value = (+grams.value / +ddd.value).toFixed(2);
+    // Update formAbx state
+    formAbx[idx].ddd = ddd.value;
+    formAbx[idx].grams = grams.value;
+    formAbx[idx].dddCalc = dddCalc.value;
   }
 }
 
 function autoCalcDot(idx) {
   var dur = document.getElementById('abx-dur-'+idx);
   var dot = document.getElementById('abx-dot-'+idx);
-  if (dur && dur.value && dot) dot.value = dur.value;
+  if (dur && dur.value && dot) {
+    dot.value = dur.value;
+    // Update formAbx state
+    formAbx[idx].duration = dur.value;
+    formAbx[idx].dot = dot.value;
+  }
 }
 
 function toggleCultDetails(idx) {
@@ -1376,7 +1390,10 @@ function toggleCultTypeOther(idx) {
   var otherInput = document.getElementById('cult-type-other-'+idx);
   if (otherCb && otherInput) {
     otherInput.style.display = otherCb.checked ? 'inline-block' : 'none';
-    if (!otherCb.checked) otherInput.value = '';
+    if (!otherCb.checked) {
+      otherInput.value = '';
+      updateCultField(idx, 'typeOther', '');
+    }
   }
 }
 
@@ -1389,8 +1406,27 @@ function toggleEskapeDetails(idx) {
       // Uncheck all ESKAPE organism checkboxes when No/empty
       var cbs = wrap.querySelectorAll('.eskape-org-cb');
       cbs.forEach(function(cb){ cb.checked = false; });
+      updateCultField(idx, 'eskapeOrganisms', '');
     }
   }
+}
+
+function updateCultField(idx, field, value) {
+  formCult[idx][field] = value;
+}
+
+function updateCultTypeCheckbox(idx) {
+  var cbs = document.querySelectorAll('.cult-type-cb[data-idx="'+idx+'"]');
+  var vals = [];
+  cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); });
+  formCult[idx].type = vals.join(',');
+}
+
+function updateCultEskapeCheckbox(idx) {
+  var cbs = document.querySelectorAll('.eskape-org-cb[data-idx="'+idx+'"]');
+  var vals = [];
+  cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); });
+  formCult[idx].eskapeOrganisms = vals.join(',');
 }
 
 // abx search
@@ -1424,6 +1460,10 @@ function selectAbx(idx, name, abxClass, category, ddd) {
   var dddEl = document.getElementById('abx-ddd-'+idx); if (dddEl) dddEl.value = ddd;
   autoCalcDddCalc(idx);
   closeAbxDropdown(idx);
+}
+
+function updateAbxField(idx, field, value) {
+  formAbx[idx][field] = value;
 }
 
 function addAbxSlot() { if (formAbx.length>=30) return; formAbx.push(emptyAbx()); renderRecordModal(); }
