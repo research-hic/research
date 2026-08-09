@@ -103,6 +103,8 @@ input,select,textarea{
   color:var(--text-primary);font-size:.875rem;outline:none;transition:border-color var(--transition);
   -webkit-appearance:none;-webkit-tap-highlight-color:transparent;
 }
+input::-webkit-calendar-picker-indicator{display:none!important;-webkit-appearance:none;}
+input[type="text"]::-webkit-calendar-picker-indicator{display:none;}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 input:read-only{opacity:.6;cursor:default}
 input:disabled,select:disabled,textarea:disabled{opacity:.5;cursor:not-allowed}
@@ -299,7 +301,7 @@ tr:hover td{background:var(--bg-table-hover)}
       </div>
       <div>
         <label class="required">Date of Collection</label>
-        <input type="date" id="login-date" required>
+        <input type="text" id="login-date" placeholder="YYYY-MM-DD" required>
       </div>
       <div>
         <label class="required">Collector Name</label>
@@ -360,7 +362,7 @@ tr:hover td{background:var(--bg-table-hover)}
   <footer>OncoCollect</footer>
 </div>
 
-<!-- RECORD MODAL -->
+<!-- RECORD MODAL (hidden, used for inline display) -->
 <div id="record-modal" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-header">
@@ -372,6 +374,21 @@ tr:hover td{background:var(--bg-table-hover)}
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- NEW ENTRY POPUP WINDOW CONTAINER -->
+<div id="new-entry-popup" class="modal-overlay hidden" style="z-index:70;">
+  <div class="modal" style="max-width:64rem;">
+    <div class="modal-header">
+      <div>
+        <h2 id="popup-modal-title" class="text-lg font-bold">New Record</h2>
+        <p id="popup-modal-subtitle" class="text-sm" style="color:var(--text-secondary)">Enter patient data below</p>
+      </div>
+      <button class="btn btn-ghost btn-icon" onclick="closeNewEntryPopup()" style="font-size:1.25rem">&times;</button>
+    </div>
+    <div class="modal-body" id="popup-modal-body"></div>
+    <div class="modal-footer" id="popup-modal-footer"></div>
   </div>
 </div>
 
@@ -963,8 +980,8 @@ function renderDashboard(container) {
   // Date filter bar
   html += '<div class="filter-bar">';
   html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Filter:</label>';
-  html += '<input type="date" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)" placeholder="From">';
-  html += '<input type="date" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)" placeholder="To">';
+  html += '<input type="text" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)" placeholder="From (YYYY-MM-DD)">';
+  html += '<input type="text" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)" placeholder="To (YYYY-MM-DD)">';
   if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(renderView)">Clear</button>';
   html += '</div>';
 
@@ -1068,7 +1085,9 @@ function emptyCult() { return {sent:'',date:'',type:'',typeOther:'',result:'',or
 function openNewRecord() {
   modalMode = 'new'; modalStudyId = ''; formAbx = [emptyAbx()]; formCult = [emptyCult()]; formVersion = 0; formTemp = {};
   window._editRec = null;
-  generateStudyId();
+  generateStudyId().then(function() {
+    renderNewEntryPopup();
+  });
 }
 
 async function generateStudyId() {
@@ -1078,7 +1097,155 @@ async function generateStudyId() {
   } catch(e) {
     modalStudyId = 'PID-ERROR';
   }
-  renderRecordModal();
+  // Only render record modal if not in new entry popup mode
+  if (modalMode !== 'new') {
+    renderRecordModal();
+  }
+}
+
+// Render the new entry popup window
+function renderNewEntryPopup() {
+  var rec = window._editRec || {};
+  var dis = '';
+  
+  document.getElementById('popup-modal-title').textContent = 'New Record';
+  document.getElementById('popup-modal-subtitle').textContent = 'Enter patient data below';
+
+  var html = '';
+
+  // collection info
+  html += '<div class="section-title">Collection Information</div><div class="form-grid">';
+  html += '<div><label>Timestamp</label><input value="'+esc(rec.timestamp||fmtDate(new Date()))+'" readonly></div>';
+  html += '<div><label>Study ID</label><input value="'+esc(modalStudyId)+'" readonly></div>';
+  html += '<div><label>Created By</label><input value="'+esc(rec.createdBy||currentUser.username)+'" readonly></div>';
+  html += '<div><label>Hospital</label><input value="'+esc(rec.hospital||sessionInfo.hospital)+'" readonly></div>';
+  html += '<div><label>Date of Collection</label><input value="'+esc(rec.dateOfCollection||sessionInfo.dateOfCollection)+'" readonly></div>';
+  html += '<div><label>Collector Name</label><input value="'+esc(rec.collectorName||sessionInfo.collectorName)+'" readonly></div>';
+  html += '</div>';
+
+  // demographics
+  html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
+  var ageVal = formTemp.age !== undefined ? formTemp.age : '';
+  var sexVal = formTemp.sex !== undefined ? formTemp.sex : '';
+  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(ageVal)+'" '+dis+' placeholder="0-120" onchange="saveFormTemp(\'age\', this.value)"></div>';
+  html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+' onchange="saveFormTemp(\'sex\', this.value)"><option value="">Select</option><option value="Male" '+(sexVal==='Male'?'selected':'')+'>Male</option><option value="Female" '+(sexVal==='Female'?'selected':'')+'>Female</option></select></div>';
+  html += '</div>';
+
+  // admission & clinical
+  html += '<div class="section-title">B. Admission & Clinical Details</div><div class="form-grid">';
+  var admitDateVal = formTemp.admissionDate !== undefined ? formTemp.admissionDate : '';
+  var dischargeDateVal = formTemp.dischargeDate !== undefined ? formTemp.dischargeDate : '';
+  var admTypeVal = formTemp.admissionType !== undefined ? formTemp.admissionType : '';
+  var wardVal = formTemp.ward !== undefined ? formTemp.ward : '';
+  var wardOtherVal = formTemp.wardOther !== undefined ? formTemp.wardOther : '';
+  var diagnosisVal = formTemp.diagnosis !== undefined ? formTemp.diagnosis : '';
+  var cancerTypeVal = formTemp.cancerType !== undefined ? formTemp.cancerType : '';
+  var cancerNameVal = formTemp.cancerName !== undefined ? formTemp.cancerName : '';
+  var cancerNameOtherVal = formTemp.cancerNameOther !== undefined ? formTemp.cancerNameOther : '';
+  var stageVal = formTemp.stage !== undefined ? formTemp.stage : '';
+  var treatmentVal = formTemp.treatment !== undefined ? formTemp.treatment : '';
+  var treatmentOtherVal = formTemp.treatmentOther !== undefined ? formTemp.treatmentOther : '';
+  var comorbVal = formTemp.comorbidities !== undefined ? formTemp.comorbidities : '';
+  var comorbOtherVal = formTemp.comorbiditiesOther !== undefined ? formTemp.comorbiditiesOther : '';
+  var immunoVal = formTemp.immunosuppressed !== undefined ? formTemp.immunosuppressed : '';
+  var outcomeVal = formTemp.outcome !== undefined ? formTemp.outcome : '';
+  var readmitVal = formTemp.readmission30d !== undefined ? formTemp.readmission30d : '';
+  var deescVal = formTemp.deEscalation !== undefined ? formTemp.deEscalation : '';
+  var requiredVal = formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : '';
+
+  html += '<div><label class="required">Admission Date</label><input type="text" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label>Discharge Date</label><input type="text" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label>LOS</label><input id="f-los" value="" readonly style="opacity:.6"></div>';
+  html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+' onchange="saveFormTemp(\'admissionType\', this.value)"><option value="">Select</option><option value="Emergency" '+(admTypeVal==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(admTypeVal==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(admTypeVal==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
+
+  var isWardOther = wardVal === 'Other' || (!['Oncology ward','ICU','HDU',''].includes(wardVal||'') && wardVal);
+  html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="saveFormTemp(\'ward\', this.value); toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(wardVal==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(wardVal==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(wardVal==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
+  html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&wardVal!=='Other'?wardVal||'':wardOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'wardOther\', this.value)"></div>';
+
+  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(diagnosisVal)+'" '+dis+' placeholder="Enter diagnosis" onchange="saveFormTemp(\'diagnosis\', this.value)"></div>';
+
+  html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="saveFormTemp(\'cancerType\', this.value); toggleField(\'cancertype\')"><option value="">Select</option>';
+  ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(cancerTypeVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  var isCancerOther = cancerNameVal === 'Other' || (!['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma',''].includes(cancerNameVal||'') && cancerNameVal);
+  html += '<div><label>Cancer Name</label><select id="f-cancername" '+dis+' onchange="saveFormTemp(\'cancerName\', this.value); toggleField(\'cancername\')"><option value="">Select</option>';
+  ['Lung Cancer','Breast Cancer','Colorectal Cancer','Gastric Cancer','Hepatocellular Carcinoma','Cervical Cancer','Prostate Cancer','Lymphoma','Leukemia','Multiple Myeloma','Other'].forEach(function(v){html+='<option value="'+v+'" '+(cancerNameVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="cancername-other-wrap" style="display:'+(isCancerOther||cancerNameVal==='Other'?'block':'none')+'"><label>Cancer Name Other</label><input id="f-cancer-other" value="'+esc(isCancerOther&&cancerNameVal!=='Other'?cancerNameVal||'':cancerNameOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'cancerNameOther\', this.value)"></div>';
+
+  html += '<div><label>Stage</label><select id="f-stage" '+dis+' onchange="saveFormTemp(\'stage\', this.value)"><option value="">Select</option>';
+  ['I','II','III','IV','Not staged'].forEach(function(v){html+='<option value="'+v+'" '+(stageVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  var isTreatOther = treatmentVal === 'Other' || (!['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care',''].includes(treatmentVal||'') && treatmentVal);
+  html += '<div><label>Treatment</label><select id="f-treatment" '+dis+' onchange="saveFormTemp(\'treatment\', this.value); toggleField(\'treatment\')"><option value="">Select</option>';
+  ['Chemotherapy','Radiotherapy','Surgery','Chemotherapy + Radiotherapy','Chemotherapy + Surgery','Immunotherapy','Targeted Therapy','Supportive Care','Other'].forEach(function(v){html+='<option value="'+v+'" '+(treatmentVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="treatment-other-wrap" style="display:'+(isTreatOther||treatmentVal==='Other'?'block':'none')+'"><label>Treatment Other</label><input id="f-treatment-other" value="'+esc(isTreatOther&&treatmentVal!=='Other'?treatmentVal||'':treatmentOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'treatmentOther\', this.value)"></div>';
+
+  var isComorbOther = comorbVal === 'Other' || (!['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None',''].includes(comorbVal||'') && comorbVal);
+  html += '<div><label>Comorbidities</label><select id="f-comorb" '+dis+' onchange="saveFormTemp(\'comorbidities\', this.value); toggleField(\'comorb\')"><option value="">Select</option>';
+  ['Diabetes','Hypertension','COPD','CKD','HIV','Liver Disease','None','Other'].forEach(function(v){html+='<option value="'+v+'" '+(comorbVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '<div id="comorb-other-wrap" style="display:'+(isComorbOther||comorbVal==='Other'?'block':'none')+'"><label>Comorbidities Other</label><input id="f-comorb-other" value="'+esc(isComorbOther&&comorbVal!=='Other'?comorbVal||'':comorbOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'comorbiditiesOther\', this.value)"></div>';
+
+  html += '<div><label>Immunosuppression</label><select id="f-immuno" '+dis+' onchange="saveFormTemp(\'immunosuppressed\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(immunoVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label class="required">Outcome</label><select id="f-outcome" '+dis+' onchange="saveFormTemp(\'outcome\', this.value)"><option value="">Select</option>';
+  ['Improved','Died','Discharged','Transferred','AMA'].forEach(function(v){html+='<option value="'+v+'" '+(outcomeVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label>Readmission 30d</label><select id="f-readmit" '+dis+' onchange="saveFormTemp(\'readmission30d\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(readmitVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '<div><label>De-escalation</label><select id="f-deesc" '+dis+' onchange="saveFormTemp(\'deEscalation\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(deescVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+
+  html += '</div>';
+
+  // antibiotics
+  html += '<div class="section-title">C. Antibiotics (up to 30)</div><div id="abx-slots">' + renderAbxSlots(false) + '</div>';
+  if (formAbx.length < 30) html += '<button class="btn btn-ghost btn-sm mt-2" onclick="addAbxSlotPopup()">+ Add Antibiotic (' + formAbx.length + '/30)</button>';
+
+  // cultures
+  html += '<div class="section-title">D. Cultures (up to 30)</div><div id="cult-slots">' + renderCultSlots(false) + '</div>';
+  if (formCult.length < 30) html += '<button class="btn btn-ghost btn-sm mt-2" onclick="addCultSlotPopup()">+ Add Culture (' + formCult.length + '/30)</button>';
+
+  // data analysis
+  html += '<div class="section-title">E. Data Analysis</div><div class="form-grid">';
+  html += '<div><label>Is this data required during analysis?</label><select id="f-required" '+dis+' onchange="saveFormTemp(\'requiredForAnalysis\', this.value)"><option value="">Select</option>';
+  ['Yes','No'].forEach(function(v){html+='<option value="'+v+'" '+(requiredVal===v?'selected':'')+'>'+v+'</option>';});
+  html += '</select></div>';
+  html += '</div>';
+
+  document.getElementById('popup-modal-body').innerHTML = html;
+
+  // Footer
+  var footer = '<button class="btn btn-ghost" onclick="closeNewEntryPopup()">Cancel</button><button class="btn btn-primary" id="popup-save-btn" onclick="saveRecordFromPopup()">Save Record</button>';
+  document.getElementById('popup-modal-footer').innerHTML = footer;
+
+  // Show popup
+  document.getElementById('new-entry-popup').classList.remove('hidden');
+  
+  // Auto-calc LOS
+  var admitEl = document.getElementById('f-admit');
+  var discEl = document.getElementById('f-discharge');
+  if (admitEl && discEl) {
+    var updateLos = function() {
+      var a = admitEl.value, d = discEl.value;
+      var los = calcLos(a,d);
+      var losEl = document.getElementById('f-los');
+      if (losEl) losEl.value = los!=null ? los+' days' : '';
+    };
+    admitEl.addEventListener('change', updateLos);
+    discEl.addEventListener('change', updateLos);
+    updateLos();
+  }
 }
 
 function viewRecord(studyId) {
@@ -1188,8 +1355,8 @@ function renderRecordModal() {
   var deescVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.deEscalation !== undefined ? formTemp.deEscalation : (rec.deEscalation || '');
   var requiredVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : (rec.requiredForAnalysis || '');
 
-  html += '<div><label class="required">Admission Date</label><input type="date" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
-  html += '<div><label>Discharge Date</label><input type="date" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label class="required">Admission Date</label><input type="text" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label>Discharge Date</label><input type="text" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
   html += '<div><label>LOS</label><input id="f-los" value="'+(rec.los!=null?rec.los+' days':'')+'" readonly style="opacity:.6"></div>';
   html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+' onchange="saveFormTemp(\'admissionType\', this.value)"><option value="">Select</option><option value="Emergency" '+(admTypeVal==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(admTypeVal==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(admTypeVal==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
 
@@ -1349,8 +1516,8 @@ function renderAbxSlots(isView) {
     html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'freq\',this.value)"><option value="">Select</option>';
     ['OD','BD','TDS','QDS','6H','8H','12H','24H','Stat','Other'].forEach(function(f){html+='<option value="'+f+'" '+(a.freq===f?'selected':'')+'>'+f+'</option>';});
     html += '</select></div>';
-    html += '<div><label>Start Date</label><input type="date" id="abx-start-'+i+'" value="'+esc(a.start)+'" '+dis+' onchange="autoCalcAbx('+i+')"></div>';
-    html += '<div><label>Stop Date</label><input type="date" id="abx-stop-'+i+'" value="'+esc(a.stop)+'" '+dis+' onchange="autoCalcAbx('+i+')"></div>';
+    html += '<div><label>Start Date</label><input type="text" id="abx-start-'+i+'" value="'+esc(a.start)+'" '+dis+' placeholder="YYYY-MM-DD" onchange="autoCalcAbx('+i+')"></div>';
+    html += '<div><label>Stop Date</label><input type="text" id="abx-stop-'+i+'" value="'+esc(a.stop)+'" '+dis+' placeholder="YYYY-MM-DD" onchange="autoCalcAbx('+i+')"></div>';
     html += '<div><label>Duration (days)</label><input type="number" id="abx-dur-'+i+'" value="'+esc(a.duration)+'" '+dis+' onchange="autoCalcDot('+i+')"></div>';
     html += '<div><label>DDD (assigned)</label><input type="number" step="0.01" id="abx-ddd-'+i+'" value="'+esc(a.ddd)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
     html += '<div><label>Grams/day</label><input type="number" step="0.01" id="abx-grams-'+i+'" value="'+esc(a.grams)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
@@ -1373,7 +1540,7 @@ function renderCultSlots(isView) {
     html += '<div class="slot-title">Culture '+(i+1)+'</div>';
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
     html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="updateCultField('+i+',\'sent\',this.value); toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Date</label><input type="date" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+' onchange="updateCultField('+i+',\'date\',this.value)"></div>';
+    html += '<div><label>Date</label><input type="text" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+' placeholder="YYYY-MM-DD" onchange="updateCultField('+i+',\'date\',this.value)"></div>';
     var typeArr = (c.type||'').split(',').filter(Boolean);
     html += '<div style="grid-column:span 3"><label>Sample Type</label><div class="checkbox-group" id="cult-type-group-'+i+'">';
     ['Blood','Urine','Sputum','Wound','BAL','CSF'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="cult-type-cb" data-idx="'+i+'" value="'+v+'" '+(typeArr.indexOf(v)>=0?'checked':'')+' '+dis+' onchange="updateCultTypeCheckbox('+i+')"> '+v+'</label>';});
@@ -1533,6 +1700,128 @@ function addAbxSlot() { if (formAbx.length>=30) return; formAbx.push(emptyAbx())
 function removeAbxSlot(idx) { if (formAbx.length<=1) return; formAbx.splice(idx,1); renderRecordModal(); }
 function addCultSlot() { if (formCult.length>=30) return; formCult.push(emptyCult()); renderRecordModal(); }
 function removeCultSlot(idx) { if (formCult.length<=1) return; formCult.splice(idx,1); renderRecordModal(); }
+
+// Popup-specific slot functions for new entry window
+function addAbxSlotPopup() { if (formAbx.length>=30) return; formAbx.push(emptyAbx()); renderNewEntryPopup(); }
+function addCultSlotPopup() { if (formCult.length>=30) return; formCult.push(emptyCult()); renderNewEntryPopup(); }
+
+// Close new entry popup
+function closeNewEntryPopup() {
+  document.getElementById('new-entry-popup').classList.add('hidden');
+  modalMode = null;
+}
+
+// Save record from popup
+async function saveRecordFromPopup() {
+  var btn = document.getElementById('popup-save-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+  try {
+    var ward = document.getElementById('f-ward') ? document.getElementById('f-ward').value : '';
+    var effectiveWard = ward==='Other' ? (document.getElementById('f-ward-other')?document.getElementById('f-ward-other').value:'') : ward;
+    var cancerName = document.getElementById('f-cancername') ? document.getElementById('f-cancername').value : '';
+    var effectiveCancer = cancerName==='Other' ? '' : cancerName;
+    var cancerNameOther = cancerName==='Other' ? (document.getElementById('f-cancer-other')?document.getElementById('f-cancer-other').value:'') : '';
+    var treatment = document.getElementById('f-treatment') ? document.getElementById('f-treatment').value : '';
+    var effectiveTreatment = treatment==='Other' ? '' : treatment;
+    var treatmentOther = treatment==='Other' ? (document.getElementById('f-treatment-other')?document.getElementById('f-treatment-other').value:'') : '';
+    var comorb = document.getElementById('f-comorb') ? document.getElementById('f-comorb').value : '';
+    var effectiveComorb = comorb==='Other' ? '' : comorb;
+    var comorbOther = comorb==='Other' ? (document.getElementById('f-comorb-other')?document.getElementById('f-comorb-other').value:'') : '';
+
+    var antibiotics = formAbx.map(function(a, idx) {
+      return {
+        name: (document.querySelector('.abx-search-input[data-idx="'+idx+'"]')?document.querySelector('.abx-search-input[data-idx="'+idx+'"]').value:'') || a.name,
+        abxClass: (document.getElementById('abx-class-'+idx)?document.getElementById('abx-class-'+idx).value:'') || a.abxClass,
+        aware: (document.getElementById('abx-aware-'+idx)?document.getElementById('abx-aware-'+idx).value:'') || a.aware,
+        route: document.getElementById('abx-route-'+idx)?document.getElementById('abx-route-'+idx).value:'',
+        dose: document.getElementById('abx-dose-'+idx)?document.getElementById('abx-dose-'+idx).value:'',
+        freq: document.getElementById('abx-freq-'+idx)?document.getElementById('abx-freq-'+idx).value:'',
+        start: document.getElementById('abx-start-'+idx)?document.getElementById('abx-start-'+idx).value:'',
+        stop: document.getElementById('abx-stop-'+idx)?document.getElementById('abx-stop-'+idx).value:'',
+        duration: document.getElementById('abx-dur-'+idx)?document.getElementById('abx-dur-'+idx).value:'',
+        ddd: document.getElementById('abx-ddd-'+idx)?document.getElementById('abx-ddd-'+idx).value:'',
+        grams: document.getElementById('abx-grams-'+idx)?document.getElementById('abx-grams-'+idx).value:'',
+        dddCalc: document.getElementById('abx-dddcalc-'+idx)?document.getElementById('abx-dddcalc-'+idx).value:'',
+        dot: document.getElementById('abx-dot-'+idx)?document.getElementById('abx-dot-'+idx).value:'',
+        indication: document.getElementById('abx-ind-'+idx)?document.getElementById('abx-ind-'+idx).value:'',
+        therapyType: document.getElementById('abx-type-'+idx)?document.getElementById('abx-type-'+idx).value:'',
+        febrileNeutro: document.getElementById('abx-neutro-'+idx)?document.getElementById('abx-neutro-'+idx).value:'',
+        febrileEpisodes: document.getElementById('abx-episodes-'+idx)?document.getElementById('abx-episodes-'+idx).value:'',
+      };
+    }).filter(function(a){return a.name});
+
+    var cultures = formCult.map(function(c, idx) {
+      return {
+        sent: document.getElementById('cult-sent-'+idx)?document.getElementById('cult-sent-'+idx).value:'',
+        date: document.getElementById('cult-date-'+idx)?document.getElementById('cult-date-'+idx).value:'',
+        type: (function(){ var cbs=document.querySelectorAll('.cult-type-cb[data-idx="'+idx+'"]'); var vals=[]; cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); }); return vals.join(','); })(),
+        typeOther: document.getElementById('cult-type-other-'+idx)?document.getElementById('cult-type-other-'+idx).value:'',
+        result: document.getElementById('cult-result-'+idx)?document.getElementById('cult-result-'+idx).value:'',
+        organism: document.getElementById('cult-org-'+idx)?document.getElementById('cult-org-'+idx).value:'',
+        gram: document.getElementById('cult-gram-'+idx)?document.getElementById('cult-gram-'+idx).value:'',
+        ast: document.getElementById('cult-ast-'+idx)?document.getElementById('cult-ast-'+idx).value:'',
+        resist: document.getElementById('cult-resist-'+idx)?document.getElementById('cult-resist-'+idx).value:'',
+        mdr: document.getElementById('cult-mdr-'+idx)?document.getElementById('cult-mdr-'+idx).value:'',
+        xdr: document.getElementById('cult-xdr-'+idx)?document.getElementById('cult-xdr-'+idx).value:'',
+        eskape: document.getElementById('cult-eskape-'+idx)?document.getElementById('cult-eskape-'+idx).value:'',
+        eskapeOrganisms: (function(){ var cbs=document.querySelectorAll('.eskape-org-cb[data-idx="'+idx+'"]'); var vals=[]; cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); }); return vals.join(','); })(),
+      };
+    }).filter(function(c){return c.sent||c.type});
+
+    var payload = {
+      record: {
+        studyId: modalStudyId,
+        version: formVersion,
+        hospital: sessionInfo.hospital,
+        dateOfCollection: sessionInfo.dateOfCollection,
+        collectorName: sessionInfo.collectorName,
+        age: formTemp.age !== undefined ? formTemp.age : '',
+        sex: formTemp.sex !== undefined ? formTemp.sex : '',
+        diagnosis: formTemp.diagnosis !== undefined ? formTemp.diagnosis : '',
+        cancerType: formTemp.cancerType !== undefined ? formTemp.cancerType : '',
+        cancerName: formTemp.cancerName !== undefined ? formTemp.cancerName : cancerName,
+        cancerNameOther: formTemp.cancerNameOther !== undefined ? formTemp.cancerNameOther : cancerNameOther,
+        stage: formTemp.stage !== undefined ? formTemp.stage : '',
+        treatment: formTemp.treatment !== undefined ? formTemp.treatment : treatment,
+        treatmentOther: formTemp.treatmentOther !== undefined ? formTemp.treatmentOther : treatmentOther,
+        comorbidities: formTemp.comorbidities !== undefined ? formTemp.comorbidities : comorb,
+        comorbiditiesOther: formTemp.comorbiditiesOther !== undefined ? formTemp.comorbiditiesOther : comorbOther,
+        immunosuppressed: formTemp.immunosuppressed !== undefined ? formTemp.immunosuppressed : '',
+        admissionDate: formTemp.admissionDate !== undefined ? formTemp.admissionDate : '',
+        dischargeDate: formTemp.dischargeDate !== undefined ? formTemp.dischargeDate : '',
+        los: calcLos(formTemp.admissionDate || '', formTemp.dischargeDate || ''),
+        admissionType: formTemp.admissionType !== undefined ? formTemp.admissionType : '',
+        ward: formTemp.ward !== undefined ? formTemp.ward : ward,
+        wardOther: (formTemp.ward || '')==='Other'?formTemp.wardOther:'',
+        outcome: formTemp.outcome !== undefined ? formTemp.outcome : '',
+        readmission30d: formTemp.readmission30d !== undefined ? formTemp.readmission30d : '',
+        deEscalation: formTemp.deEscalation !== undefined ? formTemp.deEscalation : '',
+        antibiotics: antibiotics,
+        cultures: cultures,
+        requiredForAnalysis: formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : '',
+      }
+    };
+
+    var data = await apiCall('save', payload);
+    if (data.success) {
+      toast('Record saved successfully', 'success');
+      closeNewEntryPopup();
+      await loadData();
+      renderView();
+    } else if (data.conflict) {
+      toast(data.message, 'error');
+      await loadData();
+    } else {
+      toast(data.message || 'Failed to save record', 'error');
+    }
+  } catch(e) {
+    toast('Failed to save record: ' + e.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save Record'; }
+  }
+}
+
 
 // save record
 async function saveRecord() {
@@ -1714,8 +2003,8 @@ function renderAnalytics(container) {
   // Date filter
   html += '<div class="filter-bar mb-4">';
   html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Analysis Period:</label>';
-  html += '<input type="date" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
-  html += '<input type="date" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
+  html += '<input type="text" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})" placeholder="From (YYYY-MM-DD)">';
+  html += '<input type="text" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})" placeholder="To (YYYY-MM-DD)">';
   if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(function(){currentView=\'analytics\';renderView()})">Clear</button>';
   html += '<span class="text-sm" style="color:var(--text-muted)">'+totalPatients+' patients, '+totalPatientDays+' patient-days</span>';
   html += '</div>';
