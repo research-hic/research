@@ -92,34 +92,37 @@ footer{background:var(--bg-sidebar);border-top:1px solid var(--border);padding:.
 /* cards */
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:1.25rem}
 .card-stat{display:flex;flex-direction:column;gap:.25rem}
-.card-stat .stat-icon{width:2.5rem;height:2.5rem;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.125rem}
+.card-stat .stat-icon{width:2.5rem;height:2.375rem;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.125rem}
 .card-stat .stat-value{font-size:1.5rem;font-weight:700;color:var(--text-primary)}
 .card-stat .stat-label{font-size:.75rem;color:var(--text-secondary)}
 
 /* form elements */
 input,select,textarea{
-  width:100%;height:2.5rem;padding:0 .75rem;background:var(--bg-input);
+  width:100%;height:2.375rem;padding:0 .625rem;background:var(--bg-input);
   border:1px solid var(--border-input);border-radius:var(--radius);
-  color:var(--text-primary);font-size:.875rem;outline:none;transition:border-color var(--transition);
+  color:var(--text-primary);font-size:.875rem;outline:none;transition:border-color var(--transition),box-shadow var(--transition);
   -webkit-appearance:none;-webkit-tap-highlight-color:transparent;
 }
+input:hover,select:hover,textarea:hover{border-color:rgba(14,165,233,.4)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-dim)}
 input::-webkit-calendar-picker-indicator{display:none!important;-webkit-appearance:none;}
 input[type="text"]::-webkit-calendar-picker-indicator{display:none;}
-input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 input:read-only{opacity:.6;cursor:default}
 input:disabled,select:disabled,textarea:disabled{opacity:.5;cursor:not-allowed}
 textarea{height:auto;padding:.5rem .75rem;resize:vertical}
 select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center}
-label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary);margin-bottom:.375rem}
-.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-@media(max-width:767px){.form-grid{grid-template-columns:1fr}}
-@media(min-width:768px) and (max-width:1023px){.form-grid{grid-template-columns:repeat(2,1fr)}}
+label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary);margin-bottom:.25rem}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;align-items:start}
+.form-grid-compact{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;align-items:start}
+.form-grid-wide{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;align-items:start}
+@media(max-width:767px){.form-grid,.form-grid-compact,.form-grid-wide{grid-template-columns:1fr!important;gap:.625rem!important}}
+@media(min-width:768px) and (max-width:1023px){.form-grid,.form-grid-compact{grid-template-columns:repeat(2,1fr)}.form-grid-wide{grid-template-columns:repeat(2,1fr)}}
 
 /* buttons */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.375rem;
-  padding:.5rem 1rem;border-radius:var(--radius);font-size:.875rem;font-weight:500;
-  cursor:pointer;border:none;transition:all var(--transition);height:2.5rem;
+  padding:.45rem .875rem;border-radius:var(--radius);font-size:.875rem;font-weight:500;
+  cursor:pointer;border:none;transition:all var(--transition);height:2.375rem;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -130,8 +133,8 @@ label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary
 .btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover:not(:disabled){background:#dc2626}
 .btn-success{background:var(--success);color:#fff}
-.btn-sm{height:2rem;padding:.25rem .625rem;font-size:.75rem}
-.btn-icon{width:2rem;height:2rem;padding:0;border-radius:var(--radius)}
+.btn-sm{height:1.875rem;padding:.2rem .5rem;font-size:.75rem}
+.btn-icon{width:2rem;height:1.875rem;padding:0;border-radius:var(--radius)}
 
 /* table */
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:11px}
@@ -329,7 +332,7 @@ tr:hover td{background:var(--bg-table-hover)}
       </div>
       <div>
         <label class="required">Date of Collection</label>
-        <input type="text" id="login-date" placeholder="YYYY-MM-DD" required>
+        <input type="text" id="login-date" placeholder="Select date" required>
       </div>
       <div>
         <label class="required">Collector Name</label>
@@ -351,7 +354,7 @@ tr:hover td{background:var(--bg-table-hover)}
     <aside id="sidebar">
       <div class="flex items-center justify-between px-5 h-16 shrink-0 border-b" style="border-color:var(--border)">
         <div class="flex items-center gap-3">
-          <div style="width:2rem;height:2rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
+          <div style="width:2rem;height:1.875rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
           <span class="font-bold text-lg">OncoCollect</span>
         </div>
         <button class="btn btn-ghost btn-icon" id="theme-toggle-sidebar" onclick="toggleTheme()" style="font-size:1.1rem;width:2.5rem;height:2.5rem" title="Toggle Theme">&#x2600;</button>
@@ -359,7 +362,7 @@ tr:hover td{background:var(--bg-table-hover)}
       <nav id="sidebar-nav" class="flex-1 py-4 px-3 flex flex-col gap-1 overflow-y-auto"></nav>
       <div class="px-3 py-4 flex flex-col gap-2 border-t" style="border-color:var(--border)">
         <div class="flex items-center gap-3 px-3 py-2">
-          <div id="user-avatar" class="rounded-full flex items-center justify-center font-bold text-xs" style="width:2rem;height:2rem;background:var(--accent);color:#fff"></div>
+          <div id="user-avatar" class="rounded-full flex items-center justify-center font-bold text-xs" style="width:2rem;height:1.875rem;background:var(--accent);color:#fff"></div>
           <div class="flex-1 min-w-0">
             <p id="user-name" class="text-sm font-medium truncate"></p>
             <p id="user-role" class="text-xs" style="color:var(--text-muted)"></p>
@@ -1008,8 +1011,8 @@ function renderDashboard(container) {
   // Date filter bar
   html += '<div class="filter-bar">';
   html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Filter:</label>';
-  html += '<input type="text" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)" placeholder="From (YYYY-MM-DD)">';
-  html += '<input type="text" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)" placeholder="To (YYYY-MM-DD)">';
+  html += '<input type="date" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)">';
+  html += '<input type="date" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)">';
   if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(renderView)">Clear</button>';
   html += '</div>';
 
@@ -1155,7 +1158,7 @@ function renderNewEntryPopup() {
   html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
   var ageVal = formTemp.age !== undefined ? formTemp.age : '';
   var sexVal = formTemp.sex !== undefined ? formTemp.sex : '';
-  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(ageVal)+'" '+dis+' placeholder="0-120" onchange="saveFormTemp(\'age\', this.value)"></div>';
+  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(ageVal)+'" '+dis+' placeholder="Age" onchange="saveFormTemp(\'age\', this.value)"></div>';
   html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+' onchange="saveFormTemp(\'sex\', this.value)"><option value="">Select</option><option value="Male" '+(sexVal==='Male'?'selected':'')+'>Male</option><option value="Female" '+(sexVal==='Female'?'selected':'')+'>Female</option></select></div>';
   html += '</div>';
 
@@ -1181,8 +1184,8 @@ function renderNewEntryPopup() {
   var deescVal = formTemp.deEscalation !== undefined ? formTemp.deEscalation : '';
   var requiredVal = formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : '';
 
-  html += '<div><label class="required">Admission Date</label><input type="text" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
-  html += '<div><label>Discharge Date</label><input type="text" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label class="required">Admission Date</label><input type="text" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' placeholder="Select date" onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label>Discharge Date</label><input type="text" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' placeholder="Select date" onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
   html += '<div><label>LOS</label><input id="f-los" value="" readonly style="opacity:.6"></div>';
   html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+' onchange="saveFormTemp(\'admissionType\', this.value)"><option value="">Select</option><option value="Emergency" '+(admTypeVal==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(admTypeVal==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(admTypeVal==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
 
@@ -1190,7 +1193,7 @@ function renderNewEntryPopup() {
   html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="saveFormTemp(\'ward\', this.value); toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(wardVal==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(wardVal==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(wardVal==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
   html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&wardVal!=='Other'?wardVal||'':wardOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'wardOther\', this.value)"></div>';
 
-  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(diagnosisVal)+'" '+dis+' placeholder="Enter diagnosis" onchange="saveFormTemp(\'diagnosis\', this.value)"></div>';
+  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(diagnosisVal)+'" '+dis+' placeholder="Diagnosis" onchange="saveFormTemp(\'diagnosis\', this.value)"></div>';
 
   html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="saveFormTemp(\'cancerType\', this.value); toggleField(\'cancertype\')"><option value="">Select</option>';
   ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(cancerTypeVal===v?'selected':'')+'>'+v+'</option>';});
@@ -1357,7 +1360,7 @@ function renderRecordModal() {
   html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
   var ageVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.age !== undefined ? formTemp.age : (rec.age != null ? rec.age : '');
   var sexVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.sex !== undefined ? formTemp.sex : (rec.sex || '');
-  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(ageVal)+'" '+dis+' placeholder="0-120" onchange="saveFormTemp(\'age\', this.value)"></div>';
+  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(ageVal)+'" '+dis+' placeholder="Age" onchange="saveFormTemp(\'age\', this.value)"></div>';
   html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+' onchange="saveFormTemp(\'sex\', this.value)"><option value="">Select</option><option value="Male" '+(sexVal==='Male'?'selected':'')+'>Male</option><option value="Female" '+(sexVal==='Female'?'selected':'')+'>Female</option></select></div>';
   html += '</div>';
 
@@ -1383,8 +1386,8 @@ function renderRecordModal() {
   var deescVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.deEscalation !== undefined ? formTemp.deEscalation : (rec.deEscalation || '');
   var requiredVal = (modalMode === 'edit' || modalMode === 'new') && formTemp.requiredForAnalysis !== undefined ? formTemp.requiredForAnalysis : (rec.requiredForAnalysis || '');
 
-  html += '<div><label class="required">Admission Date</label><input type="text" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
-  html += '<div><label>Discharge Date</label><input type="text" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' placeholder="YYYY-MM-DD" onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label class="required">Admission Date</label><input type="text" id="f-admit" value="'+esc(fmtDate(admitDateVal))+'" '+dis+' placeholder="Select date" onchange="saveFormTemp(\'admissionDate\', this.value); autoCalcLos()"></div>';
+  html += '<div><label>Discharge Date</label><input type="text" id="f-discharge" value="'+esc(fmtDate(dischargeDateVal))+'" '+dis+' placeholder="Select date" onchange="saveFormTemp(\'dischargeDate\', this.value); autoCalcLos()"></div>';
   html += '<div><label>LOS</label><input id="f-los" value="'+(rec.los!=null?rec.los+' days':'')+'" readonly style="opacity:.6"></div>';
   html += '<div><label class="required">Admission Type</label><select id="f-admtype" '+dis+' onchange="saveFormTemp(\'admissionType\', this.value)"><option value="">Select</option><option value="Emergency" '+(admTypeVal==='Emergency'?'selected':'')+'>Emergency</option><option value="Elective" '+(admTypeVal==='Elective'?'selected':'')+'>Elective</option><option value="Transfer" '+(admTypeVal==='Transfer'?'selected':'')+'>Transfer</option></select></div>';
 
@@ -1392,7 +1395,7 @@ function renderRecordModal() {
   html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="saveFormTemp(\'ward\', this.value); toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(wardVal==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(wardVal==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(wardVal==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
   html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&wardVal!=='Other'?wardVal||'':wardOtherVal||'')+'" '+dis+' onchange="saveFormTemp(\'wardOther\', this.value)"></div>';
 
-  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(diagnosisVal)+'" '+dis+' placeholder="Enter diagnosis" onchange="saveFormTemp(\'diagnosis\', this.value)"></div>';
+  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(diagnosisVal)+'" '+dis+' placeholder="Diagnosis" onchange="saveFormTemp(\'diagnosis\', this.value)"></div>';
 
   html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="saveFormTemp(\'cancerType\', this.value); toggleField(\'cancertype\')"><option value="">Select</option>';
   ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(cancerTypeVal===v?'selected':'')+'>'+v+'</option>';});
@@ -1540,12 +1543,12 @@ function renderAbxSlots(isView) {
     html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'route\',this.value)"><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
-    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="e.g. 1g" onchange="updateAbxField('+i+',\'dose\',this.value)"></div>';
+    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="Dose" onchange="updateAbxField('+i+',\'dose\',this.value)"></div>';
     html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+' onchange="updateAbxField('+i+',\'freq\',this.value)"><option value="">Select</option>';
     ['OD','BD','TDS','QDS','6H','8H','12H','24H','Stat','Other'].forEach(function(f){html+='<option value="'+f+'" '+(a.freq===f?'selected':'')+'>'+f+'</option>';});
     html += '</select></div>';
-    html += '<div><label>Start Date</label><input type="text" id="abx-start-'+i+'" value="'+esc(a.start)+'" '+dis+' placeholder="YYYY-MM-DD" onchange="autoCalcAbx('+i+')"></div>';
-    html += '<div><label>Stop Date</label><input type="text" id="abx-stop-'+i+'" value="'+esc(a.stop)+'" '+dis+' placeholder="YYYY-MM-DD" onchange="autoCalcAbx('+i+')"></div>';
+    html += '<div><label>Start Date</label><input type="text" id="abx-start-'+i+'" value="'+esc(a.start)+'" '+dis+' placeholder="Select date" onchange="autoCalcAbx('+i+')"></div>';
+    html += '<div><label>Stop Date</label><input type="text" id="abx-stop-'+i+'" value="'+esc(a.stop)+'" '+dis+' placeholder="Select date" onchange="autoCalcAbx('+i+')"></div>';
     html += '<div><label>Duration (days)</label><input type="number" id="abx-dur-'+i+'" value="'+esc(a.duration)+'" '+dis+' onchange="autoCalcDot('+i+')"></div>';
     html += '<div><label>DDD (assigned)</label><input type="number" step="0.01" id="abx-ddd-'+i+'" value="'+esc(a.ddd)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
     html += '<div><label>Grams/day</label><input type="number" step="0.01" id="abx-grams-'+i+'" value="'+esc(a.grams)+'" '+dis+' onchange="autoCalcDddCalc('+i+')"></div>';
@@ -1568,18 +1571,18 @@ function renderCultSlots(isView) {
     html += '<div class="slot-title">Culture '+(i+1)+'</div>';
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
     html += '<div><label>Culture Sent</label><select id="cult-sent-'+i+'" '+dis+' onchange="updateCultField('+i+',\'sent\',this.value); toggleCultDetails('+i+')"><option value="">Select</option><option value="Yes" '+(c.sent==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.sent==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Date</label><input type="text" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+' placeholder="YYYY-MM-DD" onchange="updateCultField('+i+',\'date\',this.value)"></div>';
+    html += '<div><label>Date</label><input type="text" id="cult-date-'+i+'" value="'+esc(c.date)+'" '+dis+' placeholder="Select date" onchange="updateCultField('+i+',\'date\',this.value)"></div>';
     var typeArr = (c.type||'').split(',').filter(Boolean);
     html += '<div style="grid-column:span 3"><label>Sample Type</label><div class="checkbox-group" id="cult-type-group-'+i+'">';
     ['Blood','Urine','Sputum','Wound','BAL','CSF'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="cult-type-cb" data-idx="'+i+'" value="'+v+'" '+(typeArr.indexOf(v)>=0?'checked':'')+' '+dis+' onchange="updateCultTypeCheckbox('+i+')"> '+v+'</label>';});
     html += '<label class="checkbox-label"><input type="checkbox" class="cult-type-cb cult-type-other-cb" data-idx="'+i+'" value="Other" '+(typeArr.indexOf('Other')>=0?'checked':'')+' '+dis+' onchange="toggleCultTypeOther('+i+'); updateCultTypeCheckbox('+i+')"> Other</label>';
-    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify other type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px" onchange="updateCultField('+i+',\'typeOther\',this.value)">';
+    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify culture type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px" onchange="updateCultField('+i+',\'typeOther\',this.value)">';
     html += '</div></div>';
     html += '<div><label>Result</label><select id="cult-result-'+i+'" '+dis+' onchange="updateCultField('+i+',\'result\',this.value)"><option value="">Select</option><option value="Positive" '+(c.result==='Positive'?'selected':'')+'>Positive</option><option value="Negative" '+(c.result==='Negative'?'selected':'')+'>Negative</option><option value="Contaminant" '+(c.result==='Contaminant'?'selected':'')+'>Contaminant</option></select></div>';
     html += '<div><label>Organism</label><input id="cult-org-'+i+'" value="'+esc(c.organism)+'" '+dis+' onchange="updateCultField('+i+',\'organism\',this.value)"></div>';
     html += '<div><label>Gram Stain</label><select id="cult-gram-'+i+'" '+dis+' onchange="updateCultField('+i+',\'gram\',this.value)"><option value="">Select</option><option value="Gram +ve" '+(c.gram==='Gram +ve'?'selected':'')+'>Gram +ve</option><option value="Gram -ve" '+(c.gram==='Gram -ve'?'selected':'')+'>Gram -ve</option><option value="Yeast" '+(c.gram==='Yeast'?'selected':'')+'>Yeast</option></select></div>';
     html += '<div><label>AST Done</label><select id="cult-ast-'+i+'" '+dis+' onchange="updateCultField('+i+',\'ast\',this.value)"><option value="">Select</option><option value="Yes" '+(c.ast==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.ast==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="e.g. ESBL, carbapenemase" onchange="updateCultField('+i+',\'resist\',this.value)"></div>';
+    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="Resistance pattern" onchange="updateCultField('+i+',\'resist\',this.value)"></div>';
     html += '<div><label>MDR</label><select id="cult-mdr-'+i+'" '+dis+' onchange="updateCultField('+i+',\'mdr\',this.value)"><option value="">Select</option><option value="Yes" '+(c.mdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.mdr==='No'?'selected':'')+'>No</option></select></div>';
     html += '<div><label>XDR</label><select id="cult-xdr-'+i+'" '+dis+' onchange="updateCultField('+i+',\'xdr\',this.value)"><option value="">Select</option><option value="Yes" '+(c.xdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.xdr==='No'?'selected':'')+'>No</option></select></div>';
     var eskapeOrgArr = (c.eskapeOrganisms||'').split(',').filter(Boolean);
@@ -2362,13 +2365,13 @@ footer{background:var(--bg-sidebar);border-top:1px solid var(--border);padding:.
 /* cards */
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:1.25rem}
 .card-stat{display:flex;flex-direction:column;gap:.25rem}
-.card-stat .stat-icon{width:2.5rem;height:2.5rem;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.125rem}
+.card-stat .stat-icon{width:2.5rem;height:2.375rem;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.125rem}
 .card-stat .stat-value{font-size:1.5rem;font-weight:700;color:var(--text-primary)}
 .card-stat .stat-label{font-size:.75rem;color:var(--text-secondary)}
 
 /* form elements */
 input,select,textarea{
-  width:100%;height:2.5rem;padding:0 .75rem;background:var(--bg-input);
+  width:100%;height:2.375rem;padding:0 .75rem;background:var(--bg-input);
   border:1px solid var(--border-input);border-radius:var(--radius);
   color:var(--text-primary);font-size:.875rem;outline:none;transition:border-color var(--transition);
   -webkit-appearance:none;-webkit-tap-highlight-color:transparent;
@@ -2379,15 +2382,17 @@ input:disabled,select:disabled,textarea:disabled{opacity:.5;cursor:not-allowed}
 textarea{height:auto;padding:.5rem .75rem;resize:vertical}
 select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center}
 label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary);margin-bottom:.375rem}
-.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-@media(max-width:767px){.form-grid{grid-template-columns:1fr}}
-@media(min-width:768px) and (max-width:1023px){.form-grid{grid-template-columns:repeat(2,1fr)}}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;align-items:start}
+.form-grid-compact{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;align-items:start}
+.form-grid-wide{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;align-items:start}
+@media(max-width:767px){.form-grid,.form-grid-compact,.form-grid-wide{grid-template-columns:1fr!important;gap:.625rem!important}}
+@media(min-width:768px) and (max-width:1023px){.form-grid,.form-grid-compact{grid-template-columns:repeat(2,1fr)}.form-grid-wide{grid-template-columns:repeat(2,1fr)}}
 
 /* buttons */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.375rem;
-  padding:.5rem 1rem;border-radius:var(--radius);font-size:.875rem;font-weight:500;
-  cursor:pointer;border:none;transition:all var(--transition);height:2.5rem;
+  padding:.45rem .875rem;border-radius:var(--radius);font-size:.875rem;font-weight:500;
+  cursor:pointer;border:none;transition:all var(--transition);height:2.375rem;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -2398,8 +2403,8 @@ label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary
 .btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover:not(:disabled){background:#dc2626}
 .btn-success{background:var(--success);color:#fff}
-.btn-sm{height:2rem;padding:.25rem .625rem;font-size:.75rem}
-.btn-icon{width:2rem;height:2rem;padding:0;border-radius:var(--radius)}
+.btn-sm{height:1.875rem;padding:.2rem .5rem;font-size:.75rem}
+.btn-icon{width:2rem;height:1.875rem;padding:0;border-radius:var(--radius)}
 
 /* table */
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:11px}
@@ -2596,7 +2601,7 @@ tr:hover td{background:var(--bg-table-hover)}
     <aside id="sidebar">
       <div class="flex items-center justify-between px-5 h-16 shrink-0 border-b" style="border-color:var(--border)">
         <div class="flex items-center gap-3">
-          <div style="width:2rem;height:2rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
+          <div style="width:2rem;height:1.875rem;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8125rem;color:#fff">O</div>
           <span class="font-bold text-lg">OncoCollect</span>
         </div>
         <button class="btn btn-ghost btn-icon" id="theme-toggle-sidebar" onclick="toggleTheme()" style="font-size:1.1rem;width:2.5rem;height:2.5rem" title="Toggle Theme">&#x2600;</button>
@@ -2604,7 +2609,7 @@ tr:hover td{background:var(--bg-table-hover)}
       <nav id="sidebar-nav" class="flex-1 py-4 px-3 flex flex-col gap-1 overflow-y-auto"></nav>
       <div class="px-3 py-4 flex flex-col gap-2 border-t" style="border-color:var(--border)">
         <div class="flex items-center gap-3 px-3 py-2">
-          <div id="user-avatar" class="rounded-full flex items-center justify-center font-bold text-xs" style="width:2rem;height:2rem;background:var(--accent);color:#fff"></div>
+          <div id="user-avatar" class="rounded-full flex items-center justify-center font-bold text-xs" style="width:2rem;height:1.875rem;background:var(--accent);color:#fff"></div>
           <div class="flex-1 min-w-0">
             <p id="user-name" class="text-sm font-medium truncate"></p>
             <p id="user-role" class="text-xs" style="color:var(--text-muted)"></p>
@@ -3410,7 +3415,7 @@ function renderRecordModal() {
 
   // demographics
   html += '<div class="section-title">A. Demographics</div><div class="form-grid">';
-  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(rec.age!=null?rec.age:'')+'" '+dis+' placeholder="0-120"></div>';
+  html += '<div><label class="required">Age</label><input type="number" id="f-age" min="0" max="120" value="'+esc(rec.age!=null?rec.age:'')+'" '+dis+' placeholder="Age"></div>';
   html += '<div><label class="required">Sex</label><select id="f-sex" '+dis+'><option value="">Select</option><option value="Male" '+(rec.sex==='Male'?'selected':'')+'>Male</option><option value="Female" '+(rec.sex==='Female'?'selected':'')+'>Female</option></select></div>';
   html += '</div>';
 
@@ -3425,7 +3430,7 @@ function renderRecordModal() {
   html += '<div><label class="required">Ward</label><select id="f-ward" '+dis+' onchange="toggleField(\'ward\')"><option value="">Select</option><option value="Oncology ward" '+(rec.ward==='Oncology ward'?'selected':'')+'>Oncology ward</option><option value="ICU" '+(rec.ward==='ICU'?'selected':'')+'>ICU</option><option value="HDU" '+(rec.ward==='HDU'?'selected':'')+'>HDU</option><option value="Other" '+(isWardOther?'selected':'')+'>Other</option></select></div>';
   html += '<div id="ward-other-wrap" style="display:'+(isWardOther?'block':'none')+'"><label>Ward Other</label><input id="f-ward-other" value="'+esc(isWardOther&&rec.ward!=='Other'?rec.ward||'':rec.wardOther||'')+'" '+dis+'></div>';
 
-  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(rec.diagnosis||'')+'" '+dis+' placeholder="Enter diagnosis"></div>';
+  html += '<div><label class="required">Diagnosis</label><input id="f-diagnosis" value="'+esc(rec.diagnosis||'')+'" '+dis+' placeholder="Diagnosis"></div>';
 
   html += '<div><label>Cancer Type</label><select id="f-cancertype" '+dis+' onchange="toggleField(\'cancertype\')"><option value="">Select</option>';
   ['Solid','Haematological'].forEach(function(v){html+='<option value="'+v+'" '+(rec.cancerType===v?'selected':'')+'>'+v+'</option>';});
@@ -3554,11 +3559,11 @@ function renderAbxSlots(isView) {
     html += '<div class="slot-title">Antibiotic '+(i+1)+'</div>';
     html += '<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">';
     html += '<div class="abx-search-wrap"><label>Name</label><input class="abx-search-input" data-idx="'+i+'" value="'+esc(a.name)+'" '+dis+' placeholder="Search antibiotic..." onfocus="openAbxDropdown('+i+')" oninput="filterAbxDropdown('+i+')" onblur="setTimeout(function(){closeAbxDropdown('+i+')},200)" onchange="checkOtherAntibiotic('+i+')"><div class="abx-dropdown hidden" id="abx-dd-'+i+'"></div></div>';
-    html += '<div id="abx-other-wrap-'+i+'" class="hidden" style="grid-column:span 3"><label>Specify Other Antibiotic</label><input type="text" id="abx-other-'+i+'" value="'+esc(a.otherName||'')+'" '+dis+' placeholder="Enter antibiotic name..."></div>';
+    html += '<div id="abx-other-wrap-'+i+'" class="hidden" style="grid-column:span 3"><label>Specify Other Antibiotic</label><input type="text" id="abx-other-'+i+'" value="'+esc(a.otherName||'')+'" '+dis+' placeholder="Specify antibiotic"></div>';
     html += '<div><label>Class</label><input id="abx-class-'+i+'" value="'+esc(a.abxClass)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Category</label><input id="abx-aware-'+i+'" value="'+esc(a.aware)+'" readonly style="opacity:.6"></div>';
     html += '<div><label>Route</label><select id="abx-route-'+i+'" '+dis+'><option value="">Select</option><option value="IV" '+(a.route==='IV'?'selected':'')+'>IV</option><option value="Oral" '+(a.route==='Oral'?'selected':'')+'>Oral</option><option value="IM" '+(a.route==='IM'?'selected':'')+'>IM</option></select></div>';
-    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="e.g. 1g"></div>';
+    html += '<div><label>Dose</label><input id="abx-dose-'+i+'" value="'+esc(a.dose)+'" '+dis+' placeholder="Dose"></div>';
     html += '<div><label>Frequency</label><select id="abx-freq-'+i+'" '+dis+'><option value="">Select</option>';
     ['OD','BD','TDS','QDS','6H','8H','12H','24H','Stat','Other'].forEach(function(f){html+='<option value="'+f+'" '+(a.freq===f?'selected':'')+'>'+f+'</option>';});
     html += '</select></div>';
@@ -3591,13 +3596,13 @@ function renderCultSlots(isView) {
     html += '<div style="grid-column:span 3"><label>Sample Type</label><div class="checkbox-group" id="cult-type-group-'+i+'">';
     ['Blood','Urine','Sputum','Wound','BAL','CSF'].forEach(function(v){html+='<label class="checkbox-label"><input type="checkbox" class="cult-type-cb" data-idx="'+i+'" value="'+v+'" '+(typeArr.indexOf(v)>=0?'checked':'')+' '+dis+'> '+v+'</label>';});
     html += '<label class="checkbox-label"><input type="checkbox" class="cult-type-cb cult-type-other-cb" data-idx="'+i+'" value="Other" '+(typeArr.indexOf('Other')>=0?'checked':'')+' '+dis+' onchange="toggleCultTypeOther('+i+')"> Other</label>';
-    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify other type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px">';
+    html += '<input type="text" id="cult-type-other-'+i+'" class="cult-type-other-input" value="'+esc(c.typeOther||'')+'" '+dis+' placeholder="Specify culture type" style="display:'+(typeArr.indexOf('Other')>=0?'inline-block':'none')+';margin-left:6px;width:180px">';
     html += '</div></div>';
     html += '<div><label>Result</label><select id="cult-result-'+i+'" '+dis+'><option value="">Select</option><option value="Positive" '+(c.result==='Positive'?'selected':'')+'>Positive</option><option value="Negative" '+(c.result==='Negative'?'selected':'')+'>Negative</option><option value="Contaminant" '+(c.result==='Contaminant'?'selected':'')+'>Contaminant</option></select></div>';
     html += '<div><label>Organism</label><input id="cult-org-'+i+'" value="'+esc(c.organism)+'" '+dis+'></div>';
     html += '<div><label>Gram Stain</label><select id="cult-gram-'+i+'" '+dis+'><option value="">Select</option><option value="Gram +ve" '+(c.gram==='Gram +ve'?'selected':'')+'>Gram +ve</option><option value="Gram -ve" '+(c.gram==='Gram -ve'?'selected':'')+'>Gram -ve</option><option value="Yeast" '+(c.gram==='Yeast'?'selected':'')+'>Yeast</option></select></div>';
     html += '<div><label>AST Done</label><select id="cult-ast-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.ast==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.ast==='No'?'selected':'')+'>No</option></select></div>';
-    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="e.g. ESBL, carbapenemase"></div>';
+    html += '<div><label>Resistance Pattern</label><input id="cult-resist-'+i+'" value="'+esc(c.resist)+'" '+dis+' placeholder="Resistance pattern"></div>';
     html += '<div><label>MDR</label><select id="cult-mdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.mdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.mdr==='No'?'selected':'')+'>No</option></select></div>';
     html += '<div><label>XDR</label><select id="cult-xdr-'+i+'" '+dis+'><option value="">Select</option><option value="Yes" '+(c.xdr==='Yes'?'selected':'')+'>Yes</option><option value="No" '+(c.xdr==='No'?'selected':'')+'>No</option></select></div>';
     var eskapeOrgArr = (c.eskapeOrganisms||'').split(',').filter(Boolean);
@@ -3911,8 +3916,8 @@ function renderAnalytics(container) {
   // Date filter
   html += '<div class="filter-bar mb-4">';
   html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Analysis Period:</label>';
-  html += '<input type="text" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})" placeholder="From (YYYY-MM-DD)">';
-  html += '<input type="text" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})" placeholder="To (YYYY-MM-DD)">';
+  html += '<input type="date" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
+  html += '<input type="date" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(function(){currentView=\'analytics\';renderView()})">';
   if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(function(){currentView=\'analytics\';renderView()})">Clear</button>';
   html += '<span class="text-sm" style="color:var(--text-muted)">'+totalPatients+' patients, '+totalPatientDays+' patient-days</span>';
   html += '</div>';
