@@ -7,9 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0c1322">
-<title>OncoCollect</title>
+<title>OncoCollect - Data Collection</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
 /* reset & variables */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -454,8 +453,7 @@ var sessionInfo = { hospital: '', dateOfCollection: '', collectorName: '' };
 var rawData = [];
 var whoList = [];
 var usersList = [];
-var currentView = 'dashboard';
-var chartInstances = {};
+var currentView = 'records';
 var dateFilterFrom = '';
 var dateFilterTo = '';
 
@@ -837,7 +835,6 @@ function logout() {
 
 // navigation
 var NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: '&#9632;' },
   { key: 'records', label: 'Records', icon: '&#9998;' },
   { key: 'analytics', label: 'Analytics', icon: '&#9733;' },
   { key: 'data', label: 'Data Mgmt', icon: '&#128451;', admin: true },
@@ -915,63 +912,15 @@ async function showApp() {
 // render router
 function renderView() {
   var c = document.getElementById('content');
-  Object.values(chartInstances).forEach(function(ch){ try{ch.destroy()}catch(e){} });
-  chartInstances = {};
   switch (currentView) {
-    case 'dashboard': renderDashboard(c); break;
     case 'records': renderRecords(c); break;
     case 'analytics': renderAnalytics(c); break;
     case 'data': renderDataMgmt(c); break;
     case 'users': renderUsers(c); break;
     case 'audit': renderAudit(c); break;
-    default: renderDashboard(c);
+    default: renderRecords(c);
   }
   renderNav();
-}
-
-// dashboard
-function renderDashboard(container) {
-  var total = rawData.length;
-  var abxCourses = rawData.reduce(function(s,r){return s+(r.antibiotics?r.antibiotics.length:0)},0);
-  var cultSent = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.sent==='Yes'}).length:0)},0);
-  var mort = total ? +(rawData.filter(function(r){return r.outcome==='Died'}).length/total*100).toFixed(1) : 0;
-  var losArr = rawData.map(function(r){return r.los}).filter(function(v){return v!=null});
-  var medLos = median(losArr);
-  var mdrCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.mdr==='Yes'}).length:0)},0);
-  var posCult = rawData.reduce(function(s,r){return s+(r.cultures?r.cultures.filter(function(c){return c.result==='Positive'}).length:0)},0);
-  var mdrRate = posCult ? +(mdrCult/posCult*100).toFixed(1) : 0;
-
-  var mortCI = wilsonCI(mort/100, total);
-
-  var stats = [
-    { label: 'Patients', value: total, icon: '&#9823;', color: '#0ea5e9' },
-    { label: 'Antibiotic Courses', value: abxCourses, icon: '&#176;', color: '#22c55e' },
-    { label: 'Cultures Sent', value: cultSent, icon: '&#9878;', color: '#f59e0b' },
-    { label: 'Mortality Rate', value: mort+'%', icon: '&#9760;', color: '#ef4444', ci: mortCI },
-    { label: 'Median LOS', value: medLos+'d', icon: '&#9201;', color: '#8b5cf6' },
-    { label: 'MDR Rate', value: mdrRate+'%', icon: '&#9888;', color: '#ec4899' },
-  ];
-
-  var html = '<div class="grid grid-cols-4 gap-4 mb-6">';
-  stats.forEach(function(s) {
-    html += '<div class="card card-stat"><div class="stat-icon" style="background:'+s.color+'20;color:'+s.color+'">'+s.icon+'</div><div class="stat-value">'+esc(s.value)+'</div><div class="stat-label">'+esc(s.label)+'</div>';
-    if (s.ci) html += '<div class="text-xs" style="color:var(--text-muted)">95% CI: '+(s.ci.lower*100).toFixed(1)+'%–'+(s.ci.upper*100).toFixed(1)+'%</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-
-  // Date filter bar
-  html += '<div class="filter-bar">';
-  html += '<label class="text-sm font-medium" style="color:var(--text-secondary)">Filter:</label>';
-  html += '<input type="date" id="dash-date-from" value="'+esc(dateFilterFrom)+'" onchange="dateFilterFrom=this.value;loadData().then(renderView)" placeholder="From">';
-  html += '<input type="date" id="dash-date-to" value="'+esc(dateFilterTo)+'" onchange="dateFilterTo=this.value;loadData().then(renderView)" placeholder="To">';
-  if (dateFilterFrom || dateFilterTo) html += '<button class="btn btn-ghost btn-sm" onclick="dateFilterFrom=\'\';dateFilterTo=\'\';loadData().then(renderView)">Clear</button>';
-  html += '</div>';
-
-  var recent = rawData.slice(-6).reverse();
-  html += '<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-bold">Recent Records</h2><button class="btn btn-ghost btn-sm" onclick="currentView=\'records\';renderView()">View All &rarr;</button></div>';
-  html += buildRecordTable(recent, false);
-  container.innerHTML = html;
 }
 
 // records
@@ -1416,14 +1365,18 @@ function updateCultField(idx, field, value) {
 }
 
 function updateCultTypeCheckbox(idx) {
-  var cbs = document.querySelectorAll('.cult-type-cb[data-idx="'+idx+'"]');
+  var wrap = document.getElementById('cult-type-group-'+idx);
+  if (!wrap) return;
+  var cbs = wrap.querySelectorAll('.cult-type-cb');
   var vals = [];
   cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); });
   formCult[idx].type = vals.join(',');
 }
 
 function updateCultEskapeCheckbox(idx) {
-  var cbs = document.querySelectorAll('.eskape-org-cb[data-idx="'+idx+'"]');
+  var wrap = document.getElementById('eskape-org-group-'+idx);
+  if (!wrap) return;
+  var cbs = wrap.querySelectorAll('.eskape-org-cb');
   var vals = [];
   cbs.forEach(function(cb){ if(cb.checked) vals.push(cb.value); });
   formCult[idx].eskapeOrganisms = vals.join(',');
@@ -1661,13 +1614,13 @@ function renderAnalytics(container) {
   html += '<div class="obj-card"><h3>Obj 1: Antibiotic Prescribing Patterns</h3><p>Frequency, percentage, median duration and route</p>';
   html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>AWaRe</th><th>N</th><th>%</th><th>Median Days</th><th>Routes</th></tr></thead><tbody>';
   obj1.forEach(function(r){var badge=r.aware==='Access'?'badge-access':r.aware==='Watch'?'badge-watch':r.aware==='Reserve'?'badge-reserve':'';html+='<tr><td>'+esc(r.name)+'</td><td>'+(badge?'<span class="badge '+badge+'">'+esc(r.aware)+'</span>':esc(r.aware))+'</td><td>'+r.n+'</td><td>'+r.pct+'%</td><td>'+r.medianDays+'</td><td>'+esc(r.route)+'</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj1"></canvas></div></div>';
+  html += '</tbody></table></div></div>';
 
   // Obj 2
   html += '<div class="obj-card"><h3>Obj 2: DDD &amp; DOT per 1000 Patient-Days</h3><p>Total PD: '+totalPatientDays+'</p>';
   html += '<div class="table-wrap mb-4"><table><thead><tr><th>Antibiotic</th><th>Total DDD</th><th>DDD/1000PD</th><th>Total DOT</th><th>DOT/1000PD</th></tr></thead><tbody>';
   obj2.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.totalDdd+'</td><td>'+r.dddPer1000+'</td><td>'+r.totalDot+'</td><td>'+r.dotPer1000+'</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj2"></canvas></div></div>';
+  html += '</tbody></table></div></div>';
 
   // Obj 3 with CI and 60% benchmark
   html += '<div class="obj-card"><h3>Obj 3: WHO AWaRe Classification</h3><p>AWaRe distribution with WHO 60% Access benchmark</p>';
@@ -1675,13 +1628,13 @@ function renderAnalytics(container) {
   html += '<div class="progress" style="height:8px;margin-bottom:.25rem"><div class="progress-bar" style="width:'+Math.min(accessPct,100)+'%;background:#22c55e"></div></div><div style="position:relative;height:0"><div style="position:absolute;left:60%;top:-12px;width:2px;height:20px;background:var(--danger)"></div></div></div>';
   html += '<div class="table-wrap mb-4"><table><thead><tr><th>Category</th><th>Courses</th><th>%</th><th>95% CI</th><th>Total DDD</th><th>DDD %</th></tr></thead><tbody>';
   obj3.forEach(function(r){var badge=r.aware==='Access'?'badge-access':r.aware==='Watch'?'badge-watch':'badge-reserve';html+='<tr><td><span class="badge '+badge+'">'+esc(r.aware)+'</span></td><td>'+r.courses+'</td><td>'+r.pct+'%</td><td>'+r.ciLower+'%–'+r.ciUpper+'%</td><td>'+r.totalDdd+'</td><td>'+r.dddPct+'%</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj3"></canvas></div></div>';
+  html += '</tbody></table></div></div>';
 
   // Obj 4
   html += '<div class="obj-card"><h3>Obj 4: Antimicrobial Resistance Patterns</h3><p>Organism frequency with MDR, XDR, ESKAPE rates</p>';
   html += '<div class="table-wrap mb-4"><table><thead><tr><th>Organism</th><th>N</th><th>%</th><th>MDR %</th><th>XDR %</th><th>ESKAPE</th></tr></thead><tbody>';
   obj4.forEach(function(r){html+='<tr><td>'+esc(r.name)+'</td><td>'+r.n+'</td><td>'+r.pct+'%</td><td>'+r.mdrPct+'%</td><td>'+r.xdrPct+'%</td><td>'+r.eskape+'</td></tr>'});
-  html += '</tbody></table></div><div class="chart-container"><canvas id="chart-obj4"></canvas></div></div>';
+  html += '</tbody></table></div></div>';
 
   // Obj 5: LOS vs ABX count scatter with Spearman
   html += '<div class="obj-card"><h3>Obj 5: LOS vs Antibiotic Count Correlation</h3>';
@@ -1696,31 +1649,9 @@ function renderAnalytics(container) {
     if (losAbxPairs.length > 20) html += '<tr><td colspan="3" class="text-center" style="color:var(--text-muted)">... and '+(losAbxPairs.length-20)+' more</td></tr>';
     html += '</tbody></table></div>';
   }
-  html += '<div class="chart-container"><canvas id="chart-obj5"></canvas></div></div>';
+  html += '</div>';
 
   container.innerHTML = html;
-
-  // Charts Theme Settings
-  var chartColors = {Access:'#22c55e',Watch:'#f59e0b',Reserve:'#ef4444'};
-  var isLightTheme = document.documentElement.getAttribute('data-theme') === 'light';
-  var gridColor = isLightTheme ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
-  var textColor = isLightTheme ? '#475569' : '#94a3b8';
-
-  if (obj1.length) {
-    chartInstances.obj1 = new Chart(document.getElementById('chart-obj1'),{type:'bar',data:{labels:obj1.map(function(r){return r.name}),datasets:[{label:'Courses',data:obj1.map(function(r){return r.n}),backgroundColor:obj1.map(function(r){return chartColors[r.aware]||'#0ea5e9'})}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor}}}}});
-  }
-  if (obj2.length) {
-    chartInstances.obj2 = new Chart(document.getElementById('chart-obj2'),{type:'bar',data:{labels:obj2.map(function(r){return r.name}),datasets:[{label:'DDD/1000PD',data:obj2.map(function(r){return r.dddPer1000}),backgroundColor:'#0ea5e9'},{label:'DOT/1000PD',data:obj2.map(function(r){return r.dotPer1000}),backgroundColor:'#8b5cf6'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor}}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor}}}}});
-  }
-  if (obj3.length) {
-    chartInstances.obj3 = new Chart(document.getElementById('chart-obj3'),{type:'doughnut',data:{labels:obj3.map(function(r){return r.aware}),datasets:[{data:obj3.map(function(r){return r.courses}),backgroundColor:obj3.map(function(r){return chartColors[r.aware]||'#0ea5e9'}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:textColor,padding:16}}}}});
-  }
-  if (obj4.length) {
-    chartInstances.obj4 = new Chart(document.getElementById('chart-obj4'),{type:'bar',data:{labels:obj4.map(function(r){return r.name}),datasets:[{label:'MDR %',data:obj4.map(function(r){return r.mdrPct}),backgroundColor:'#f59e0b'},{label:'XDR %',data:obj4.map(function(r){return r.xdrPct}),backgroundColor:'#ef4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor}}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor},max:100}}}});
-  }
-  if (losAbxPairs.length >= 2) {
-    chartInstances.obj5 = new Chart(document.getElementById('chart-obj5'),{type:'scatter',data:{datasets:[{label:'LOS vs ABX',data:losAbxPairs.map(function(p){return{x:p.los,y:p.abxCount}}),backgroundColor:'#0ea5e9',pointRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return 'LOS: '+ctx.parsed.x+'d, ABX: '+ctx.parsed.y}}}},scales:{x:{title:{display:true,text:'Length of Stay (days)',color:textColor},grid:{color:gridColor},ticks:{color:textColor}},y:{title:{display:true,text:'Antibiotic Count',color:textColor},grid:{color:gridColor},ticks:{color:textColor}}}}});
-  }
 }
 
 // data management
